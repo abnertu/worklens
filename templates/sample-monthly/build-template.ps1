@@ -172,7 +172,15 @@ try {
     # Master elements: logo, footer text, slide number.
     New-LogoPng $logoPath
     $slideWidth = $presentation.PageSetup.SlideWidth
-    $master.Shapes.AddPicture($logoPath, $msoFalse, $msoTrue, $slideWidth - 120 - 18, 12, 120, 40).Name = 'Logo'
+    $logoLeft = $slideWidth - 120 - 18
+    $master.Shapes.AddPicture($logoPath, $msoFalse, $msoTrue, $logoLeft, 12, 120, 40).Name = 'Logo'
+    # A title that wraps to two lines must not run under the logo (PoC P5): the master title ends 12 pt left of the
+    # logo. The kept layouts' titles have no position of their own and inherit it.
+    foreach ($shape in $master.Shapes) {
+        if ($shape.Type -eq 14 -and $shape.PlaceholderFormat.Type -eq $ppPlaceholderTitle) {
+            $shape.Width = $logoLeft - 12 - $shape.Left
+        }
+    }
     $master.HeadersFooters.Footer.Visible = $msoTrue
     $master.HeadersFooters.Footer.Text = $FooterText
     $master.HeadersFooters.SlideNumber.Visible = $msoTrue

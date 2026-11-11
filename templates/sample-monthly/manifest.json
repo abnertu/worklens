@@ -4,7 +4,7 @@
     "id": "sample-monthly",
     "version": "0.1.0",
     "file": "sample-monthly.pptx",
-    "sha256": "e230344387119678ffa03e41a8101272599ea0c11f048ed6b5d9aea6a46ec961"
+    "sha256": "07cfe14e5e3965f92a69a7576a0bf7d9f24a28d358b4ed1a1b496d4991daa1f1"
   },
   "layouts": [
     {
@@ -19,7 +19,7 @@
           },
           "kind": "text",
           "required": true,
-          "max_chars": 60
+          "max_chars": 24
         },
         {
           "id": "subtitle",
@@ -43,7 +43,7 @@
           },
           "kind": "text",
           "required": true,
-          "max_chars": 40
+          "max_chars": 32
         },
         {
           "id": "highlights",
@@ -51,8 +51,8 @@
             "name": "Content Placeholder 2"
           },
           "kind": "bullets",
-          "max_items": 6,
-          "max_chars": 80,
+          "max_items": 5,
+          "max_chars": 28,
           "overflow": "truncate"
         },
         {
@@ -61,7 +61,8 @@
             "name": "Content Placeholder 3"
           },
           "kind": "table",
-          "max_items": 8,
+          "max_items": 5,
+          "max_chars": 30,
           "overflow": "truncate"
         }
       ]
@@ -78,7 +79,7 @@
           },
           "kind": "text",
           "required": true,
-          "max_chars": 40
+          "max_chars": 32
         },
         {
           "id": "items",
@@ -86,7 +87,7 @@
             "idx": 13
           },
           "kind": "table",
-          "max_items": 8,
+          "max_items": 6,
           "max_chars": 40,
           "overflow": "split"
         }
@@ -104,7 +105,7 @@
           },
           "kind": "text",
           "required": true,
-          "max_chars": 40
+          "max_chars": 32
         },
         {
           "id": "facts",
@@ -113,7 +114,7 @@
           },
           "kind": "bullets",
           "max_items": 5,
-          "max_chars": 90,
+          "max_chars": 54,
           "overflow": "split"
         }
       ]
@@ -130,7 +131,7 @@
           },
           "kind": "text",
           "required": true,
-          "max_chars": 40
+          "max_chars": 32
         },
         {
           "id": "body",
@@ -138,7 +139,8 @@
             "idx": 1
           },
           "kind": "bullets",
-          "max_items": 6,
+          "max_items": 5,
+          "max_chars": 54,
           "overflow": "split"
         }
       ]
