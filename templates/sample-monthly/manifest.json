@@ -1,0 +1,204 @@
+{
+  "schema_version": "1.0",
+  "template": {
+    "id": "sample-monthly",
+    "version": "0.1.0",
+    "file": "sample-monthly.pptx",
+    "sha256": "e230344387119678ffa03e41a8101272599ea0c11f048ed6b5d9aea6a46ec961"
+  },
+  "layouts": [
+    {
+      "id": "cover_v1",
+      "slide_layout_name": "Title Slide",
+      "purpose": "cover",
+      "slots": [
+        {
+          "id": "title",
+          "placeholder": {
+            "idx": 0
+          },
+          "kind": "text",
+          "required": true,
+          "max_chars": 60
+        },
+        {
+          "id": "subtitle",
+          "placeholder": {
+            "idx": 1
+          },
+          "kind": "text",
+          "max_chars": 80
+        }
+      ]
+    },
+    {
+      "id": "summary_v1",
+      "slide_layout_name": "Two Content",
+      "purpose": "summary",
+      "slots": [
+        {
+          "id": "title",
+          "placeholder": {
+            "idx": 0
+          },
+          "kind": "text",
+          "required": true,
+          "max_chars": 40
+        },
+        {
+          "id": "highlights",
+          "placeholder": {
+            "name": "Content Placeholder 2"
+          },
+          "kind": "bullets",
+          "max_items": 6,
+          "max_chars": 80,
+          "overflow": "truncate"
+        },
+        {
+          "id": "activity",
+          "placeholder": {
+            "name": "Content Placeholder 3"
+          },
+          "kind": "table",
+          "max_items": 8,
+          "overflow": "truncate"
+        }
+      ]
+    },
+    {
+      "id": "achievements_v1",
+      "slide_layout_name": "Title and Table",
+      "purpose": "achievements",
+      "slots": [
+        {
+          "id": "title",
+          "placeholder": {
+            "idx": 0
+          },
+          "kind": "text",
+          "required": true,
+          "max_chars": 40
+        },
+        {
+          "id": "items",
+          "placeholder": {
+            "idx": 13
+          },
+          "kind": "table",
+          "max_items": 8,
+          "max_chars": 40,
+          "overflow": "split"
+        }
+      ]
+    },
+    {
+      "id": "achievement_detail_v1",
+      "slide_layout_name": "Title and Content",
+      "purpose": "work_item_detail",
+      "slots": [
+        {
+          "id": "title",
+          "placeholder": {
+            "idx": 0
+          },
+          "kind": "text",
+          "required": true,
+          "max_chars": 40
+        },
+        {
+          "id": "facts",
+          "placeholder": {
+            "name": "Content Placeholder 2"
+          },
+          "kind": "bullets",
+          "max_items": 5,
+          "max_chars": 90,
+          "overflow": "split"
+        }
+      ]
+    },
+    {
+      "id": "narrative_v1",
+      "slide_layout_name": "Title and Content",
+      "purpose": "narrative",
+      "slots": [
+        {
+          "id": "title",
+          "placeholder": {
+            "idx": 0
+          },
+          "kind": "text",
+          "required": true,
+          "max_chars": 40
+        },
+        {
+          "id": "body",
+          "placeholder": {
+            "idx": 1
+          },
+          "kind": "bullets",
+          "max_items": 6,
+          "overflow": "split"
+        }
+      ]
+    }
+  ],
+  "sequence": [
+    {
+      "section": "cover",
+      "layout_id": "cover_v1"
+    },
+    {
+      "section": "summary",
+      "layout_id": "summary_v1"
+    },
+    {
+      "section": "achievements",
+      "layout_id": "achievements_v1"
+    },
+    {
+      "section": "work_item_details",
+      "layout_id": "achievement_detail_v1"
+    },
+    {
+      "section": "challenges",
+      "layout_id": "narrative_v1"
+    },
+    {
+      "section": "next_plan",
+      "layout_id": "narrative_v1"
+    }
+  ],
+  "labels": {
+    "cover_title": "{period} 工作月報",
+    "summary_title": "本月重點",
+    "summary_status": "完成 {completed} 項工作, {unknown} 項待確認",
+    "summary_activity": "{repositories} 個 repository, {merged_changes} 個已合併的 PR",
+    "activity_columns": [
+      "Repository",
+      "Commits",
+      "Merged PR/MR"
+    ],
+    "achievements_title": "本月成果",
+    "achievements_columns": [
+      "工作項目",
+      "狀態"
+    ],
+    "challenges_title": "遇到的問題",
+    "improvements_title": "改善事項",
+    "next_plan_title": "下月規劃",
+    "other_work_title": "其他工作",
+    "closing_title": "謝謝",
+    "inference": "(推論, 信心: {confidence}) {statement}",
+    "confidence_low": "低",
+    "confidence_medium": "中",
+    "confidence_high": "高",
+    "cell_status_completed": "完成",
+    "cell_status_in_progress": "進行中",
+    "cell_status_unknown": "待確認",
+    "status_in_progress": "(狀態: 進行中)",
+    "status_unknown": "(狀態: 待確認)",
+    "human_notes": "(人工補充) {notes}"
+  }
+}

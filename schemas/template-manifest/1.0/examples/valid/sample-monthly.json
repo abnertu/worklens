@@ -3,7 +3,8 @@
   "template": {
     "id": "sample-monthly",
     "version": "0.1.0",
-    "file": "sample-monthly.pptx"
+    "file": "sample-monthly.pptx",
+    "sha256": "e230344387119678ffa03e41a8101272599ea0c11f048ed6b5d9aea6a46ec961"
   },
   "layouts": [
     {
@@ -66,6 +67,32 @@
       ]
     },
     {
+      "id": "achievements_v1",
+      "slide_layout_name": "Title and Table",
+      "purpose": "achievements",
+      "slots": [
+        {
+          "id": "title",
+          "placeholder": {
+            "idx": 0
+          },
+          "kind": "text",
+          "required": true,
+          "max_chars": 40
+        },
+        {
+          "id": "items",
+          "placeholder": {
+            "idx": 13
+          },
+          "kind": "table",
+          "max_items": 8,
+          "max_chars": 40,
+          "overflow": "split"
+        }
+      ]
+    },
+    {
       "id": "achievement_detail_v1",
       "slide_layout_name": "Title and Content",
       "purpose": "work_item_detail",
@@ -102,7 +129,8 @@
             "idx": 0
           },
           "kind": "text",
-          "required": true
+          "required": true,
+          "max_chars": 40
         },
         {
           "id": "body",
@@ -124,6 +152,10 @@
     {
       "section": "summary",
       "layout_id": "summary_v1"
+    },
+    {
+      "section": "achievements",
+      "layout_id": "achievements_v1"
     },
     {
       "section": "work_item_details",
