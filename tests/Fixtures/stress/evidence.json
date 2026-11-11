@@ -1,0 +1,522 @@
+{
+  "schema_version": "1.0",
+  "document_id": "evd-2026-10-stress",
+  "generated_at": "2026-11-01T02:15:00+00:00",
+  "generator": {
+    "name": "worklens",
+    "version": "0.1.0"
+  },
+  "query": {
+    "period": {
+      "label": "2026-10",
+      "start": "2026-09-30T16:00:00+00:00",
+      "end": "2026-10-31T16:00:00+00:00",
+      "timezone": "Asia/Taipei"
+    },
+    "identities": [
+      {
+        "platform": "github",
+        "username": "example-user"
+      }
+    ],
+    "sources": [
+      {
+        "platform": "github",
+        "base_url": "https://api.github.com",
+        "repository": "example-org/stress-service"
+      },
+      {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform/stress-billing"
+      }
+    ]
+  },
+  "items": [
+    {
+      "id": "ev-a000000000000001",
+      "kind": "change_request",
+      "source": {
+        "platform": "github",
+        "base_url": "https://api.github.com",
+        "repository": "example-org/stress-service",
+        "external_id": "7",
+        "url": "https://github.com/example-org/stress-service/pull/7"
+      },
+      "title": "Stress change request",
+      "state": "merged",
+      "author": {
+        "username": "example-user",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-10-20T08:00:00+00:00",
+        "merged_at": "2026-10-20T08:00:00+00:00"
+      },
+      "fetched_at": "2026-11-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-c000000000000001",
+      "kind": "commit",
+      "source": {
+        "platform": "github",
+        "base_url": "https://api.github.com",
+        "repository": "example-org/stress-service",
+        "external_id": "0000000000000000000000000000000000000001",
+        "url": "https://example.invalid/example-org/stress-service/commit/0000000000000000000000000000000000000001"
+      },
+      "title": "stress commit 1",
+      "author": {
+        "username": "example-user",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-10-06T03:00:00+00:00"
+      },
+      "fetched_at": "2026-11-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-c000000000000002",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform/stress-billing",
+        "external_id": "0000000000000000000000000000000000000002",
+        "url": "https://example.invalid/platform/stress-billing/commit/0000000000000000000000000000000000000002"
+      },
+      "title": "stress commit 2",
+      "author": {
+        "username": "example-user",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-10-07T03:00:00+00:00"
+      },
+      "fetched_at": "2026-11-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-c000000000000003",
+      "kind": "commit",
+      "source": {
+        "platform": "github",
+        "base_url": "https://api.github.com",
+        "repository": "example-org/stress-service",
+        "external_id": "0000000000000000000000000000000000000003",
+        "url": "https://example.invalid/example-org/stress-service/commit/0000000000000000000000000000000000000003"
+      },
+      "title": "stress commit 3",
+      "author": {
+        "username": "example-user",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-10-08T03:00:00+00:00"
+      },
+      "fetched_at": "2026-11-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-c000000000000004",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform/stress-billing",
+        "external_id": "0000000000000000000000000000000000000004",
+        "url": "https://example.invalid/platform/stress-billing/commit/0000000000000000000000000000000000000004"
+      },
+      "title": "stress commit 4",
+      "author": {
+        "username": "example-user",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-10-09T03:00:00+00:00"
+      },
+      "fetched_at": "2026-11-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-c000000000000005",
+      "kind": "commit",
+      "source": {
+        "platform": "github",
+        "base_url": "https://api.github.com",
+        "repository": "example-org/stress-service",
+        "external_id": "0000000000000000000000000000000000000005",
+        "url": "https://example.invalid/example-org/stress-service/commit/0000000000000000000000000000000000000005"
+      },
+      "title": "stress commit 5",
+      "author": {
+        "username": "example-user",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-10-10T03:00:00+00:00"
+      },
+      "fetched_at": "2026-11-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-c000000000000006",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform/stress-billing",
+        "external_id": "0000000000000000000000000000000000000006",
+        "url": "https://example.invalid/platform/stress-billing/commit/0000000000000000000000000000000000000006"
+      },
+      "title": "stress commit 6",
+      "author": {
+        "username": "example-user",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-10-11T03:00:00+00:00"
+      },
+      "fetched_at": "2026-11-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-c000000000000007",
+      "kind": "commit",
+      "source": {
+        "platform": "github",
+        "base_url": "https://api.github.com",
+        "repository": "example-org/stress-service",
+        "external_id": "0000000000000000000000000000000000000007",
+        "url": "https://example.invalid/example-org/stress-service/commit/0000000000000000000000000000000000000007"
+      },
+      "title": "stress commit 7",
+      "author": {
+        "username": "example-user",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-10-12T03:00:00+00:00"
+      },
+      "fetched_at": "2026-11-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-c000000000000008",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform/stress-billing",
+        "external_id": "0000000000000000000000000000000000000008",
+        "url": "https://example.invalid/platform/stress-billing/commit/0000000000000000000000000000000000000008"
+      },
+      "title": "stress commit 8",
+      "author": {
+        "username": "example-user",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-10-13T03:00:00+00:00"
+      },
+      "fetched_at": "2026-11-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-c000000000000009",
+      "kind": "commit",
+      "source": {
+        "platform": "github",
+        "base_url": "https://api.github.com",
+        "repository": "example-org/stress-service",
+        "external_id": "0000000000000000000000000000000000000009",
+        "url": "https://example.invalid/example-org/stress-service/commit/0000000000000000000000000000000000000009"
+      },
+      "title": "stress commit 9",
+      "author": {
+        "username": "example-user",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-10-14T03:00:00+00:00"
+      },
+      "fetched_at": "2026-11-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-c00000000000000a",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform/stress-billing",
+        "external_id": "000000000000000000000000000000000000000a",
+        "url": "https://example.invalid/platform/stress-billing/commit/000000000000000000000000000000000000000a"
+      },
+      "title": "stress commit 10",
+      "author": {
+        "username": "example-user",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-10-15T03:00:00+00:00"
+      },
+      "fetched_at": "2026-11-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-c00000000000000b",
+      "kind": "commit",
+      "source": {
+        "platform": "github",
+        "base_url": "https://api.github.com",
+        "repository": "example-org/stress-service",
+        "external_id": "000000000000000000000000000000000000000b",
+        "url": "https://example.invalid/example-org/stress-service/commit/000000000000000000000000000000000000000b"
+      },
+      "title": "stress commit 11",
+      "author": {
+        "username": "example-user",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-10-16T03:00:00+00:00"
+      },
+      "fetched_at": "2026-11-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-c00000000000000c",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform/stress-billing",
+        "external_id": "000000000000000000000000000000000000000c",
+        "url": "https://example.invalid/platform/stress-billing/commit/000000000000000000000000000000000000000c"
+      },
+      "title": "stress commit 12",
+      "author": {
+        "username": "example-user",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-10-17T03:00:00+00:00"
+      },
+      "fetched_at": "2026-11-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-c00000000000000d",
+      "kind": "commit",
+      "source": {
+        "platform": "github",
+        "base_url": "https://api.github.com",
+        "repository": "example-org/stress-service",
+        "external_id": "000000000000000000000000000000000000000d",
+        "url": "https://example.invalid/example-org/stress-service/commit/000000000000000000000000000000000000000d"
+      },
+      "title": "stress commit 13",
+      "author": {
+        "username": "example-user",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-10-18T03:00:00+00:00"
+      },
+      "fetched_at": "2026-11-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-c00000000000000e",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform/stress-billing",
+        "external_id": "000000000000000000000000000000000000000e",
+        "url": "https://example.invalid/platform/stress-billing/commit/000000000000000000000000000000000000000e"
+      },
+      "title": "stress commit 14",
+      "author": {
+        "username": "example-user",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-10-19T03:00:00+00:00"
+      },
+      "fetched_at": "2026-11-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-c00000000000000f",
+      "kind": "commit",
+      "source": {
+        "platform": "github",
+        "base_url": "https://api.github.com",
+        "repository": "example-org/stress-service",
+        "external_id": "000000000000000000000000000000000000000f",
+        "url": "https://example.invalid/example-org/stress-service/commit/000000000000000000000000000000000000000f"
+      },
+      "title": "stress commit 15",
+      "author": {
+        "username": "example-user",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-10-20T03:00:00+00:00"
+      },
+      "fetched_at": "2026-11-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-c000000000000010",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform/stress-billing",
+        "external_id": "0000000000000000000000000000000000000010",
+        "url": "https://example.invalid/platform/stress-billing/commit/0000000000000000000000000000000000000010"
+      },
+      "title": "stress commit 16",
+      "author": {
+        "username": "example-user",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-10-21T03:00:00+00:00"
+      },
+      "fetched_at": "2026-11-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-c000000000000011",
+      "kind": "commit",
+      "source": {
+        "platform": "github",
+        "base_url": "https://api.github.com",
+        "repository": "example-org/stress-service",
+        "external_id": "0000000000000000000000000000000000000011",
+        "url": "https://example.invalid/example-org/stress-service/commit/0000000000000000000000000000000000000011"
+      },
+      "title": "stress commit 17",
+      "author": {
+        "username": "example-user",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-10-22T03:00:00+00:00"
+      },
+      "fetched_at": "2026-11-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-c000000000000012",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform/stress-billing",
+        "external_id": "0000000000000000000000000000000000000012",
+        "url": "https://example.invalid/platform/stress-billing/commit/0000000000000000000000000000000000000012"
+      },
+      "title": "stress commit 18",
+      "author": {
+        "username": "example-user",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-10-23T03:00:00+00:00"
+      },
+      "fetched_at": "2026-11-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-c000000000000013",
+      "kind": "commit",
+      "source": {
+        "platform": "github",
+        "base_url": "https://api.github.com",
+        "repository": "example-org/stress-service",
+        "external_id": "0000000000000000000000000000000000000013",
+        "url": "https://example.invalid/example-org/stress-service/commit/0000000000000000000000000000000000000013"
+      },
+      "title": "stress commit 19",
+      "author": {
+        "username": "example-user",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-10-24T03:00:00+00:00"
+      },
+      "fetched_at": "2026-11-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-c000000000000014",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform/stress-billing",
+        "external_id": "0000000000000000000000000000000000000014",
+        "url": "https://example.invalid/platform/stress-billing/commit/0000000000000000000000000000000000000014"
+      },
+      "title": "stress commit 20",
+      "author": {
+        "username": "example-user",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-10-25T03:00:00+00:00"
+      },
+      "fetched_at": "2026-11-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-c000000000000100",
+      "kind": "commit",
+      "source": {
+        "platform": "github",
+        "base_url": "https://api.github.com",
+        "repository": "example-org/stress-service",
+        "external_id": "0000000000000000000000000000000000000100",
+        "url": "https://example.invalid/example-org/stress-service/commit/0000000000000000000000000000000000000100"
+      },
+      "title": "out of period commit",
+      "author": {
+        "username": "example-user",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-02T03:00:00+00:00"
+      },
+      "fetched_at": "2026-11-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-c000000000000101",
+      "kind": "commit",
+      "source": {
+        "platform": "github",
+        "base_url": "https://api.github.com",
+        "repository": "example-org/stress-service",
+        "external_id": "0000000000000000000000000000000000000101",
+        "url": "https://example.invalid/example-org/stress-service/commit/0000000000000000000000000000000000000101"
+      },
+      "title": "duplicate commit",
+      "author": {
+        "username": "example-user",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-10-03T03:00:00+00:00"
+      },
+      "fetched_at": "2026-11-01T02:00:00+00:00",
+      "flags": [
+        "duplicate"
+      ]
+    },
+    {
+      "id": "ev-c000000000000102",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform/stress-billing",
+        "external_id": "0000000000000000000000000000000000000102",
+        "url": "https://example.invalid/platform/stress-billing/commit/0000000000000000000000000000000000000102"
+      },
+      "title": "control \u001b character in title",
+      "author": {
+        "username": "example-user",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-10-04T03:00:00+00:00"
+      },
+      "fetched_at": "2026-11-01T02:00:00+00:00"
+    }
+  ]
+}

@@ -1,0 +1,227 @@
+{
+  "schema_version": "1.0",
+  "report_id": "rpt-2026-10-stress",
+  "period": {
+    "label": "2026-10",
+    "start": "2026-09-30T16:00:00+00:00",
+    "end": "2026-10-31T16:00:00+00:00",
+    "timezone": "Asia/Taipei"
+  },
+  "subject": {
+    "display_name": "壓力測試使用者 Stress User"
+  },
+  "evidence_document": {
+    "document_id": "evd-2026-10-stress",
+    "sha256": "733362509140ea954a6db6659d48e70f605218d41fb84a1fadb025142b16bfe1"
+  },
+  "work_items": [
+    {
+      "id": "wi-stress-twenty-facts",
+      "origin": "agent",
+      "category": "feature",
+      "status": "completed",
+      "title": "二十項事實的工作項目",
+      "summary": "包含二十項 observed facts 的工作項目。",
+      "observed_facts": [
+        {
+          "statement": "這是一段完全由中文組成的長句子用來測試東亞文字在投影片中的自動換行與字型替代是否正確並觀察行尾是否出現被截斷的字元以及標點符號位置是否合乎中文排版習慣",
+          "evidence_refs": [
+            "ev-c000000000000001"
+          ]
+        },
+        {
+          "statement": "混合 Mixed 中英文 text 的句子: 在 TokenService 中加入 refresh token rotation, 並更新 API documentation 與 integration tests。",
+          "evidence_refs": [
+            "ev-c000000000000002"
+          ]
+        },
+        {
+          "statement": "長網址: https://gitlab.example.com/platform/stress-billing/-/merge_requests/1234/diffs?commit_id=0123456789abcdef0123456789abcdef01234567&view=parallel",
+          "evidence_refs": [
+            "ev-c000000000000003"
+          ]
+        },
+        {
+          "statement": "全形標點測試：「引號」、（括號）、《書名號》；分號；驚嘆號！問號？句號。逗號，頓號、以及刪節號……",
+          "evidence_refs": [
+            "ev-c000000000000004"
+          ]
+        },
+        {
+          "statement": "第 5 項事實: commit 5 修改了 stress-service 的模組 5。",
+          "evidence_refs": [
+            "ev-c000000000000005"
+          ]
+        },
+        {
+          "statement": "第 6 項事實: commit 6 修改了 stress-service 的模組 6。",
+          "evidence_refs": [
+            "ev-c000000000000006"
+          ]
+        },
+        {
+          "statement": "第 7 項事實: commit 7 修改了 stress-service 的模組 7。",
+          "evidence_refs": [
+            "ev-c000000000000007"
+          ]
+        },
+        {
+          "statement": "第 8 項事實: commit 8 修改了 stress-service 的模組 8。",
+          "evidence_refs": [
+            "ev-c000000000000008"
+          ]
+        },
+        {
+          "statement": "第 9 項事實: commit 9 修改了 stress-service 的模組 9。",
+          "evidence_refs": [
+            "ev-c000000000000009"
+          ]
+        },
+        {
+          "statement": "第 10 項事實: commit 10 修改了 stress-service 的模組 10。",
+          "evidence_refs": [
+            "ev-c00000000000000a"
+          ]
+        },
+        {
+          "statement": "第 11 項事實: commit 11 修改了 stress-service 的模組 11。",
+          "evidence_refs": [
+            "ev-c00000000000000b"
+          ]
+        },
+        {
+          "statement": "第 12 項事實: commit 12 修改了 stress-service 的模組 12。",
+          "evidence_refs": [
+            "ev-c00000000000000c"
+          ]
+        },
+        {
+          "statement": "第 13 項事實: commit 13 修改了 stress-service 的模組 13。",
+          "evidence_refs": [
+            "ev-c00000000000000d"
+          ]
+        },
+        {
+          "statement": "第 14 項事實: commit 14 修改了 stress-service 的模組 14。",
+          "evidence_refs": [
+            "ev-c00000000000000e"
+          ]
+        },
+        {
+          "statement": "第 15 項事實: commit 15 修改了 stress-service 的模組 15。",
+          "evidence_refs": [
+            "ev-c00000000000000f"
+          ]
+        },
+        {
+          "statement": "第 16 項事實: commit 16 修改了 stress-service 的模組 16。",
+          "evidence_refs": [
+            "ev-c000000000000010"
+          ]
+        },
+        {
+          "statement": "第 17 項事實: commit 17 修改了 stress-service 的模組 17。",
+          "evidence_refs": [
+            "ev-c000000000000011"
+          ]
+        },
+        {
+          "statement": "第 18 項事實: commit 18 修改了 stress-service 的模組 18。",
+          "evidence_refs": [
+            "ev-c000000000000012"
+          ]
+        },
+        {
+          "statement": "第 19 項事實: commit 19 修改了 stress-service 的模組 19。",
+          "evidence_refs": [
+            "ev-c000000000000013"
+          ]
+        },
+        {
+          "statement": "第 20 項事實: commit 20 修改了 stress-service 的模組 20。",
+          "evidence_refs": [
+            "ev-c000000000000014"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "ev-a000000000000001"
+      ],
+      "rank": 1
+    },
+    {
+      "id": "wi-stress-long-title",
+      "origin": "human",
+      "category": "other",
+      "status": "in_progress",
+      "title": "一百二十字的標題用來測試標題容量與截斷行為 Long title to test title capacity and truncation behaviour, 中英混合並且持續延伸直到剛好達到一百二十字為止的長度限制喔一百二十字的標題用",
+      "summary": "這是一段三百字的摘要, 沒有任何 observed facts, 用來測試 work item 沒有事實時以摘要作為第一層項目符號並依 max_chars 截斷的行為。這是一段三百字的摘要, 沒有任何 observed facts, 用來測試 work item 沒有事實時以摘要作為第一層項目符號並依 max_chars 截斷的行為。這是一段三百字的摘要, 沒有任何 observed facts, 用來測試 work item 沒有事實時以摘要作為第一層項目符號並依 max_chars 截斷的行為。這是一段三百字的摘要, 沒有任何 observed facts, 用來測試 work item ",
+      "observed_facts": [],
+      "evidence_refs": [],
+      "rank": 2
+    },
+    {
+      "id": "wi-stress-rejected",
+      "origin": "agent",
+      "category": "fix",
+      "status": "unknown",
+      "title": "已被拒絕的項目",
+      "summary": "不應出現在投影片中。",
+      "observed_facts": [],
+      "evidence_refs": [
+        "ev-c000000000000102"
+      ],
+      "review_status": "rejected"
+    }
+  ],
+  "narratives": [
+    {
+      "id": "nr-stress-challenge-0",
+      "kind": "challenge",
+      "origin": "agent",
+      "text": "這是一段完全由中文組成的長句子用來測試東亞文字在投影片中的自動換行與字型替代是否正確並觀察行尾是否出現被截斷的字元以及標點符號位置是否合乎中文排版習慣"
+    },
+    {
+      "id": "nr-stress-challenge-1",
+      "kind": "challenge",
+      "origin": "agent",
+      "text": "混合 Mixed 中英文 text 的句子: 在 TokenService 中加入 refresh token rotation, 並更新 API documentation 與 integration tests。"
+    },
+    {
+      "id": "nr-stress-challenge-2",
+      "kind": "challenge",
+      "origin": "agent",
+      "text": "長網址: https://gitlab.example.com/platform/stress-billing/-/merge_requests/1234/diffs?commit_id=0123456789abcdef0123456789abcdef01234567&view=parallel"
+    },
+    {
+      "id": "nr-stress-challenge-3",
+      "kind": "challenge",
+      "origin": "agent",
+      "text": "全形標點測試：「引號」、（括號）、《書名號》；分號；驚嘆號！問號？句號。逗號，頓號、以及刪節號……"
+    },
+    {
+      "id": "nr-stress-challenge-4",
+      "kind": "challenge",
+      "origin": "agent",
+      "text": "這是一段完全由中文組成的長句子用來測試東亞文字在投影片中的自動換行與字型替代是否正確並觀察行尾是否出現被截斷的字元以及標點符號位置是否合乎中文排版習慣"
+    },
+    {
+      "id": "nr-stress-challenge-5",
+      "kind": "challenge",
+      "origin": "agent",
+      "text": "混合 Mixed 中英文 text 的句子: 在 TokenService 中加入 refresh token rotation, 並更新 API documentation 與 integration tests。"
+    },
+    {
+      "id": "nr-stress-challenge-6",
+      "kind": "challenge",
+      "origin": "agent",
+      "text": "長網址: https://gitlab.example.com/platform/stress-billing/-/merge_requests/1234/diffs?commit_id=0123456789abcdef0123456789abcdef01234567&view=parallel"
+    },
+    {
+      "id": "nr-stress-next-plan",
+      "kind": "next_plan",
+      "origin": "human",
+      "text": "長網址: https://gitlab.example.com/platform/stress-billing/-/merge_requests/1234/diffs?commit_id=0123456789abcdef0123456789abcdef01234567&view=parallel"
+    }
+  ]
+}

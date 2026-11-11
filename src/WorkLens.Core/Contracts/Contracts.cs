@@ -69,12 +69,19 @@ public interface IReportValidator
     ValidationResult Validate(string reportJson, EvidenceDocument? evidence, string? evidenceSha256);
 }
 
-/// <summary>Deterministically maps Report IR to Presentation IR using a Template Manifest (M0).</summary>
+/// <summary>
+/// Deterministically maps a validated Report IR to Presentation IR using a Template Manifest (M0). A pure function.
+/// </summary>
 public interface ILayoutResolver
 {
-    LayoutResult Resolve(ReportDocument report, EvidenceDocument evidence, TemplateManifest manifest);
+    /// <param name="reportSha256">SHA-256 of the report.json bytes, recorded as <c>source_report.sha256</c>.</param>
+    LayoutResult Resolve(ReportDocument report, string reportSha256, EvidenceDocument evidence, TemplateManifest manifest);
 }
 
+/// <summary>
+/// <see cref="Presentation"/> is <c>null</c> when <see cref="Errors"/> is not empty. Errors are manifest problems
+/// (<c>manifest.*</c>) whose <c>Details["path"]</c> is a JSON Pointer into the manifest.
+/// </summary>
 public sealed record LayoutResult(PresentationDocument? Presentation, IReadOnlyList<WorkLensError> Errors);
 
 /// <summary>Renders a validated Presentation IR into an output file (M0: pptx).</summary>

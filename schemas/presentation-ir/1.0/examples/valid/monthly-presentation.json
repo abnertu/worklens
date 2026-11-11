@@ -64,8 +64,7 @@
               "1",
               "0"
             ]
-          ],
-          "truncated": false
+          ]
         }
       },
       "source_refs": [
@@ -79,6 +78,42 @@
     },
     {
       "id": "slide-003",
+      "layout_id": "achievements_v1",
+      "bindings": {
+        "title": {
+          "kind": "text",
+          "text": "本月成果"
+        },
+        "items": {
+          "kind": "table",
+          "columns": [
+            "工作項目",
+            "狀態"
+          ],
+          "rows": [
+            [
+              "使用者驗證機制優化",
+              "完成"
+            ],
+            [
+              "修正新台幣發票進位",
+              "待確認"
+            ],
+            [
+              "新進同仁 Onboarding",
+              "完成"
+            ]
+          ]
+        }
+      },
+      "source_refs": [
+        "wi-auth-refresh-rotation",
+        "wi-billing-rounding-fix",
+        "wi-onboarding-mentoring"
+      ]
+    },
+    {
+      "id": "slide-004",
       "layout_id": "achievement_detail_v1",
       "bindings": {
         "title": {
@@ -110,7 +145,7 @@
       ]
     },
     {
-      "id": "slide-004",
+      "id": "slide-005",
       "layout_id": "achievement_detail_v1",
       "bindings": {
         "title": {
@@ -125,7 +160,7 @@
               "level": 0
             },
             {
-              "text": "(狀態: 待確認) 是否已部署無證據, 待人工確認。",
+              "text": "(狀態: 待確認)",
               "level": 1
             }
           ]
@@ -137,7 +172,7 @@
       ]
     },
     {
-      "id": "slide-005",
+      "id": "slide-006",
       "layout_id": "achievement_detail_v1",
       "bindings": {
         "title": {
@@ -152,7 +187,7 @@
               "level": 0
             },
             {
-              "text": "(人工補充) 非 Git 活動。",
+              "text": "(人工補充) 非 Git 活動, 人工補充。",
               "level": 1
             }
           ]
@@ -163,7 +198,7 @@
       ]
     },
     {
-      "id": "slide-006",
+      "id": "slide-007",
       "layout_id": "narrative_v1",
       "bindings": {
         "title": {
@@ -185,7 +220,7 @@
       ]
     },
     {
-      "id": "slide-007",
+      "id": "slide-008",
       "layout_id": "narrative_v1",
       "bindings": {
         "title": {
