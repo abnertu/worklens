@@ -1,4 +1,3 @@
-using System.Text.Json;
 using WorkLens.Core.Common;
 using WorkLens.Core.Errors;
 using WorkLens.Core.Evidence;
@@ -57,13 +56,17 @@ public interface IAnalysisModule
 public sealed record AnalysisResult(ReportDocument? Report, IReadOnlyList<WorkLensError> Errors);
 
 /// <summary>
-/// Validates Report IR (M0): schema first (on the raw JSON, so unknown fields are reported as
-/// <c>schema.additionalProperties</c> rather than failing deserialization), then referential integrity and
-/// domain rules against the evidence document and its SHA-256.
+/// Validates Report IR (M0) from its raw JSON text: JSON syntax, schema version and schema first (so unknown fields
+/// are reported as <c>schema.additionalProperties</c> rather than failing deserialization), then referential
+/// integrity and domain rules against the evidence document and its SHA-256. Each layer reports all of its issues;
+/// a layer with an error stops the later layers. Never throws for invalid input.
 /// </summary>
 public interface IReportValidator
 {
-    ValidationResult Validate(JsonElement report, EvidenceDocument? evidence, string? evidenceSha256);
+    /// <param name="reportJson">Report IR JSON text (without BOM).</param>
+    /// <param name="evidence">The evidence document; <c>null</c> skips the reference and rule layers.</param>
+    /// <param name="evidenceSha256">SHA-256 of the evidence file bytes; <c>null</c> skips the hash comparison.</param>
+    ValidationResult Validate(string reportJson, EvidenceDocument? evidence, string? evidenceSha256);
 }
 
 /// <summary>Deterministically maps Report IR to Presentation IR using a Template Manifest (M0).</summary>
