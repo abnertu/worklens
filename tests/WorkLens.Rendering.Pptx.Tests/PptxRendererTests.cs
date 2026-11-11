@@ -452,23 +452,40 @@ public sealed class PptxRendererTests : IDisposable
         Assert.Equal($"/layouts/{manifest.Layouts.Count}/id", error.Details!["path"]);
     }
 
-    [Fact]
-    public void Malformed_xml_part_is_unreadable_template()
+    [Theory]
+    [InlineData("malformed_xml")]
+    [InlineData("missing_part")]
+    [InlineData("missing_slide_part")]
+    [InlineData("bad_attribute")]
+    public void Broken_template_is_unreadable(string fault)
     {
-        var template = Path.Combine(_directory, "malformed.pptx");
+        var template = Path.Combine(_directory, fault + ".pptx");
         File.Copy(TemplatePath, template);
         using (var zip = ZipFile.Open(template, ZipArchiveMode.Update))
         {
-            var entry = zip.GetEntry("ppt/slideLayouts/slideLayout2.xml")!;
-            string xml;
-            using (var reader = new StreamReader(entry.Open()))
+            if (fault == "missing_part")
             {
-                xml = reader.ReadToEnd();
+                zip.GetEntry("ppt/tableStyles.xml")!.Delete();
             }
+            else if (fault == "missing_slide_part")
+            {
+                // The renderer deletes the demo slides; the SDK fails only when it saves the package.
+                zip.GetEntry("ppt/slides/slide1.xml")!.Delete();
+            }
+            else
+            {
+                var entry = zip.GetEntry("ppt/slideLayouts/slideLayout2.xml")!;
+                string xml;
+                using (var reader = new StreamReader(entry.Open()))
+                {
+                    xml = reader.ReadToEnd();
+                }
 
-            entry.Delete();
-            using var writer = new StreamWriter(zip.CreateEntry("ppt/slideLayouts/slideLayout2.xml").Open());
-            writer.Write(xml[..(xml.Length / 2)]);
+                Assert.Contains("idx=\"1\"", xml, StringComparison.Ordinal);
+                entry.Delete();
+                using var writer = new StreamWriter(zip.CreateEntry("ppt/slideLayouts/slideLayout2.xml").Open());
+                writer.Write(fault == "malformed_xml" ? xml[..(xml.Length / 2)] : xml.Replace("idx=\"1\"", "idx=\"abc\"", StringComparison.Ordinal));
+            }
         }
 
         var manifest = Manifest();

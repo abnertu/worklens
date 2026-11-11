@@ -77,7 +77,7 @@ public sealed class PptxRenderer : IOutputRenderer
             using var document = DocumentFormat.OpenXml.Packaging.PresentationDocument.Open(stream, isEditable: true);
             errors = Build(document, presentation, manifest);
         }
-        catch (Exception ex) when (ex is OpenXmlPackageException or InvalidDataException or FileFormatException or System.Xml.XmlException)
+        catch (Exception ex) when (IsTemplateFault(ex))
         {
             return Failed(new WorkLensError(
                 "template.unreadable",
@@ -106,6 +106,23 @@ public sealed class PptxRenderer : IOutputRenderer
     }
 
     private static RenderResult Failed(WorkLensError error) => new(null, [error]);
+
+    /// <summary>
+    /// Exceptions that the SDK throws for a broken template while it opens or lazily loads parts: a bad package or
+    /// XML, a relationship to a missing part (<see cref="InvalidOperationException"/>, or
+    /// <see cref="NotSupportedException"/> when the package is saved), or an attribute value it
+    /// cannot parse (<see cref="FormatException"/>, <see cref="OverflowException"/>). The presentation has already been
+    /// checked against the manifest, so these come from the template (D14: exit 3).
+    /// </summary>
+    private static bool IsTemplateFault(Exception ex) => ex is OpenXmlPackageException
+        or InvalidDataException
+        or FileFormatException
+        or System.Xml.XmlException
+        or InvalidOperationException
+        or NotSupportedException
+        or FormatException
+        or OverflowException
+        or KeyNotFoundException;
 
     private static IReadOnlyList<WorkLensError> Build(
         DocumentFormat.OpenXml.Packaging.PresentationDocument document,

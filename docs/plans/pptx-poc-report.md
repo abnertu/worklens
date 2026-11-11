@@ -11,7 +11,7 @@
 - 範例案例: `schemas/{report-ir,evidence}/1.0/examples/valid/` → 8 頁。
 - 壓力案例: `tests/Fixtures/stress/` → 11 頁 (20 facts 的 work item、120 字標題、300 字無 facts 的摘要、7 則 challenge; 純中文、中英混合、長 URL、全形標點)。
 - PowerPoint 檢查: `tools/poc/run-poc-checks.ps1` (本機 PowerPoint (Office16), COM; 每頁 1600×900 PNG 匯出)。
-- 結構檢查: `tests/WorkLens.Rendering.Pptx.Tests` (不需 Office, 17 個測試)。
+- 結構檢查: `tests/WorkLens.Rendering.Pptx.Tests` (不需 Office)。
 
 ## P1 Placeholder 填值
 
