@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>WorkLens.Rendering.Pptx</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DocumentFormat.OpenXml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WorkLens.Core\WorkLens.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="WorkLens.Rendering.Pptx.Tests" />
+  </ItemGroup>
+
+</Project>

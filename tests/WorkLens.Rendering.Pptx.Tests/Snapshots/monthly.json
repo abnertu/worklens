@@ -1,0 +1,714 @@
+{
+  "slides": [
+    {
+      "slide_id": 256,
+      "layout": "Title Slide",
+      "shapes": [
+        {
+          "element": "sp",
+          "id": 2,
+          "name": "Title 1",
+          "placeholder": {
+            "type": "ctrTitle",
+            "idx": null
+          },
+          "paragraphs": [
+            {
+              "level": 0,
+              "text": "2026-10 \u5DE5\u4F5C\u6708\u5831"
+            }
+          ]
+        },
+        {
+          "element": "sp",
+          "id": 3,
+          "name": "Subtitle 2",
+          "placeholder": {
+            "type": "subTitle",
+            "idx": 1
+          },
+          "paragraphs": [
+            {
+              "level": 0,
+              "text": "Example User"
+            }
+          ]
+        },
+        {
+          "element": "sp",
+          "id": 4,
+          "name": "Footer Placeholder 4",
+          "placeholder": {
+            "type": "ftr",
+            "idx": 11
+          },
+          "paragraphs": [
+            {
+              "level": 0,
+              "text": "WorkLens Sample Template"
+            }
+          ]
+        },
+        {
+          "element": "sp",
+          "id": 5,
+          "name": "Slide Number Placeholder 5",
+          "placeholder": {
+            "type": "sldNum",
+            "idx": 12
+          },
+          "paragraphs": [
+            {
+              "level": 0,
+              "text": "\u2039#\u203A",
+              "field": "slidenum"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slide_id": 257,
+      "layout": "Two Content",
+      "shapes": [
+        {
+          "element": "sp",
+          "id": 2,
+          "name": "Title 1",
+          "placeholder": {
+            "type": "title",
+            "idx": null
+          },
+          "paragraphs": [
+            {
+              "level": 0,
+              "text": "\u672C\u6708\u91CD\u9EDE"
+            }
+          ]
+        },
+        {
+          "element": "sp",
+          "id": 3,
+          "name": "Content Placeholder 2",
+          "placeholder": {
+            "type": null,
+            "idx": 1
+          },
+          "paragraphs": [
+            {
+              "level": 0,
+              "text": "\u5B8C\u6210 2 \u9805\u5DE5\u4F5C, 1 \u9805\u5F85\u78BA\u8A8D"
+            },
+            {
+              "level": 1,
+              "text": "2 \u500B repository, 1 \u500B\u5DF2\u5408\u4F75\u7684 PR"
+            }
+          ]
+        },
+        {
+          "element": "graphicFrame",
+          "id": 4,
+          "name": "Content Placeholder 3",
+          "placeholder": {
+            "type": null,
+            "idx": 2
+          },
+          "table": {
+            "style": "{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}",
+            "first_row": true,
+            "band_row": true,
+            "grid": [
+              1727200,
+              1727200,
+              1727200
+            ],
+            "rows": [
+              [
+                [
+                  {
+                    "level": 0,
+                    "text": "Repository"
+                  }
+                ],
+                [
+                  {
+                    "level": 0,
+                    "text": "Commits"
+                  }
+                ],
+                [
+                  {
+                    "level": 0,
+                    "text": "Merged PR/MR"
+                  }
+                ]
+              ],
+              [
+                [
+                  {
+                    "level": 0,
+                    "text": "example-org/auth-service"
+                  }
+                ],
+                [
+                  {
+                    "level": 0,
+                    "text": "1"
+                  }
+                ],
+                [
+                  {
+                    "level": 0,
+                    "text": "1"
+                  }
+                ]
+              ],
+              [
+                [
+                  {
+                    "level": 0,
+                    "text": "platform/billing"
+                  }
+                ],
+                [
+                  {
+                    "level": 0,
+                    "text": "1"
+                  }
+                ],
+                [
+                  {
+                    "level": 0,
+                    "text": "0"
+                  }
+                ]
+              ]
+            ]
+          }
+        },
+        {
+          "element": "sp",
+          "id": 5,
+          "name": "Footer Placeholder 5",
+          "placeholder": {
+            "type": "ftr",
+            "idx": 11
+          },
+          "paragraphs": [
+            {
+              "level": 0,
+              "text": "WorkLens Sample Template"
+            }
+          ]
+        },
+        {
+          "element": "sp",
+          "id": 6,
+          "name": "Slide Number Placeholder 6",
+          "placeholder": {
+            "type": "sldNum",
+            "idx": 12
+          },
+          "paragraphs": [
+            {
+              "level": 0,
+              "text": "\u2039#\u203A",
+              "field": "slidenum"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slide_id": 258,
+      "layout": "Title and Table",
+      "shapes": [
+        {
+          "element": "sp",
+          "id": 2,
+          "name": "Title 1",
+          "placeholder": {
+            "type": "title",
+            "idx": null
+          },
+          "paragraphs": [
+            {
+              "level": 0,
+              "text": "\u672C\u6708\u6210\u679C"
+            }
+          ]
+        },
+        {
+          "element": "sp",
+          "id": 3,
+          "name": "Footer Placeholder 3",
+          "placeholder": {
+            "type": "ftr",
+            "idx": 11
+          },
+          "paragraphs": [
+            {
+              "level": 0,
+              "text": "WorkLens Sample Template"
+            }
+          ]
+        },
+        {
+          "element": "sp",
+          "id": 4,
+          "name": "Slide Number Placeholder 4",
+          "placeholder": {
+            "type": "sldNum",
+            "idx": 12
+          },
+          "paragraphs": [
+            {
+              "level": 0,
+              "text": "\u2039#\u203A",
+              "field": "slidenum"
+            }
+          ]
+        },
+        {
+          "element": "graphicFrame",
+          "id": 5,
+          "name": "Table Placeholder 5",
+          "placeholder": {
+            "type": "tbl",
+            "idx": 13
+          },
+          "table": {
+            "style": "{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}",
+            "first_row": true,
+            "band_row": true,
+            "grid": [
+              5257800,
+              5257800
+            ],
+            "rows": [
+              [
+                [
+                  {
+                    "level": 0,
+                    "text": "\u5DE5\u4F5C\u9805\u76EE"
+                  }
+                ],
+                [
+                  {
+                    "level": 0,
+                    "text": "\u72C0\u614B"
+                  }
+                ]
+              ],
+              [
+                [
+                  {
+                    "level": 0,
+                    "text": "\u4F7F\u7528\u8005\u9A57\u8B49\u6A5F\u5236\u512A\u5316"
+                  }
+                ],
+                [
+                  {
+                    "level": 0,
+                    "text": "\u5B8C\u6210"
+                  }
+                ]
+              ],
+              [
+                [
+                  {
+                    "level": 0,
+                    "text": "\u4FEE\u6B63\u65B0\u53F0\u5E63\u767C\u7968\u9032\u4F4D"
+                  }
+                ],
+                [
+                  {
+                    "level": 0,
+                    "text": "\u5F85\u78BA\u8A8D"
+                  }
+                ]
+              ],
+              [
+                [
+                  {
+                    "level": 0,
+                    "text": "\u65B0\u9032\u540C\u4EC1 Onboarding"
+                  }
+                ],
+                [
+                  {
+                    "level": 0,
+                    "text": "\u5B8C\u6210"
+                  }
+                ]
+              ]
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "slide_id": 259,
+      "layout": "Title and Content",
+      "shapes": [
+        {
+          "element": "sp",
+          "id": 2,
+          "name": "Title 1",
+          "placeholder": {
+            "type": "title",
+            "idx": null
+          },
+          "paragraphs": [
+            {
+              "level": 0,
+              "text": "\u4F7F\u7528\u8005\u9A57\u8B49\u6A5F\u5236\u512A\u5316"
+            }
+          ]
+        },
+        {
+          "element": "sp",
+          "id": 3,
+          "name": "Content Placeholder 2",
+          "placeholder": {
+            "type": null,
+            "idx": 1
+          },
+          "paragraphs": [
+            {
+              "level": 0,
+              "text": "PR #42\u300CAdd refresh token rotation\u300D\u65BC 2026-10-14 \u5408\u4F75\u3002"
+            },
+            {
+              "level": 0,
+              "text": "Commit \u65B0\u589E TokenService \u7684\u8F2A\u66FF\u908F\u8F2F\u8207\u5C0D\u61C9\u6E2C\u8A66\u3002"
+            },
+            {
+              "level": 1,
+              "text": "(\u63A8\u8AD6, \u4FE1\u5FC3: \u4E2D) \u964D\u4F4E\u88AB\u7ACA\u53D6\u7684 Refresh Token \u88AB\u91CD\u8907\u4F7F\u7528\u7684\u98A8\u96AA\u3002"
+            }
+          ]
+        },
+        {
+          "element": "sp",
+          "id": 4,
+          "name": "Footer Placeholder 4",
+          "placeholder": {
+            "type": "ftr",
+            "idx": 11
+          },
+          "paragraphs": [
+            {
+              "level": 0,
+              "text": "WorkLens Sample Template"
+            }
+          ]
+        },
+        {
+          "element": "sp",
+          "id": 5,
+          "name": "Slide Number Placeholder 5",
+          "placeholder": {
+            "type": "sldNum",
+            "idx": 12
+          },
+          "paragraphs": [
+            {
+              "level": 0,
+              "text": "\u2039#\u203A",
+              "field": "slidenum"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slide_id": 260,
+      "layout": "Title and Content",
+      "shapes": [
+        {
+          "element": "sp",
+          "id": 2,
+          "name": "Title 1",
+          "placeholder": {
+            "type": "title",
+            "idx": null
+          },
+          "paragraphs": [
+            {
+              "level": 0,
+              "text": "\u4FEE\u6B63\u65B0\u53F0\u5E63\u767C\u7968\u9032\u4F4D"
+            }
+          ]
+        },
+        {
+          "element": "sp",
+          "id": 3,
+          "name": "Content Placeholder 2",
+          "placeholder": {
+            "type": null,
+            "idx": 1
+          },
+          "paragraphs": [
+            {
+              "level": 0,
+              "text": "Commit \u5C07 TWD \u9032\u4F4D\u6539\u70BA\u56DB\u6368\u4E94\u5165 (half away from zero)\u3002"
+            },
+            {
+              "level": 1,
+              "text": "(\u72C0\u614B: \u5F85\u78BA\u8A8D)"
+            }
+          ]
+        },
+        {
+          "element": "sp",
+          "id": 4,
+          "name": "Footer Placeholder 4",
+          "placeholder": {
+            "type": "ftr",
+            "idx": 11
+          },
+          "paragraphs": [
+            {
+              "level": 0,
+              "text": "WorkLens Sample Template"
+            }
+          ]
+        },
+        {
+          "element": "sp",
+          "id": 5,
+          "name": "Slide Number Placeholder 5",
+          "placeholder": {
+            "type": "sldNum",
+            "idx": 12
+          },
+          "paragraphs": [
+            {
+              "level": 0,
+              "text": "\u2039#\u203A",
+              "field": "slidenum"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slide_id": 261,
+      "layout": "Title and Content",
+      "shapes": [
+        {
+          "element": "sp",
+          "id": 2,
+          "name": "Title 1",
+          "placeholder": {
+            "type": "title",
+            "idx": null
+          },
+          "paragraphs": [
+            {
+              "level": 0,
+              "text": "\u65B0\u9032\u540C\u4EC1 Onboarding"
+            }
+          ]
+        },
+        {
+          "element": "sp",
+          "id": 3,
+          "name": "Content Placeholder 2",
+          "placeholder": {
+            "type": null,
+            "idx": 1
+          },
+          "paragraphs": [
+            {
+              "level": 0,
+              "text": "\u5354\u52A9\u5169\u4F4D\u65B0\u9032\u540C\u4EC1\u5B8C\u6210\u958B\u767C\u74B0\u5883\u5EFA\u7F6E\u8207 code review \u6D41\u7A0B\u3002"
+            },
+            {
+              "level": 1,
+              "text": "(\u4EBA\u5DE5\u88DC\u5145) \u975E Git \u6D3B\u52D5, \u4EBA\u5DE5\u88DC\u5145\u3002"
+            }
+          ]
+        },
+        {
+          "element": "sp",
+          "id": 4,
+          "name": "Footer Placeholder 4",
+          "placeholder": {
+            "type": "ftr",
+            "idx": 11
+          },
+          "paragraphs": [
+            {
+              "level": 0,
+              "text": "WorkLens Sample Template"
+            }
+          ]
+        },
+        {
+          "element": "sp",
+          "id": 5,
+          "name": "Slide Number Placeholder 5",
+          "placeholder": {
+            "type": "sldNum",
+            "idx": 12
+          },
+          "paragraphs": [
+            {
+              "level": 0,
+              "text": "\u2039#\u203A",
+              "field": "slidenum"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slide_id": 262,
+      "layout": "Title and Content",
+      "shapes": [
+        {
+          "element": "sp",
+          "id": 2,
+          "name": "Title 1",
+          "placeholder": {
+            "type": "title",
+            "idx": null
+          },
+          "paragraphs": [
+            {
+              "level": 0,
+              "text": "\u9047\u5230\u7684\u554F\u984C"
+            }
+          ]
+        },
+        {
+          "element": "sp",
+          "id": 3,
+          "name": "Content Placeholder 2",
+          "placeholder": {
+            "type": null,
+            "idx": 1
+          },
+          "paragraphs": [
+            {
+              "level": 0,
+              "text": "\u65E2\u6709 Session \u9700\u76F8\u5BB9\u820A\u683C\u5F0F Token, \u4EE5\u904E\u6E21\u671F\u96D9\u683C\u5F0F\u9A57\u8B49\u8655\u7406\u3002"
+            }
+          ]
+        },
+        {
+          "element": "sp",
+          "id": 4,
+          "name": "Footer Placeholder 4",
+          "placeholder": {
+            "type": "ftr",
+            "idx": 11
+          },
+          "paragraphs": [
+            {
+              "level": 0,
+              "text": "WorkLens Sample Template"
+            }
+          ]
+        },
+        {
+          "element": "sp",
+          "id": 5,
+          "name": "Slide Number Placeholder 5",
+          "placeholder": {
+            "type": "sldNum",
+            "idx": 12
+          },
+          "paragraphs": [
+            {
+              "level": 0,
+              "text": "\u2039#\u203A",
+              "field": "slidenum"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slide_id": 263,
+      "layout": "Title and Content",
+      "shapes": [
+        {
+          "element": "sp",
+          "id": 2,
+          "name": "Title 1",
+          "placeholder": {
+            "type": "title",
+            "idx": null
+          },
+          "paragraphs": [
+            {
+              "level": 0,
+              "text": "\u4E0B\u6708\u898F\u5283"
+            }
+          ]
+        },
+        {
+          "element": "sp",
+          "id": 3,
+          "name": "Content Placeholder 2",
+          "placeholder": {
+            "type": null,
+            "idx": 1
+          },
+          "paragraphs": [
+            {
+              "level": 0,
+              "text": "11 \u6708\u8A55\u4F30 SSO \u6574\u5408\u65B9\u6848\u3002"
+            }
+          ]
+        },
+        {
+          "element": "sp",
+          "id": 4,
+          "name": "Footer Placeholder 4",
+          "placeholder": {
+            "type": "ftr",
+            "idx": 11
+          },
+          "paragraphs": [
+            {
+              "level": 0,
+              "text": "WorkLens Sample Template"
+            }
+          ]
+        },
+        {
+          "element": "sp",
+          "id": 5,
+          "name": "Slide Number Placeholder 5",
+          "placeholder": {
+            "type": "sldNum",
+            "idx": 12
+          },
+          "paragraphs": [
+            {
+              "level": 0,
+              "text": "\u2039#\u203A",
+              "field": "slidenum"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "core": {
+    "title": "2026-10 \u5DE5\u4F5C\u6708\u5831",
+    "creator": "WorkLens",
+    "last_modified_by": null,
+    "revision": null,
+    "has_created": false,
+    "has_modified": false
+  },
+  "app": [
+    "Slides=8",
+    "Application=WorkLens"
+  ]
+}
