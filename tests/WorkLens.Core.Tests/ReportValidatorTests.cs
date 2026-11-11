@@ -88,6 +88,24 @@ public sealed class ReportValidatorTests
         return (report.ToJsonString(WorkLensJson.Options), ToEvidence(evidence), sha);
     }
 
+    [Fact]
+    public void Lone_surrogate_escape_is_invalid_json()
+    {
+        // JsonDocument accepts the escape, but JSON Schema's minLength check reads the string and would throw.
+        var json = ReplaceFirst(ReportJson, "\"title\": \"", "\"title\": \"\\ud800");
+
+        var issue = Assert.Single(Validator.Validate(json, ToEvidence(EvidenceNode()), EvidenceSha256).Issues);
+
+        Assert.Equal(("json.invalid", IssueSeverity.Error, ""), (issue.Code, issue.Severity, issue.InstancePath));
+    }
+
+    private static string ReplaceFirst(string text, string oldValue, string newValue)
+    {
+        var index = text.IndexOf(oldValue, StringComparison.Ordinal);
+        Assert.True(index >= 0);
+        return string.Concat(text.AsSpan(0, index), newValue, text.AsSpan(index + oldValue.Length));
+    }
+
     // Each row is a distinct (code, instance_path); every code of domain-model section 3.2 and of the validator's
     // input checks appears at least once.
     [Theory]

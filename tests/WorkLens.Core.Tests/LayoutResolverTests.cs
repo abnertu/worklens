@@ -249,6 +249,33 @@ public sealed class LayoutResolverTests
         AssertSingleError(manifest, evidence, "manifest.slot_mismatch", $"/layouts/{index}/slots/2");
     }
 
+    [Fact]
+    public void Required_slot_outside_purpose_conventions_is_an_error()
+    {
+        var index = LayoutIndex("cover_v1");
+        var logo = new SlotDefinition("logo", new PlaceholderRef(Idx: 1), SlotKind.Text, Required: true);
+        var manifest = ReplaceLayout(index, l => l with { Slots = [.. l.Slots, logo] });
+
+        AssertSingleError(manifest, Evidence, "manifest.slot_mismatch", $"/layouts/{index}/slots/{Manifest.Layouts[index].Slots.Count}");
+    }
+
+    [Fact]
+    public void Duplicate_layout_id_is_an_error()
+    {
+        var manifest = Manifest with { Layouts = [.. Manifest.Layouts, Manifest.Layouts[0]] };
+
+        AssertSingleError(manifest, Evidence, "manifest.duplicate_id", $"/layouts/{Manifest.Layouts.Count}/id");
+    }
+
+    [Fact]
+    public void Duplicate_slot_id_is_an_error()
+    {
+        var index = LayoutIndex("summary_v1");
+        var manifest = ReplaceLayout(index, l => l with { Slots = [.. l.Slots, l.Slots[0]] });
+
+        AssertSingleError(manifest, Evidence, "manifest.duplicate_id", $"/layouts/{index}/slots/{Manifest.Layouts[index].Slots.Count}/id");
+    }
+
     private static int LayoutIndex(string id) => Manifest.Layouts.Select((l, i) => (l, i)).Single(x => x.l.Id == id).i;
 
     private static TemplateManifest ReplaceLayout(int index, Func<LayoutDefinition, LayoutDefinition> change) =>

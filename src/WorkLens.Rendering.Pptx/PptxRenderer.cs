@@ -5,6 +5,7 @@ using WorkLens.Core.Contracts;
 using WorkLens.Core.Errors;
 using WorkLens.Core.Presentation;
 using WorkLens.Core.Templates;
+using WorkLens.Core.Validation;
 using P = DocumentFormat.OpenXml.Presentation;
 using PresentationDocument = WorkLens.Core.Presentation.PresentationDocument;
 
@@ -76,7 +77,7 @@ public sealed class PptxRenderer : IOutputRenderer
             using var document = DocumentFormat.OpenXml.Packaging.PresentationDocument.Open(stream, isEditable: true);
             errors = Build(document, presentation, manifest);
         }
-        catch (Exception ex) when (ex is OpenXmlPackageException or InvalidDataException or FileFormatException)
+        catch (Exception ex) when (ex is OpenXmlPackageException or InvalidDataException or FileFormatException or System.Xml.XmlException)
         {
             return Failed(new WorkLensError(
                 "template.unreadable",
@@ -113,6 +114,12 @@ public sealed class PptxRenderer : IOutputRenderer
     {
         var presentationPart = document.PresentationPart
             ?? throw new InvalidDataException("The package has no presentation part.");
+
+        var idErrors = TemplateManifestChecker.CheckIds(manifest);
+        if (idErrors.Count > 0)
+        {
+            return idErrors;
+        }
 
         var template = TemplateLayouts.Resolve(presentationPart, manifest, out var errors);
         if (errors.Count == 0)

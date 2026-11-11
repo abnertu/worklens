@@ -45,6 +45,10 @@ internal static class RenderCommand
 
             var presentationFile = InputFiles.Read(presentationPath);
             var manifestDocument = InputFiles.LoadUpstream<TemplateManifest>(InputFiles.Read(manifestPath), TemplateManifest.SchemaId);
+            if (TemplateManifestChecker.CheckIds(manifestDocument) is { Count: > 0 } idErrors)
+            {
+                throw CliException.FromErrors(idErrors, "manifest.invalid", manifestPath);
+            }
             var templatePath = parse.GetValue(template) is { } t
                 ? Path.GetFullPath(t)
                 : Path.GetFullPath(Path.Combine(Path.GetDirectoryName(manifestPath)!, manifestDocument.Template.File));

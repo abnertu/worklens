@@ -80,10 +80,10 @@ internal static class TemplateLayouts
                     }
                 }
 
-                slots[slot.Id] = new LayoutPlaceholder(match.Shape, match.Placeholder, match.Name, position);
+                slots.TryAdd(slot.Id, new LayoutPlaceholder(match.Shape, match.Placeholder, match.Name, position));
             }
 
-            result[definition.Id] = new TemplateLayout(definition, part, slots);
+            result.TryAdd(definition.Id, new TemplateLayout(definition, part, slots));
         }
 
         return result;

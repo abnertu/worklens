@@ -6,6 +6,7 @@ using WorkLens.Core.Evidence;
 using WorkLens.Core.Presentation;
 using WorkLens.Core.Report;
 using WorkLens.Core.Templates;
+using WorkLens.Core.Validation;
 
 namespace WorkLens.Core.Layout;
 
@@ -41,6 +42,12 @@ public sealed class LayoutResolver : ILayoutResolver
         ArgumentNullException.ThrowIfNull(report);
         ArgumentNullException.ThrowIfNull(evidence);
         ArgumentNullException.ThrowIfNull(manifest);
+
+        var idErrors = TemplateManifestChecker.CheckIds(manifest);
+        if (idErrors.Count > 0)
+        {
+            return new LayoutResult(null, idErrors);
+        }
 
         var context = new Context(report, evidence, LayoutLabels.From(manifest.Labels));
         var errors = new List<WorkLensError>();
@@ -148,6 +155,14 @@ public sealed class LayoutResolver : ILayoutResolver
         {
             var slot = layout.Slots[k];
             var convention = conventions.FirstOrDefault(c => c.Id == slot.Id);
+            if (convention.Id is null && slot.Required == true)
+            {
+                // The resolver never binds a slot outside the purpose's conventions, so a required one would make every
+                // presentation fail the render-time check (presentation.missing_required_slot).
+                errors.Add(Error("manifest.slot_mismatch", $"/layouts/{layoutIndex}/slots/{k}",
+                    $"Slot '{slot.Id}' of layout '{layout.Id}' is required, but purpose {Name(layout.Purpose)} never fills it."));
+            }
+
             if (convention.Id is not null && convention.Kind != slot.Kind)
             {
                 errors.Add(Error("manifest.slot_mismatch", $"/layouts/{layoutIndex}/slots/{k}/kind",

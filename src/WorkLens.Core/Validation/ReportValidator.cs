@@ -51,29 +51,34 @@ public sealed partial class ReportValidator : IReportValidator
                 return Single("schema.type", string.Empty, $"Report root must be an object, not {root.ValueKind}.");
             }
 
-            if (!IsSupportedVersion(root))
-            {
-                return Single(
-                    "schema.unsupported_version",
-                    "/schema_version",
-                    $"schema_version must be \"{ReportDocument.CurrentSchemaVersion}\" (the version built into this WorkLens).");
-            }
-
-            var schemaResult = _schemaValidator.Validate(ReportDocument.SchemaId, root);
-            if (!schemaResult.IsValid)
-            {
-                return schemaResult;
-            }
-
             ReportDocument report;
             try
             {
+                if (!IsSupportedVersion(root))
+                {
+                    return Single(
+                        "schema.unsupported_version",
+                        "/schema_version",
+                        $"schema_version must be \"{ReportDocument.CurrentSchemaVersion}\" (the version built into this WorkLens).");
+                }
+
+                var schemaResult = _schemaValidator.Validate(ReportDocument.SchemaId, root);
+                if (!schemaResult.IsValid)
+                {
+                    return schemaResult;
+                }
+
                 report = root.Deserialize<ReportDocument>(WorkLensJson.Options)
                     ?? throw new JsonException("Report deserialized to null.");
             }
             catch (JsonException ex)
             {
                 return Single("json.deserialize_failed", JsonPointer.FromJsonPath(ex.Path), $"Report cannot be read: {ex.Message}");
+            }
+            catch (InvalidOperationException ex)
+            {
+                // JsonDocument accepts an escaped lone UTF-16 surrogate such as "\ud800"; reading that string throws.
+                return Single("json.invalid", string.Empty, $"Report contains a string that is not valid UTF-16 text: {ex.Message}");
             }
 
             if (evidence is null)

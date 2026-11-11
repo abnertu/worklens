@@ -441,10 +441,48 @@ public sealed class PptxRendererTests : IDisposable
         Assert.Equal("/template/sha256", error.Details!["path"]);
     }
 
-    private Core.Contracts.RenderResult RenderWith(TemplateManifest manifest)
+    [Fact]
+    public void Duplicate_layout_id_is_reported()
+    {
+        var manifest = Manifest();
+        var result = RenderWith(manifest with { Layouts = [.. manifest.Layouts, manifest.Layouts[0]] });
+
+        var error = Assert.Single(result.Errors);
+        Assert.Equal("manifest.duplicate_id", error.Code);
+        Assert.Equal($"/layouts/{manifest.Layouts.Count}/id", error.Details!["path"]);
+    }
+
+    [Fact]
+    public void Malformed_xml_part_is_unreadable_template()
+    {
+        var template = Path.Combine(_directory, "malformed.pptx");
+        File.Copy(TemplatePath, template);
+        using (var zip = ZipFile.Open(template, ZipArchiveMode.Update))
+        {
+            var entry = zip.GetEntry("ppt/slideLayouts/slideLayout2.xml")!;
+            string xml;
+            using (var reader = new StreamReader(entry.Open()))
+            {
+                xml = reader.ReadToEnd();
+            }
+
+            entry.Delete();
+            using var writer = new StreamWriter(zip.CreateEntry("ppt/slideLayouts/slideLayout2.xml").Open());
+            writer.Write(xml[..(xml.Length / 2)]);
+        }
+
+        var manifest = Manifest();
+        var result = RenderWith(manifest with { Template = manifest.Template with { Sha256 = null } }, template);
+
+        var error = Assert.Single(result.Errors);
+        Assert.Equal("template.unreadable", error.Code);
+        Assert.Equal("/template/file", error.Details!["path"]);
+    }
+
+    private Core.Contracts.RenderResult RenderWith(TemplateManifest manifest, string? templatePath = null)
     {
         var path = Path.Combine(_directory, "failed.pptx");
-        var result = PptxRenderer.Render(MonthlyPresentation(), manifest, TemplatePath, path);
+        var result = PptxRenderer.Render(MonthlyPresentation(), manifest, templatePath ?? TemplatePath, path);
         Assert.Null(result.OutputPath);
         Assert.False(File.Exists(path));
         return result;

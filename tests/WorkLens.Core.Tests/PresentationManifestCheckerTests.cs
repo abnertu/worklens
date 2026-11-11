@@ -53,6 +53,15 @@ public sealed class PresentationManifestCheckerTests
         Assert.Empty(PresentationManifestChecker.Check(Golden(), Manifest()).Issues);
 
     [Fact]
+    public void Duplicate_layout_id_uses_the_first_definition()
+    {
+        var manifest = Manifest();
+        var duplicate = manifest.Layouts[0] with { Slots = [] };
+
+        Assert.Empty(PresentationManifestChecker.Check(Golden(), manifest with { Layouts = [.. manifest.Layouts, duplicate] }).Issues);
+    }
+
+    [Fact]
     public void Template_mismatch() =>
         Assert.Equal(
             ("presentation.template_mismatch", "/template"),

@@ -176,7 +176,8 @@ TemplateManifest
 
 Layout Resolver 規則 (M0, `WorkLens.Core.Layout.LayoutResolver`, 純函式; 同樣輸入必定得到位元組相同的輸出):
 
-- 依 `sequence` 產生 slides (`slide-001` 起); `layout_id` 不存在 → `manifest.unknown_layout`; section 與 layout `purpose` 不對應 → `manifest.purpose_mismatch`; layout 缺少必要 slot 或 kind 不符 → `manifest.slot_mismatch` (CLI exit 3, `manifest.invalid`)。
+- Layout id 或同一 layout 內的 slot id 重複 → `manifest.duplicate_id` (JSON Schema 無法表達, 由 `TemplateManifestChecker` 檢查; `render` 也檢查)。
+- 依 `sequence` 產生 slides (`slide-001` 起); `layout_id` 不存在 → `manifest.unknown_layout`; section 與 layout `purpose` 不對應 → `manifest.purpose_mismatch`; layout 缺少必要 slot、kind 不符, 或有該 purpose 不會填的 `required: true` slot → `manifest.slot_mismatch` (CLI exit 3, `manifest.invalid`)。
 - 每個 purpose 的 slot id 慣例: cover `title` (`labels.cover_title`, `{period}`)、`subtitle` (`subject.display_name`); summary `title`、`highlights` (bullets: 狀態統計 L0 + 活動統計 L1)、`activity` (table: repository、commit 數、merged change request 數); achievements `title`、`items` (table: 標題、狀態); work_item_detail `title` (work item 標題)、`facts` (bullets: facts L0 (無 facts 時用 `summary`) → 推論 L1 → 非 completed 的狀態 L1 → `human_notes` L1); narrative `title`、`body` (該 kind 的 narratives, L0); closing `title`。未列出的 slot 不綁定; 選填 slot 無內容時不綁定。narrative 與 achievements 無內容時不產生該 slide。
 - 統計只計 `occurred_at ∈ [period.start, period.end)` 且無 `duplicate` flag 的證據; 排除 `review_status: rejected` 的 work item; 順序依 `rank` (見 §3)。
 - Overflow: 文字超過 `max_chars` → 截為 `max_chars - 1` 個 text element + `…`; 超過 `max_items` → `overflow: split` 且為流動 slot (`facts`、`body`、`items`) 時拆成多頁並設 `continuation` (標題不變), 其他情況截斷; 有截斷的 SlotValue 設 `truncated: true`。

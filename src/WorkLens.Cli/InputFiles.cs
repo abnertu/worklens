@@ -90,14 +90,14 @@ internal static class InputFiles
 
         using (document)
         {
-            var schema = (validator ?? new IrSchemaValidator()).Validate(schemaId, document.RootElement);
-            if (!schema.IsValid)
-            {
-                return (null, schema.Issues);
-            }
-
             try
             {
+                var schema = (validator ?? new IrSchemaValidator()).Validate(schemaId, document.RootElement);
+                if (!schema.IsValid)
+                {
+                    return (null, schema.Issues);
+                }
+
                 var value = document.RootElement.Deserialize<T>(WorkLensJson.Options)
                     ?? throw new JsonException("Document deserialized to null.");
                 return (value, []);
@@ -105,6 +105,11 @@ internal static class InputFiles
             catch (JsonException ex)
             {
                 return (null, [Issue("json.deserialize_failed", JsonPointer.FromJsonPath(ex.Path), ex.Message)]);
+            }
+            catch (InvalidOperationException ex)
+            {
+                // JsonDocument accepts an escaped lone UTF-16 surrogate such as "\ud800"; reading that string throws.
+                return (null, [Issue("json.invalid", string.Empty, $"{System.IO.Path.GetFileName(file.Path)} contains a string that is not valid UTF-16 text: {ex.Message}")]);
             }
         }
     }

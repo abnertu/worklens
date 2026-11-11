@@ -161,7 +161,7 @@ stdout 恰好一個 JSON 物件, 結尾換行:
 
 | Code | 出現位置 | Exit |
 |---|---|---|
-| `json.invalid` | 輸入不是有效 JSON (report / presentation 為 issue; evidence / manifest 包在 `input.invalid` 內) | 2 (report、presentation) / 3 |
+| `json.invalid` | 輸入不是有效 JSON, 或含無法讀取的字串 (例如單獨的 UTF-16 surrogate escape `\ud800`) (report / presentation 為 issue; evidence / manifest 包在 `input.invalid` 內) | 2 (report、presentation) / 3 |
 | `json.deserialize_failed` | schema 通過但無法轉成 C# 模型 (例 `rank` 超出 int) | 同上 |
 | `schema.*` | JSON Schema 違規 (`schema.required`、`schema.additionalProperties`、`schema.type`、`schema.unsupported_version` 等) | 同上 |
 | `ref.*`、`rule.*` | Report IR 參照完整性 (error) 與 domain 規則 (warning), 見 domain-model §3.2 | 2 (`rule.*` 只在 `--strict` 時) |
@@ -170,7 +170,7 @@ stdout 恰好一個 JSON 物件, 結尾換行:
 | `input.unreadable` | 輸入檔存在但讀取失敗 (IO 錯誤、權限) | 3 |
 | `input.invalid` | evidence / manifest 不是有效 JSON 或不符合 schema (`issues` 附上原因) | 3 |
 | `config.missing_manifest` | `present` / `render` 未給 `--manifest` | 3 |
-| `manifest.invalid` | Layout Resolver 回報 manifest 問題; `issues` 含 `manifest.unknown_layout`、`manifest.purpose_mismatch`、`manifest.slot_mismatch` | 3 |
+| `manifest.invalid` | manifest 內容有問題 (`present`; `render` 只檢查 id 重複); `issues` 含 `manifest.duplicate_id` (layout id 或同一 layout 內的 slot id 重複)、`manifest.unknown_layout`、`manifest.purpose_mismatch`、`manifest.slot_mismatch` | 3 |
 | `template.invalid` | Renderer 回報模板問題; `issues` 含 `template.sha256_mismatch`、`template.unreadable`、`template.layout_missing`、`template.placeholder_missing`、`template.placeholder_position_missing` | 3 |
 | `output.write_failed` | 輸出目錄不存在或目標檔被鎖定 (例如在 PowerPoint 中開啟) | 3 |
 | `schema.not_found` | `schema show` 不認得的名稱或版本 (stderr) | 1 |

@@ -24,7 +24,12 @@ public static class PresentationManifestChecker
                 $"The presentation was resolved for template {presentation.Template.Id} {presentation.Template.Version}, but the manifest is {manifest.Template.Id} {manifest.Template.Version}."));
         }
 
-        var layouts = manifest.Layouts.ToDictionary(l => l.Id, StringComparer.Ordinal);
+        // First occurrence wins, as in the Layout Resolver (duplicate ids are reported by TemplateManifestChecker).
+        var layouts = new Dictionary<string, LayoutDefinition>(StringComparer.Ordinal);
+        foreach (var definition in manifest.Layouts)
+        {
+            layouts.TryAdd(definition.Id, definition);
+        }
         for (var i = 0; i < presentation.Slides.Count; i++)
         {
             var slide = presentation.Slides[i];
