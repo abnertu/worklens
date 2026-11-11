@@ -81,7 +81,7 @@ public static class Program
         report.Subcommands.Add(ReportCommands.Validate());
         root.Subcommands.Add(report);
 
-        root.Subcommands.Add(Stub("present", "Resolve report.json into presentation.json using a template manifest."));
+        root.Subcommands.Add(PresentCommand.Create());
         root.Subcommands.Add(Stub("render", "Render presentation.json into a .pptx file."));
 
         return root;

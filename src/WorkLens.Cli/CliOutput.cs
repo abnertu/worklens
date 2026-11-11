@@ -24,6 +24,24 @@ internal sealed class CliException(
     public IReadOnlyList<ValidationIssue> Issues { get; } = issues ?? [];
 
     public static JsonObject FileDetails(string path) => new() { ["file"] = path };
+
+    /// <summary>
+    /// Resolver / renderer errors are problems of an upstream file (manifest or template) that the report author
+    /// cannot fix: exit 3, every error as an error issue (D14).
+    /// </summary>
+    public static CliException FromErrors(IReadOnlyList<WorkLensError> errors, string code, string file)
+    {
+        var issues = errors
+            .Select(e => new ValidationIssue(
+                e.Code,
+                IssueSeverity.Error,
+                e.Details?.GetValueOrDefault("path") ?? string.Empty,
+                null,
+                e.Message))
+            .ToList();
+        var message = errors.Count == 1 ? errors[0].Message : $"{errors.Count} problems in {file}.";
+        return new CliException(ExitCodes.Configuration, code, message, FileDetails(file), issues);
+    }
 }
 
 /// <summary>

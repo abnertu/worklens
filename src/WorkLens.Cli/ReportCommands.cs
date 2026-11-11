@@ -1,7 +1,12 @@
 using System.CommandLine;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using WorkLens.Core.Errors;
 using WorkLens.Core.Evidence;
+using WorkLens.Core.Json;
+using WorkLens.Core.Layout;
+using WorkLens.Core.Report;
+using WorkLens.Core.Templates;
 using WorkLens.Core.Validation;
 
 namespace WorkLens.Cli;
@@ -83,3 +88,62 @@ internal sealed record CheckedReport(
     InputFile Report,
     InputFile EvidenceFile,
     EvidenceDocument? Evidence);
+
+internal static class PresentCommand
+{
+    /// <summary><c>present</c>: validate report.json, then resolve it into presentation.json with a manifest.</summary>
+    public static Command Create()
+    {
+        var command = new Command("present", "Resolve report.json into presentation.json using a template manifest.");
+        var workspace = Program.WorkspaceOption();
+        var report = Program.FileOption("--report", InputFiles.ReportFileName);
+        var evidence = Program.FileOption("--evidence", InputFiles.EvidenceFileName);
+        var manifest = new Option<string?>("--manifest") { Description = "Template manifest.json (required in M0)." };
+        var output = Program.FileOption("--output", InputFiles.PresentationFileName);
+        var strict = Program.StrictOption();
+        var json = Program.JsonOption();
+        foreach (var option in new Option[] { workspace, report, evidence, manifest, output, strict, json })
+        {
+            command.Options.Add(option);
+        }
+
+        command.SetAction(parse => CliOutput.Run("present", parse.GetValue(json), result =>
+        {
+            var manifestPath = parse.GetValue(manifest) is { } m
+                ? Path.GetFullPath(m)
+                : throw new CliException(
+                    ExitCodes.Configuration,
+                    "config.missing_manifest",
+                    "No template manifest: pass --manifest <manifest.json>.");
+            var ws = parse.GetValue(workspace);
+            var reportPath = InputFiles.Resolve(parse.GetValue(report), ws, InputFiles.ReportFileName);
+            var evidencePath = InputFiles.Resolve(parse.GetValue(evidence), ws, InputFiles.EvidenceFileName);
+            var outputPath = InputFiles.Resolve(parse.GetValue(output), ws, InputFiles.PresentationFileName);
+
+            var checkedReport = ReportCommands.ValidateReport(reportPath, evidencePath, parse.GetValue(strict), result);
+            var files = (JsonObject)result.Result!["files"]!;
+            files["manifest"] = manifestPath;
+            if (checkedReport.Evidence is null)
+            {
+                result.Lines.Add($"{reportPath}: validation failed; presentation not written.");
+                return checkedReport.ExitCode;
+            }
+
+            var manifestDocument = InputFiles.LoadUpstream<TemplateManifest>(InputFiles.Read(manifestPath), TemplateManifest.SchemaId);
+            var reportDocument = JsonSerializer.Deserialize<ReportDocument>(checkedReport.Report.Content.Span, WorkLensJson.Options)!;
+
+            var layout = new LayoutResolver().Resolve(reportDocument, checkedReport.Report.Sha256, checkedReport.Evidence, manifestDocument);
+            if (layout.Presentation is null)
+            {
+                throw CliException.FromErrors(layout.Errors, "manifest.invalid", manifestPath);
+            }
+
+            AtomicFile.WriteAllBytes(outputPath, WorkLensJson.SerializeCanonicalUtf8(layout.Presentation));
+            files["presentation"] = outputPath;
+            result.Result["slide_count"] = layout.Presentation.Slides.Count;
+            result.Lines.Add($"Wrote {outputPath} ({layout.Presentation.Slides.Count} slides).");
+            return ExitCodes.Success;
+        }));
+        return command;
+    }
+}
