@@ -1,0 +1,129 @@
+{
+  "schema_version": "1.0",
+  "presentation_id": "prs-2026-10-example-user",
+  "source_report": {
+    "report_id": "rpt-2026-10-example-user",
+    "sha256": "a3c5e7f9b1d3f5a7c9e1b3d5f7a9c1e3b5d7f9a1c3e5b7d9f1a3c5e7b9d1f3a5"
+  },
+  "template": {
+    "id": "sample-monthly",
+    "version": "0.1.0"
+  },
+  "slides": [
+    {
+      "id": "slide-1",
+      "layout_id": "cover_v1",
+      "bindings": {
+        "title": {
+          "kind": "text",
+          "text": "2026-10 工作月報"
+        },
+        "subtitle": {
+          "kind": "text",
+          "text": "Example User"
+        }
+      },
+      "source_refs": []
+    },
+    {
+      "id": "slide-002",
+      "layout_id": "summary_v1",
+      "bindings": {
+        "title": {
+          "kind": "text",
+          "text": "本月重點"
+        },
+        "highlights": {
+          "kind": "bullets",
+          "items": [
+            {
+              "text": "完成 2 項工作, 1 項待確認",
+              "level": 0
+            },
+            {
+              "text": "2 個 repository, 1 個已合併的 PR",
+              "level": 1
+            }
+          ]
+        }
+      },
+      "source_refs": [
+        "wi-auth-refresh-rotation",
+        "wi-billing-rounding-fix",
+        "wi-onboarding-mentoring"
+      ]
+    },
+    {
+      "id": "slide-003",
+      "layout_id": "achievement_detail_v1",
+      "bindings": {
+        "title": {
+          "kind": "text",
+          "text": "使用者驗證機制優化"
+        },
+        "facts": {
+          "kind": "bullets",
+          "items": [
+            {
+              "text": "PR #42「Add refresh token rotation」於 2026-10-14 合併。",
+              "level": 0
+            },
+            {
+              "text": "Commit 新增 TokenService 的輪替邏輯與對應測試。",
+              "level": 0
+            },
+            {
+              "text": "(推論, 信心: 中) 降低被竊取的 Refresh Token 被重複使用的風險。",
+              "level": 1
+            }
+          ]
+        }
+      },
+      "source_refs": [
+        "wi-auth-refresh-rotation",
+        "ev-1a2b3c4d5e6f7a8b",
+        "ev-2b3c4d5e6f7a8b9c"
+      ]
+    },
+    {
+      "id": "slide-004",
+      "layout_id": "narrative_v1",
+      "bindings": {
+        "title": {
+          "kind": "text",
+          "text": "活動統計"
+        },
+        "body": {
+          "kind": "table",
+          "columns": [
+            "Repository",
+            "Commits",
+            "Merged PR/MR"
+          ],
+          "rows": [
+            [
+              "example-org/auth-service",
+              "1",
+              "1"
+            ],
+            [
+              "platform/billing",
+              "1",
+              "0"
+            ]
+          ],
+          "truncated": false
+        }
+      },
+      "source_refs": [
+        "ev-1a2b3c4d5e6f7a8b",
+        "ev-2b3c4d5e6f7a8b9c",
+        "ev-3c4d5e6f7a8b9c0d"
+      ],
+      "continuation": {
+        "index": 1,
+        "total": 2
+      }
+    }
+  ]
+}

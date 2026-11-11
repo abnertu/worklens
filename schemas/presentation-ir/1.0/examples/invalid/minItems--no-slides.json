@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0",
+  "presentation_id": "prs-2026-10-example-user",
+  "source_report": {
+    "report_id": "rpt-2026-10-example-user",
+    "sha256": "a3c5e7f9b1d3f5a7c9e1b3d5f7a9c1e3b5d7f9a1c3e5b7d9f1a3c5e7b9d1f3a5"
+  },
+  "template": {
+    "id": "sample-monthly",
+    "version": "0.1.0"
+  },
+  "slides": []
+}

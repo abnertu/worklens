@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:worklens:schema:template-manifest:1.0",
+  "title": "WorkLens Template Manifest 1.0",
+  "description": "Declares the legal layouts and slots of a .pptx template and the order of report sections.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "template", "layouts", "sequence"],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "template": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "file"],
+      "properties": {
+        "id": { "$ref": "#/$defs/identifier" },
+        "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+        "file": { "type": "string", "pattern": "\\.pptx$" },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    },
+    "layouts": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/layout" }
+    },
+    "sequence": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["section", "layout_id"],
+        "properties": {
+          "section": {
+            "enum": ["cover", "summary", "achievements", "work_item_details", "challenges", "improvements", "next_plan", "other_work", "closing"]
+          },
+          "layout_id": { "$ref": "#/$defs/identifier" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "identifier": { "type": "string", "pattern": "^[a-z][a-z0-9_-]*$" },
+    "layout": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "slide_layout_name", "purpose", "slots"],
+      "properties": {
+        "id": { "$ref": "#/$defs/identifier" },
+        "slide_layout_name": { "type": "string", "minLength": 1 },
+        "purpose": { "enum": ["cover", "summary", "achievements", "work_item_detail", "narrative", "closing"] },
+        "slots": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/slot" }
+        }
+      }
+    },
+    "slot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "placeholder", "kind"],
+      "properties": {
+        "id": { "$ref": "#/$defs/identifier" },
+        "placeholder": {
+          "type": "object",
+          "additionalProperties": false,
+          "minProperties": 1,
+          "properties": {
+            "idx": { "type": "integer", "minimum": 0 },
+            "name": { "type": "string", "minLength": 1 }
+          }
+        },
+        "kind": { "enum": ["text", "bullets", "table"] },
+        "required": { "type": "boolean" },
+        "max_chars": { "type": "integer", "minimum": 1 },
+        "max_items": { "type": "integer", "minimum": 1 },
+        "overflow": { "enum": ["split", "truncate"] }
+      }
+    }
+  }
+}

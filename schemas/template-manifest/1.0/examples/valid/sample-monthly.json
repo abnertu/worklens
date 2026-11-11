@@ -1,0 +1,141 @@
+{
+  "schema_version": "1.0",
+  "template": {
+    "id": "sample-monthly",
+    "version": "0.1.0",
+    "file": "templates/sample-monthly/sample-monthly.pptx"
+  },
+  "layouts": [
+    {
+      "id": "cover_v1",
+      "slide_layout_name": "Title Slide",
+      "purpose": "cover",
+      "slots": [
+        {
+          "id": "title",
+          "placeholder": {
+            "idx": 0
+          },
+          "kind": "text",
+          "required": true,
+          "max_chars": 60
+        },
+        {
+          "id": "subtitle",
+          "placeholder": {
+            "idx": 1
+          },
+          "kind": "text",
+          "max_chars": 80
+        }
+      ]
+    },
+    {
+      "id": "summary_v1",
+      "slide_layout_name": "Title and Content",
+      "purpose": "summary",
+      "slots": [
+        {
+          "id": "title",
+          "placeholder": {
+            "idx": 0
+          },
+          "kind": "text",
+          "required": true,
+          "max_chars": 40
+        },
+        {
+          "id": "highlights",
+          "placeholder": {
+            "idx": 1
+          },
+          "kind": "bullets",
+          "max_items": 6,
+          "max_chars": 80,
+          "overflow": "truncate"
+        },
+        {
+          "id": "activity",
+          "placeholder": {
+            "name": "Table Placeholder 3"
+          },
+          "kind": "table",
+          "max_items": 8,
+          "overflow": "truncate"
+        }
+      ]
+    },
+    {
+      "id": "achievement_detail_v1",
+      "slide_layout_name": "Title and Content",
+      "purpose": "work_item_detail",
+      "slots": [
+        {
+          "id": "title",
+          "placeholder": {
+            "idx": 0
+          },
+          "kind": "text",
+          "required": true,
+          "max_chars": 40
+        },
+        {
+          "id": "facts",
+          "placeholder": {
+            "name": "Content Placeholder 2"
+          },
+          "kind": "bullets",
+          "max_items": 5,
+          "max_chars": 90,
+          "overflow": "split"
+        }
+      ]
+    },
+    {
+      "id": "narrative_v1",
+      "slide_layout_name": "Title and Content",
+      "purpose": "narrative",
+      "slots": [
+        {
+          "id": "title",
+          "placeholder": {
+            "idx": 0
+          },
+          "kind": "text",
+          "required": true
+        },
+        {
+          "id": "body",
+          "placeholder": {
+            "idx": 1
+          },
+          "kind": "bullets",
+          "max_items": 6,
+          "overflow": "split"
+        }
+      ]
+    }
+  ],
+  "sequence": [
+    {
+      "section": "cover",
+      "layout_id": "cover_v1"
+    },
+    {
+      "section": "summary",
+      "layout_id": "summary_v1"
+    },
+    {
+      "section": "work_item_details",
+      "layout_id": "achievement_detail_v1"
+    },
+    {
+      "section": "challenges",
+      "layout_id": "narrative_v1"
+    },
+    {
+      "section": "next_plan",
+      "layout_id": "narrative_v1"
+    }
+  ]
+}

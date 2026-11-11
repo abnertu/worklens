@@ -1,0 +1,135 @@
+{
+  "schema_version": "1.0",
+  "document_id": "evd-2026-10-3f9a1c2b",
+  "generated_at": "2026-11-01T02:15:00+00:00",
+  "generator": {
+    "name": "worklens",
+    "version": "0.1.0"
+  },
+  "query": {
+    "period": {
+      "label": "2026-10",
+      "start": "2026-09-30T16:00:00+00:00",
+      "end": "2026-10-31T16:00:00+00:00",
+      "timezone": "Asia/Taipei"
+    },
+    "identities": [
+      {
+        "platform": "github",
+        "username": "example-user"
+      },
+      {
+        "email": "example-user@example.com"
+      }
+    ],
+    "sources": [
+      {
+        "platform": "github",
+        "base_url": "https://api.github.com",
+        "repository": "example-org/auth-service"
+      },
+      {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform/billing"
+      }
+    ]
+  },
+  "items": [
+    {
+      "id": "ev-1a2b3c4d5e6f7a8b",
+      "kind": "change_request",
+      "source": {
+        "platform": "github",
+        "base_url": "https://api.github.com",
+        "repository": "example-org/auth-service",
+        "external_id": "42",
+        "url": "https://github.com/example-org/auth-service/pull/42"
+      },
+      "title": "Add refresh token rotation",
+      "body": "Implements rotation of refresh tokens and handles expired sessions.",
+      "state": "merged",
+      "author": {
+        "username": "example-user",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-10-14T08:30:00+00:00",
+        "created_at": "2026-10-10T03:00:00+00:00",
+        "merged_at": "2026-10-14T08:30:00+00:00"
+      },
+      "stats": {
+        "files_changed": 6,
+        "additions": 240,
+        "deletions": 35
+      },
+      "relations": [
+        {
+          "type": "contains",
+          "target_id": "ev-2b3c4d5e6f7a8b9c"
+        }
+      ],
+      "fetched_at": "2026-11-01T02:14:10+00:00"
+    },
+    {
+      "id": "ev-2b3c4d5e6f7a8b9c",
+      "kind": "commit",
+      "source": {
+        "platform": "github",
+        "base_url": "https://api.github.com",
+        "repository": "example-org/auth-service",
+        "external_id": "9f3e2d1c0b9a8f7e6d5c4b3a2f1e0d9c8b7a6f5e",
+        "url": "https://github.com/example-org/auth-service/commit/9f3e2d1c0b9a8f7e6d5c4b3a2f1e0d9c8b7a6f5e"
+      },
+      "title": "feat(auth): rotate refresh tokens on use",
+      "author": {
+        "name": "Example User",
+        "email": "example-user@example.com",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-10-11T06:12:00+00:00",
+        "authored_at": "2026-10-11T06:12:00+00:00",
+        "committed_at": "2026-10-11T06:20:00+00:00"
+      },
+      "stats": {
+        "files_changed": 4,
+        "additions": 180,
+        "deletions": 20
+      },
+      "paths": [
+        "src/Auth/TokenService.cs",
+        "tests/Auth/TokenServiceTests.cs"
+      ]
+    },
+    {
+      "id": "ev-3c4d5e6f7a8b9c0d",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform/billing",
+        "external_id": "0d9c8b7a6f5e4d3c2b1a0f9e8d7c6b5a4f3e2d1c",
+        "url": "https://gitlab.example.com/platform/billing/-/commit/0d9c8b7a6f5e4d3c2b1a0f9e8d7c6b5a4f3e2d1c"
+      },
+      "title": "fix: correct invoice rounding for TWD",
+      "body": "Round half away from zero as required by finance.",
+      "author": {
+        "name": "Example User",
+        "email": "example-user@example.com",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-10-22T09:05:00+00:00",
+        "authored_at": "2026-10-22T09:05:00+00:00",
+        "committed_at": "2026-10-22T09:05:00+00:00"
+      },
+      "stats": {
+        "files_changed": 2,
+        "additions": 14,
+        "deletions": 3
+      },
+      "fetched_at": "2026-11-01T02:14:30+00:00"
+    }
+  ]
+}

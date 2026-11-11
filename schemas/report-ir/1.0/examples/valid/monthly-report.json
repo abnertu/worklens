@@ -1,0 +1,86 @@
+{
+  "schema_version": "1.0",
+  "report_id": "rpt-2026-10-example-user",
+  "period": {
+    "label": "2026-10",
+    "start": "2026-09-30T16:00:00+00:00",
+    "end": "2026-10-31T16:00:00+00:00",
+    "timezone": "Asia/Taipei"
+  },
+  "subject": { "display_name": "Example User" },
+  "evidence_document": {
+    "document_id": "evd-2026-10-3f9a1c2b",
+    "sha256": "5f2b0c8e3d9a7f1b6c4e2a0d8f6b4c2e0a9d7f5b3c1e9a7d5f3b1c9e7a5d3f1b"
+  },
+  "analysis": { "agent": "claude-code", "notes": "Grouped by repository and change request." },
+  "work_items": [
+    {
+      "id": "wi-auth-refresh-rotation",
+      "origin": "agent",
+      "category": "feature",
+      "status": "completed",
+      "title": "使用者驗證機制優化",
+      "summary": "實作 Refresh Token 輪替與 Session 過期處理, 已合併至 auth-service。",
+      "observed_facts": [
+        {
+          "statement": "PR #42「Add refresh token rotation」於 2026-10-14 合併。",
+          "evidence_refs": [ "ev-1a2b3c4d5e6f7a8b" ]
+        },
+        {
+          "statement": "Commit 新增 TokenService 的輪替邏輯與對應測試。",
+          "evidence_refs": [ "ev-2b3c4d5e6f7a8b9c" ]
+        }
+      ],
+      "agent_inference": {
+        "statement": "降低被竊取的 Refresh Token 被重複使用的風險。",
+        "confidence": "medium"
+      },
+      "evidence_refs": [ "ev-1a2b3c4d5e6f7a8b", "ev-2b3c4d5e6f7a8b9c" ],
+      "rank": 1,
+      "review_status": "pending"
+    },
+    {
+      "id": "wi-billing-rounding-fix",
+      "origin": "agent",
+      "category": "fix",
+      "status": "unknown",
+      "title": "修正新台幣發票進位",
+      "summary": "調整發票金額的進位規則; 是否已部署無證據, 待人工確認。",
+      "observed_facts": [
+        {
+          "statement": "Commit 將 TWD 進位改為四捨五入 (half away from zero)。",
+          "evidence_refs": [ "ev-3c4d5e6f7a8b9c0d" ]
+        }
+      ],
+      "evidence_refs": [ "ev-3c4d5e6f7a8b9c0d" ],
+      "rank": 2
+    },
+    {
+      "id": "wi-onboarding-mentoring",
+      "origin": "human",
+      "category": "other",
+      "status": "completed",
+      "title": "新進同仁 Onboarding",
+      "summary": "協助兩位新進同仁完成開發環境建置與 code review 流程。",
+      "observed_facts": [],
+      "evidence_refs": [],
+      "human_notes": "非 Git 活動, 人工補充。",
+      "review_status": "approved"
+    }
+  ],
+  "narratives": [
+    {
+      "id": "nr-challenge-token-migration",
+      "kind": "challenge",
+      "origin": "agent",
+      "text": "既有 Session 需相容舊格式 Token, 以過渡期雙格式驗證處理。",
+      "evidence_refs": [ "ev-1a2b3c4d5e6f7a8b" ]
+    },
+    {
+      "id": "nr-next-plan-sso",
+      "kind": "next_plan",
+      "origin": "human",
+      "text": "11 月評估 SSO 整合方案。"
+    }
+  ]
+}
