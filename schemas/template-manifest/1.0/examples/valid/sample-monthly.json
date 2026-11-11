@@ -3,7 +3,7 @@
   "template": {
     "id": "sample-monthly",
     "version": "0.1.0",
-    "file": "templates/sample-monthly/sample-monthly.pptx"
+    "file": "sample-monthly.pptx"
   },
   "layouts": [
     {
@@ -137,5 +137,36 @@
       "section": "next_plan",
       "layout_id": "narrative_v1"
     }
-  ]
+  ],
+  "labels": {
+    "cover_title": "{period} 工作月報",
+    "summary_title": "本月重點",
+    "summary_status": "完成 {completed} 項工作, {unknown} 項待確認",
+    "summary_activity": "{repositories} 個 repository, {merged_changes} 個已合併的 PR",
+    "activity_columns": [
+      "Repository",
+      "Commits",
+      "Merged PR/MR"
+    ],
+    "achievements_title": "本月成果",
+    "achievements_columns": [
+      "工作項目",
+      "狀態"
+    ],
+    "challenges_title": "遇到的問題",
+    "improvements_title": "改善事項",
+    "next_plan_title": "下月規劃",
+    "other_work_title": "其他工作",
+    "closing_title": "謝謝",
+    "inference": "(推論, 信心: {confidence}) {statement}",
+    "confidence_low": "低",
+    "confidence_medium": "中",
+    "confidence_high": "高",
+    "cell_status_completed": "完成",
+    "cell_status_in_progress": "進行中",
+    "cell_status_unknown": "待確認",
+    "status_in_progress": "(狀態: 進行中)",
+    "status_unknown": "(狀態: 待確認)",
+    "human_notes": "(人工補充) {notes}"
+  }
 }

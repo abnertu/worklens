@@ -15,10 +15,19 @@
       "properties": {
         "id": { "$ref": "#/$defs/identifier" },
         "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
-        "file": { "type": "string", "pattern": "\\.pptx$" },
-        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+        "file": {
+          "description": "Path of the .pptx template, relative to the directory that contains this manifest file.",
+          "type": "string",
+          "pattern": "\\.pptx$"
+        },
+        "sha256": {
+          "description": "Lowercase hex SHA-256 of the template file bytes as written.",
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
       }
     },
+    "labels": { "$ref": "#/$defs/labels" },
     "layouts": {
       "type": "array",
       "minItems": 1,
@@ -42,6 +51,36 @@
   },
   "$defs": {
     "identifier": { "type": "string", "pattern": "^[a-z][a-z0-9_-]*$" },
+    "label": { "type": "string", "minLength": 1 },
+    "labels": {
+      "description": "Fixed text used by the Layout Resolver. Placeholders in braces (for example {period}) are substituted once. Missing keys fall back to English defaults.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "cover_title": { "$ref": "#/$defs/label" },
+        "summary_title": { "$ref": "#/$defs/label" },
+        "summary_status": { "$ref": "#/$defs/label" },
+        "summary_activity": { "$ref": "#/$defs/label" },
+        "activity_columns": { "type": "array", "minItems": 3, "maxItems": 3, "items": { "$ref": "#/$defs/label" } },
+        "achievements_title": { "$ref": "#/$defs/label" },
+        "achievements_columns": { "type": "array", "minItems": 2, "maxItems": 2, "items": { "$ref": "#/$defs/label" } },
+        "challenges_title": { "$ref": "#/$defs/label" },
+        "improvements_title": { "$ref": "#/$defs/label" },
+        "next_plan_title": { "$ref": "#/$defs/label" },
+        "other_work_title": { "$ref": "#/$defs/label" },
+        "closing_title": { "$ref": "#/$defs/label" },
+        "inference": { "$ref": "#/$defs/label" },
+        "confidence_low": { "$ref": "#/$defs/label" },
+        "confidence_medium": { "$ref": "#/$defs/label" },
+        "confidence_high": { "$ref": "#/$defs/label" },
+        "cell_status_completed": { "$ref": "#/$defs/label" },
+        "cell_status_in_progress": { "$ref": "#/$defs/label" },
+        "cell_status_unknown": { "$ref": "#/$defs/label" },
+        "status_in_progress": { "$ref": "#/$defs/label" },
+        "status_unknown": { "$ref": "#/$defs/label" },
+        "human_notes": { "$ref": "#/$defs/label" }
+      }
+    },
     "layout": {
       "type": "object",
       "additionalProperties": false,

@@ -148,6 +148,7 @@ SlotValue (以 kind 區分)
 TemplateManifest
 ├── schema_version: "1.0"
 ├── template               { id, version (semver), file, sha256? }
+│                          file: 相對於 manifest 檔所在目錄; sha256: 模板檔寫出時位元組的 SHA-256 (小寫 hex)
 ├── layouts[]
 │   ├── id                 例 cover_v1, achievement_detail_v1
 │   ├── slide_layout_name  模板中 slide layout 的名稱
@@ -159,9 +160,19 @@ TemplateManifest
 │       ├── required?      預設 false
 │       ├── max_chars?     | max_items?
 │       └── overflow?      split | truncate (預設 truncate)
-└── sequence[]             { section, layout_id }
-    section ∈ cover | summary | achievements | work_item_details | challenges | improvements | next_plan | other_work | closing
+├── sequence[]             { section, layout_id }
+│   section ∈ cover | summary | achievements | work_item_details | challenges | improvements | next_plan | other_work | closing
+└── labels?                Layout Resolver 的固定文字 (固定 key, 皆選填, 未提供時用英文預設)
+    ├── cover_title, summary_title, achievements_title, challenges_title, improvements_title,
+    │   next_plan_title, other_work_title, closing_title
+    ├── summary_status, summary_activity, inference, human_notes   (含 {name} 代入, 單次掃描)
+    ├── activity_columns (3 個字串), achievements_columns (2 個字串)
+    ├── confidence_low | confidence_medium | confidence_high
+    ├── cell_status_completed | cell_status_in_progress | cell_status_unknown
+    └── status_in_progress | status_unknown
 ```
+
+所有 IR 中的 `sha256` 欄位 (`evidence_document.sha256`、`source_report.sha256`、`template.sha256`) 一律是被參照檔案「寫出時的位元組」的 SHA-256 (小寫 hex), 不做任何正規化。
 
 Layout Resolver 規則 (M0 實作): 依 `sequence` 產生 slides; `work_item_details` 對每個 `review_status != rejected` 的 work item 依 `rank` 產生一頁; 內容超過 `max_items` 且 `overflow: split` 時複製同 layout 拆頁並設定 `continuation`; `truncate` 時截斷並設 `truncated: true`。同樣輸入必定得到同樣輸出。
 
