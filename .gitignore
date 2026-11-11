@@ -1,0 +1,16 @@
+# Build output
+bin/
+obj/
+*.user
+.vs/
+TestResults/
+
+# Local tool state / machine-specific agent config
+.codegraph/
+.claude/settings*.json
+.mcp.json
+.codex/
+
+# WorkLens runtime workspace and generated reports
+.worklens/
+out/
