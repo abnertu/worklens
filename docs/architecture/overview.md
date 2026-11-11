@@ -37,7 +37,7 @@ v0.1 的關鍵架構決策 (Decided, [ADR-0004](../adr/0004-agent-as-analyzer.md
 | AI 分析 | 由 agent CLI 執行, WorkLens 不內建 LLM SDK | Decided | [ADR-0004](../adr/0004-agent-as-analyzer.md) |
 | Agent 介面 | CLI 子命令 + JSON 檔 I/O + Skill; MCP 延後 | Decided | [ADR-0005](../adr/0005-agent-interface-cli-json-skill.md) |
 | Headless agent runner | 不做 (backlog) | Decided | ADR-0004 |
-| PPTX 生成 | Open XML SDK, 以樣本模板 PoC 驗證 | Proposed | [ADR-0006](../adr/0006-pptx-open-xml-sdk.md) |
+| PPTX 生成 | Open XML SDK (樣本模板 PoC 通過, [報告](../plans/pptx-poc-report.md)) | Decided | [ADR-0006](../adr/0006-pptx-open-xml-sdk.md) |
 | 儲存 | 工作目錄內 JSON 檔 + provenance manifest; SQLite 延後 | Proposed | [ADR-0007](../adr/0007-storage-workspace-json-files.md) |
 | Schema 驗證 | JsonSchema.Net 9.x (接受 OSMF EULA) | Decided | [ADR-0008](../adr/0008-libraries-schema-validation-and-http.md) |
 | Source connector HTTP | HttpClient typed client | Proposed | ADR-0008 |
@@ -82,19 +82,20 @@ v0.1 的關鍵架構決策 (Decided, [ADR-0004](../adr/0004-agent-as-analyzer.md
 
 交接文件 §7 列出 8 個邏輯模組。v0.1 不為每個模組建立 `.csproj` (避免空專案與過早的邊界), 改以**命名空間 + 相依規則**維持邊界, 在實際需要隔離相依時才拆專案 (Proposed, [ADR-0002](../adr/0002-modular-monolith.md))。
 
-### 4.1 v0.1 骨架 (本計畫建立)
+### 4.1 已建立 (v0.1 骨架 + M0)
 
 | Project | 內容 | 允許的相依 |
 |---|---|---|
 | `src/WorkLens.Core` | 三層 IR records、Template Manifest model、模組契約 interfaces、錯誤模型、`WorkLensJson` 序列化設定、`WorkLensSchemaRegistry` / `IrSchemaValidator`、embedded schemas | BCL、`JsonSchema.Net` (與其遞移相依) |
-| `src/WorkLens.Cli` | `worklens` 執行檔、命令解析、輸出格式、exit codes | Core、`System.CommandLine` |
-| `tests/WorkLens.Core.Tests` | Schema / 範例 / 模型一致性、Core 相依規則 | Core、xUnit v3 |
+| `src/WorkLens.Rendering.Pptx` | `PptxRenderer : IOutputRenderer` (Open XML; M0) | Core、`DocumentFormat.OpenXml` |
+| `src/WorkLens.Cli` | `worklens` 執行檔、命令解析、輸出格式、exit codes | Core、Rendering.Pptx、`System.CommandLine` |
+| `tests/WorkLens.Core.Tests` | Schema / 範例 / 模型一致性、Core 相依規則、Validator / Layout Resolver | Core、xUnit v3 |
+| `tests/WorkLens.Rendering.Pptx.Tests` | Renderer 結構斷言、`OpenXmlValidator`、正規化 snapshot (不需 Office) | Core、Rendering.Pptx、`DocumentFormat.OpenXml`、xUnit v3 |
 
 ### 4.2 之後依 Milestone 建立 (預計)
 
 | Project | Milestone | 內容 | 允許的相依 |
 |---|---|---|---|
-| `src/WorkLens.Rendering.Pptx` | M0 | Layout Resolver 之外的 PPTX 渲染 (Open XML) | Core、`DocumentFormat.OpenXml` |
 | `src/WorkLens.Connectors.Git` | M1 | GitHub / GitLab connectors、作者識別、去重 | Core、`Microsoft.Extensions.Http` |
 | `src/WorkLens.Application` | 視需要 (M3) | 若 CLI 以外出現第二個入口 (MCP / API), 把 pipeline 編排從 Cli 移出 | Core |
 
@@ -119,9 +120,9 @@ Layout Resolver (Report IR → Presentation IR) 是純函式, 放在 Core (`Work
 | `ISourceConnector` | `SourceQuery` → `EvidenceDocument` (片段) | M1: GitHub、GitLab |
 | `IEvidenceDigester` | `EvidenceDocument` + `DigestOptions` → `EvidenceDigest` | M2 |
 | `IAnalysisModule` | `EvidenceDigest` → `ReportDocument` | v0.1 由 **agent** 擔任, WorkLens 內無實作; 契約保留給未來內建 LLM / headless runner |
-| `IReportValidator` | Report JSON + `EvidenceDocument` (+ SHA-256) → `ValidationResult` | M0 (組合 schema、參照完整性與規則); v0.1 骨架已提供其 schema 層 `IrSchemaValidator` |
-| `ILayoutResolver` | `ReportDocument` + `EvidenceDocument` + `TemplateManifest` → `PresentationDocument` | M0 |
-| `IOutputRenderer` | `PresentationDocument` + template 檔 → 輸出檔 | M0: PPTX |
+| `IReportValidator` | `Validate(string reportJson, EvidenceDocument? evidence, string? evidenceSha256)` → `ValidationResult` | M0: `ReportValidator` (JSON 解析、schema、參照完整性、domain 規則) |
+| `ILayoutResolver` | `Resolve(ReportDocument, string reportSha256, EvidenceDocument, TemplateManifest)` → `LayoutResult` (`PresentationDocument?` + errors) | M0: `LayoutResolver` |
+| `IOutputRenderer` | `RenderAsync(PresentationDocument, TemplateManifest, string templatePath, string outputPath, CancellationToken)` → `RenderResult` | M0: `PptxRenderer` |
 
 ## 6. 工作目錄 (Workspace)
 

@@ -77,4 +77,4 @@
 - [ ] Digest 預設不含 email、diff、URL query (M2)。
 - [ ] Secret pattern redaction 有單元測試 (M2)。
 - [ ] `.worklens/` 未被 `.gitignore` 排除時警告 (M3)。
-- [ ] 模板範例 slides / 備註 / 文件屬性不帶入輸出 (M0)。
+- [x] 模板範例 slides / 備註 / 文件屬性不帶入輸出 (M0; `PptxRendererTests` 斷言, 見 [pptx-poc-report.md](../plans/pptx-poc-report.md))。

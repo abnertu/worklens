@@ -7,7 +7,7 @@
 
 ### OQ-01 首個目標環境: Windows/Linux/macOS? 本地 CLI 或 CI Runner?
 - Status: Open
-- 影響: 路徑處理、字型 (中文換行與替代)、LibreOffice 驗證環境、secret 存放方式。
+- 影響: 路徑處理、字型 (中文換行與替代)、secret 存放方式。
 - 預設假設: 主要在 Windows 本機, 由使用者在 agent CLI (Claude Code / Codex CLI) 中執行; 程式碼保持跨平台 (不用 Windows 專屬 API), CI Runner 延後 (見 OQ-12)。
 - 需決定於: M4 之前 (部署 / 排程)。
 
@@ -58,10 +58,8 @@
 - 需決定於: M4 之前。
 
 ### OQ-10 期望 Template Renderer 的驗證標準: 僅固定版型可用, 或要求跨 PowerPoint/LibreOffice 近似一致?
-- Status: Open
-- 影響: 測試策略與 CI 環境 (需安裝 LibreOffice 與字型)。
-- 預設假設: 正確性以 Open XML 結構斷言 (slot 文字、slide 數、layout 對應) 為主; 視覺一致性以「PowerPoint 開啟無修復提示 + LibreOffice headless 轉 PDF 成功」為 PoC 驗收, 像素級回歸測試延後。
-- 需決定於: M0 PoC 結束時。
+- Status: Decided — 正確性以 Open XML 結構斷言 (slot 文字、slide 數、layout 對應、`OpenXmlValidator`、正規化 snapshot; 不需 Office) 為主; 可編輯性以 PowerPoint 開啟 / 編輯 / 另存 / 重開 (`tools/poc/run-poc-checks.ps1`) 驗證; 視覺以人工檢視 PowerPoint 匯出的 PNG。不做跨檢視器 (LibreOffice 等) 驗證, 移至 backlog (觸發條件: 收件人使用非 PowerPoint 檢視器, 或 M4 需要 Linux CI 轉檔檢查); 像素級回歸測試延後。決策者: 使用者 (2026-11-11; 結果見 [pptx-poc-report.md](plans/pptx-poc-report.md))。
+- 影響: 測試策略; CI 不需安裝 Office 或 LibreOffice。
 
 ### OQ-11 是否有授權預算使用商業 PPTX Library, 或只能使用 OSS?
 - Status: Open

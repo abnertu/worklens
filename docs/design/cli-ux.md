@@ -13,14 +13,14 @@
 | `worklens init [--workspace <dir>]` | — | `worklens.json` 範本 | M3 |
 | `worklens collect --period <yyyy-MM> [--source <id>...]` | `worklens.json`、token 環境變數 | `evidence.json` | M1 |
 | `worklens evidence digest` | `evidence.json` | `digest.json` | M2 |
-| `worklens report validate [--report <file>] [--strict]` | `report.json`、`evidence.json` | 驗證結果 | 骨架為 stub; M0 |
+| `worklens report validate [--report <file>] [--evidence <file>] [--strict]` | `report.json`、`evidence.json` | 驗證結果 | M0 |
 | `worklens report rebind` | `report.json`、新的 `evidence.json` | 更新 `report.json` 的 `evidence_document` (所有參照仍存在時) | M3 |
-| `worklens present [--manifest <file>]` | `report.json`、`evidence.json`、manifest | `presentation.json` | M0 |
-| `worklens render [--template <pptx>] [--output <file>]` | `presentation.json`、manifest、模板 | `.pptx` | M0 |
+| `worklens present --manifest <file> [--strict]` | `report.json`、`evidence.json`、manifest | `presentation.json` | M0 |
+| `worklens render --manifest <file> [--template <pptx>] [--output <file>]` | `presentation.json`、manifest、模板 | `.pptx` | M0 |
 | `worklens report generate --period <yyyy-MM> ...` | — | 依序執行 present + render (不含 agent 步驟) | M3 |
 | `worklens status` | 工作目錄 | 各檔案存在 / 過期 (stale) 狀態與建議的下一步 | M3 |
 
-v0.1 骨架: `--version` 與 `schema list` 可用; `collect`、`evidence digest`、`report validate`、`present`、`render` 已註冊但回 exit code **10** (not implemented)。Stub 命令**沒有必填參數**且接受任何參數 (例 `collect --period 2026-10 --json`), 以確保回 10 而不是解析錯誤 1。
+M0 (現況): `--version`、`schema list`、`schema show`、`report validate`、`present`、`render` 可用; `collect`、`evidence digest` 已註冊但回 exit code **10** (`command.not_implemented`)。Stub 命令**沒有必填參數**且接受任何參數 (例 `collect --period 2026-10 --json`), 以確保回 10 而不是解析錯誤 1。
 
 交接文件 §5.4 的概念命令 `worklens report generate --period ... --author ... --template ... --output ...` 對應到 M3 的便利命令; 由於分析由 agent 執行, 它只負責 agent 完成 `report.json` 之後的步驟。
 
@@ -34,6 +34,23 @@ v0.1 骨架: `--version` 與 `schema list` 可用; `collect`、`evidence digest`
 | `--dry-run` | 只顯示將執行的動作 (要呼叫的 API、要寫入的檔案), 不發出網路請求、不寫檔 |
 | `--verbose` | stderr 輸出詳細日誌 (仍經過脫敏) |
 | `--no-color` | 停用色彩; 非 TTY 時自動停用 |
+
+### 2.1 M0 實際提供的選項
+
+M0 只實作下列選項; `--config`、`--dry-run`、`--verbose`、`--no-color` 與 `worklens.json` 於 M3 起提供。
+
+| 命令 | 選項 |
+|---|---|
+| `report validate` | `--workspace`、`--report`、`--evidence`、`--strict`、`--json` |
+| `present` | `--workspace`、`--report`、`--evidence`、`--manifest`、`--output`、`--strict`、`--json` |
+| `render` | `--workspace`、`--presentation`、`--manifest`、`--template`、`--output`、`--json` |
+| `schema show <name>[:<version>]` | 無 (stdout 為 schema 原文位元組; 不認得的名稱或版本 → stderr `schema.not_found`, exit 1) |
+
+- `--workspace <dir>` 預設為目前目錄; 檔名 `report.json`、`evidence.json`、`presentation.json`、`report.pptx`, 各由 `--report` / `--evidence` / `--presentation` / `--output` 覆寫。其他相對路徑以目前目錄解析。
+- `--manifest` 在 M0 必須提供, 未提供 → exit 3 `config.missing_manifest` (M3 從 `worklens.json` 取預設)。`--template` 預設為 manifest 的 `template.file` (相對於 manifest 所在目錄)。
+- `report validate` 與 `present` 都需要 evidence 檔; `present` 先執行與 `report validate` 相同的驗證。
+- 輸出一律原子寫入 (同目錄暫存檔 + rename); 失敗時不留下暫存檔, 也不覆寫既有輸出。
+- 讀檔以位元組讀入: SHA-256 對原始位元組計算, 解析前去除 UTF-8 BOM。JSON 輸出為 UTF-8 無 BOM、LF、結尾換行。
 
 ## 3. 設定
 
@@ -135,10 +152,31 @@ stdout 恰好一個 JSON 物件, 結尾換行:
 }
 ```
 
-- `issues`: 驗證問題 (欄位同 [domain-model.md §7](domain-model.md) 的 `ValidationIssue`)。
+- `issues`: 驗證問題 (欄位同 [domain-model.md §7](domain-model.md) 的 `ValidationIssue`)。`schema_path` 只有 `schema.*` issue 有值 (JSON Schema evaluation path); 其他 issue 輸出 `null` (欄位一律存在)。
 - `error`: 非驗證類的失敗 `{ "code", "message", "details" }`, 例如 `config.missing_token`、`source.rate_limited`、`command.not_implemented`。
 - `message` 為英文 (穩定, 便於 agent 比對); 人類可讀模式可本地化。
 - 日誌與進度在 `--json` 模式下只寫 stderr。
+
+### 5.3 M0 的 code
+
+| Code | 出現位置 | Exit |
+|---|---|---|
+| `json.invalid` | 輸入不是有效 JSON (report / presentation 為 issue; evidence / manifest 包在 `input.invalid` 內) | 2 (report、presentation) / 3 |
+| `json.deserialize_failed` | schema 通過但無法轉成 C# 模型 (例 `rank` 超出 int) | 同上 |
+| `schema.*` | JSON Schema 違規 (`schema.required`、`schema.additionalProperties`、`schema.type`、`schema.unsupported_version` 等) | 同上 |
+| `ref.*`、`rule.*` | Report IR 參照完整性 (error) 與 domain 規則 (warning), 見 domain-model §3.2 | 2 (`rule.*` 只在 `--strict` 時) |
+| `presentation.*` | presentation 與 manifest 不一致: `template_mismatch`、`unknown_layout`、`unknown_slot`、`slot_kind_mismatch`、`missing_required_slot`、`table_row_width`、`invalid_character` | 2 |
+| `input.not_found` | 輸入檔 (含模板) 不存在 | 3 |
+| `input.unreadable` | 輸入檔存在但讀取失敗 (IO 錯誤、權限) | 3 |
+| `input.invalid` | evidence / manifest 不是有效 JSON 或不符合 schema (`issues` 附上原因) | 3 |
+| `config.missing_manifest` | `present` / `render` 未給 `--manifest` | 3 |
+| `manifest.invalid` | Layout Resolver 回報 manifest 問題; `issues` 含 `manifest.unknown_layout`、`manifest.purpose_mismatch`、`manifest.slot_mismatch` | 3 |
+| `template.invalid` | Renderer 回報模板問題; `issues` 含 `template.sha256_mismatch`、`template.unreadable`、`template.layout_missing`、`template.placeholder_missing`、`template.placeholder_position_missing` | 3 |
+| `output.write_failed` | 輸出目錄不存在或目標檔被鎖定 (例如在 PowerPoint 中開啟) | 3 |
+| `schema.not_found` | `schema show` 不認得的名稱或版本 (stderr) | 1 |
+| `command.usage_error` | 參數解析錯誤 (`--json` 時仍輸出 envelope) | 1 |
+| `command.not_implemented` | stub 命令 | 10 |
+| `command.internal_error` | 未預期的例外 (`--json` 時仍輸出 envelope) | 70 |
 
 `schema list --json` 的 `result`:
 

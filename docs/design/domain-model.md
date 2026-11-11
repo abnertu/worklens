@@ -77,7 +77,7 @@ ReportDocument
 │   ├── observed_facts[]   { statement, evidence_refs[≥1] } — 可由證據直接驗證的事實
 │   ├── agent_inference?   { statement, confidence: low|medium|high } — 推論 (例如影響)
 │   ├── evidence_refs[]    ev-...; origin = agent 時 ≥ 1
-│   ├── rank?              ≥ 1, 越小越重要; 未給則依陣列順序
+│   ├── rank?              ≥ 1, 越小越重要; 未給的排在所有有 rank 的項目之後; 同值 (含都未給) 依陣列順序
 │   ├── human_notes?       人工補充
 │   └── review_status?     pending | approved | rejected (預設 pending)
 └── narratives[]  Narrative
@@ -103,7 +103,7 @@ ReportDocument
 
 ### 3.2 驗證規則
 
-`worklens report validate` 依序執行, 回傳所有問題 (不在第一個錯誤停止):
+`worklens report validate` 依下表的層級依序執行; 同一層內回報全部問題, 前一層有 error 時不執行後續層 (例: schema 有 error 時不反序列化; 參照層有 error 時不執行規則層)。最前面另有兩個停止條件: JSON 解析失敗 → `json.invalid` (`instance_path` = `""`); 根節點不是 object → `schema.type`; `schema_version` 缺少、不是字串或不是內建版本 → `schema.unsupported_version` (`/schema_version`)。Schema 通過但反序列化失敗 (例 `rank` 超出 int) → `json.deserialize_failed` (`instance_path` 指向該欄位)。
 
 | 層級 | code | 嚴重度 | 規則 |
 |---|---|---|---|
@@ -112,10 +112,10 @@ ReportDocument
 | 參照 | `ref.evidence_missing` | error | `evidence_refs` 中的 ID 不存在於 Evidence IR |
 | 參照 | `ref.duplicate_id` | error | `work_items` / `narratives` 的 `id` 重複 |
 | 規則 | `rule.completed_without_merged_change` | warning | `status: completed`、`origin: agent`, 引用的證據中沒有 `state: merged` 的 change_request, 且 `review_status` 不是 `approved` (只有 commit 不足以判定完成; 需人工確認後設 `approved`) |
-| 規則 | `rule.evidence_outside_period` | warning | 引用的證據 `occurred_at` 不在 `period` 內 |
-| 規則 | `rule.unreferenced_numeric_claim` | warning | `summary` / `agent_inference.statement` 含百分比或倍數, 但該 work item 無 `observed_facts` 支持 (啟發式, M0 定義 pattern) |
+| 規則 | `rule.evidence_outside_period` | warning | 引用的證據 `occurred_at` 不在 `period` 的 `[start, end)` 內 (`instance_path` 指向該 ref) |
+| 規則 | `rule.unreferenced_numeric_claim` | warning | `summary` / `agent_inference.statement` 含百分比或倍數, 但該 work item 無 `observed_facts` 支持 (啟發式; pattern `\d+(?:\.\d+)?\s*(?:%\|％\|倍\|x\b\|×)`) |
 
-v0.1 骨架只實作 **Schema** 層 (`IrSchemaValidator`, 對原始 JSON 驗證); `IReportValidator` (先 schema、再反序列化、再參照與規則) 於 M0 實作。Schema 驗證必須在反序列化之前, 因為 C# models 拒絕未定義欄位, 反序列化會直接失敗而得不到 `schema.additionalProperties`。warning 不影響 exit code (除非 `--strict`)。
+Schema 層由 `IrSchemaValidator` 對原始 JSON 驗證; `ReportValidator : IReportValidator` (M0) 組合各層。evidence 為 null 時略過參照與規則層。Schema 驗證必須在反序列化之前, 因為 C# models 拒絕未定義欄位, 反序列化會直接失敗而得不到 `schema.additionalProperties`。warning 不影響 exit code (除非 `--strict`)。
 
 ## 4. Presentation IR (`urn:worklens:schema:presentation-ir:1.0`)
 
@@ -174,7 +174,14 @@ TemplateManifest
 
 所有 IR 中的 `sha256` 欄位 (`evidence_document.sha256`、`source_report.sha256`、`template.sha256`) 一律是被參照檔案「寫出時的位元組」的 SHA-256 (小寫 hex), 不做任何正規化。
 
-Layout Resolver 規則 (M0 實作): 依 `sequence` 產生 slides; `work_item_details` 對每個 `review_status != rejected` 的 work item 依 `rank` 產生一頁; 內容超過 `max_items` 且 `overflow: split` 時複製同 layout 拆頁並設定 `continuation`; `truncate` 時截斷並設 `truncated: true`。同樣輸入必定得到同樣輸出。
+Layout Resolver 規則 (M0, `WorkLens.Core.Layout.LayoutResolver`, 純函式; 同樣輸入必定得到位元組相同的輸出):
+
+- 依 `sequence` 產生 slides (`slide-001` 起); `layout_id` 不存在 → `manifest.unknown_layout`; section 與 layout `purpose` 不對應 → `manifest.purpose_mismatch`; layout 缺少必要 slot 或 kind 不符 → `manifest.slot_mismatch` (CLI exit 3, `manifest.invalid`)。
+- 每個 purpose 的 slot id 慣例: cover `title` (`labels.cover_title`, `{period}`)、`subtitle` (`subject.display_name`); summary `title`、`highlights` (bullets: 狀態統計 L0 + 活動統計 L1)、`activity` (table: repository、commit 數、merged change request 數); achievements `title`、`items` (table: 標題、狀態); work_item_detail `title` (work item 標題)、`facts` (bullets: facts L0 (無 facts 時用 `summary`) → 推論 L1 → 非 completed 的狀態 L1 → `human_notes` L1); narrative `title`、`body` (該 kind 的 narratives, L0); closing `title`。未列出的 slot 不綁定; 選填 slot 無內容時不綁定。narrative 與 achievements 無內容時不產生該 slide。
+- 統計只計 `occurred_at ∈ [period.start, period.end)` 且無 `duplicate` flag 的證據; 排除 `review_status: rejected` 的 work item; 順序依 `rank` (見 §3)。
+- Overflow: 文字超過 `max_chars` → 截為 `max_chars - 1` 個 text element + `…`; 超過 `max_items` → `overflow: split` 且為流動 slot (`facts`、`body`、`items`) 時拆成多頁並設 `continuation` (標題不變), 其他情況截斷; 有截斷的 SlotValue 設 `truncated: true`。
+- 所有輸出文字移除 XML 1.0 不允許的字元, 讓 resolver 產出的 presentation 必定可渲染。
+- 固定文字取自 `labels` (`{name}` 單次代入, 代入值內的大括號不展開), 未提供時用英文預設。容量值以 PowerPoint 實測校正 ([pptx-poc-report.md](../plans/pptx-poc-report.md) P5)。
 
 ## 6. Evidence Digest (agent 輸入, 非正式 IR)
 
@@ -214,13 +221,14 @@ public interface IAnalysisModule
 
 public interface IReportValidator
 {
-    // 對原始 JSON 驗證 (先 schema), 再以 evidence 與其 SHA-256 檢查參照與規則。
-    ValidationResult Validate(JsonElement report, EvidenceDocument? evidence, string? evidenceSha256);
+    // 對原始 JSON 文字驗證 (解析、schema、反序列化), 再以 evidence 與其 SHA-256 檢查參照與規則。
+    ValidationResult Validate(string reportJson, EvidenceDocument? evidence, string? evidenceSha256);
 }
 
 public interface ILayoutResolver
 {
-    LayoutResult Resolve(ReportDocument report, EvidenceDocument evidence, TemplateManifest manifest);
+    // reportSha256: report 檔原始位元組的 SHA-256, 寫入 source_report。
+    LayoutResult Resolve(ReportDocument report, string reportSha256, EvidenceDocument evidence, TemplateManifest manifest);
 }
 
 public interface IOutputRenderer
@@ -251,12 +259,12 @@ public sealed record ValidationResult(IReadOnlyList<ValidationIssue> Issues)
 public sealed record WorkLensError(string Code, string Message, IReadOnlyDictionary<string, string>? Details = null);
 ```
 
-`SourceCollectResult`、`AnalysisResult`、`LayoutResult`、`RenderResult` 皆為「成功值 或 `WorkLensError` 清單」的形式, 於實作的 Milestone 定義細節。
+`SourceCollectResult`、`AnalysisResult`、`LayoutResult`、`RenderResult` 皆為「成功值 或 `WorkLensError` 清單」的形式。M0: `LayoutResult(PresentationDocument? Presentation, Errors)`、`RenderResult(string? OutputPath, Errors)`; error 的 `Details["path"]` 為 manifest 的 JSON Pointer (CLI 轉成 `issues`)。
 
 ### 7.1 版本契約
 
 - 每個 IR root record 公開 `public const string CurrentSchemaVersion = "1.0"` 與對應 `$id`。
-- 讀取時先讀 `schema_version`: 同 major 可讀; 不同 major 回 `schema.unsupported_version`, 不嘗試猜測 (migration 見 [schema-versioning.md](schema-versioning.md))。
+- 讀取時先讀 `schema_version`: 只接受內建的版本; 不是內建版本 (不同 major, 或比內建更新的 minor) 回 `schema.unsupported_version`, 不嘗試猜測 (migration 見 [schema-versioning.md](schema-versioning.md))。
 - Validator 依文件的 `schema_version` 選擇 schema, 不是依程式的最新版本。
 
 ### 7.2 DI

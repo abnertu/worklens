@@ -21,6 +21,8 @@ M0 與 M1 只透過 Evidence IR schema 相依, 可平行開發; 但 M0 的參照
 
 子計畫: `m0-pptx-poc`
 
+狀態: 實作完成 (2026-11-11); 結果見 [pptx-poc-report.md](pptx-poc-report.md)。`render` / `present` 在 M0 需要 `--manifest`; `worklens.json`、預設工作目錄、stale exit 5 與 `report rebind` 屬 M3。
+
 目標: 以手寫的 `report.json` / `evidence.json` 驗證 schema → layout → PPTX, 確認樣本模板可行。
 
 工作項目:
@@ -32,14 +34,14 @@ M0 與 M1 只透過 Evidence IR schema 相依, 可平行開發; 但 M0 的參照
 6. PoC 報告與 ADR-0006 結論。
 
 ### Acceptance
-- pptx-poc-plan.md 的 P1–P4、P7–P10 通過; P5、P6、P11 有記錄的結果。
+- pptx-poc-plan.md 的 P1–P4、P7–P10 通過; P5、P6 有記錄的結果; P11 記錄為不執行 (使用者決定不做跨檢視器驗證)。
 - `report validate` 對 `ref.evidence_missing`、`ref.duplicate_id`、`ref.evidence_document_mismatch` 各有測試; 所有 issue 都有正確的 `instance_path`。
 - 同一 `report.json` 執行 `present` 兩次, `presentation.json` 位元組完全相同。
 - Renderer 結構斷言測試在 CI 環境 (無 Office) 通過。
 
 ### Depends on
 - v0.1 規劃計畫 (本 repo 現況)。
-- OQ-10 (驗證標準) 的預設假設; OQ-11 只在 PoC 失敗時需要決定。
+- OQ-10 (驗證標準): 已決定 — 結構斷言 + PowerPoint 開啟 / 編輯 + 人工檢視 PNG; 跨檢視器驗證移至 backlog。OQ-11 只在 PoC 失敗時需要決定 (未發生)。
 
 測試策略: Layout Resolver 以 golden file 測試; Renderer 以 Open XML 讀回的結構斷言 + 正規化 JSON snapshot。
 風險: slide 複製與 placeholder 繼承 (見 pptx-poc-plan.md §5); 若 Open XML SDK 不足, ADR-0006 改提案替代方案, M0 延長。
@@ -131,7 +133,7 @@ M0 與 M1 只透過 Evidence IR schema 相依, 可平行開發; 但 M0 的參照
 目標: 穩定性、可發佈與後續自動化的前置作業。
 
 工作項目:
-1. Repo CI (build + test, 含 Renderer 結構斷言); 可選 LibreOffice 轉檔檢查。
+1. Repo CI (build + test, 含 Renderer 結構斷言); 跨檢視器 (LibreOffice 等) 轉檔檢查只在需要時加入 (pptx-poc-report P11)。
 2. 發佈形式: dotnet tool 或 self-contained 執行檔 (OQ-01)。
 3. 錯誤恢復: 中斷後重跑的行為、部分 source 失敗時的輸出 (`--continue-on-source-error`)。
 4. OS credential store 評估; 資料保留政策 (OQ-09)。
