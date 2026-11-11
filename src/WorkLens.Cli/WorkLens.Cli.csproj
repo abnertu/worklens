@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\WorkLens.Core\WorkLens.Core.csproj" />
+    <ProjectReference Include="..\WorkLens.Rendering.Pptx\WorkLens.Rendering.Pptx.csproj" />
   </ItemGroup>
 
 </Project>

@@ -291,7 +291,14 @@ public sealed class LayoutResolver : ILayoutResolver
         return items.Chunk(max).Select(c => (c.Select(i => i.Item).ToList(), c.Any(i => i.Truncated))).ToList();
     }
 
-    /// <summary>Removes characters that XML 1.0 does not allow (control characters, lone surrogates, U+FFFE/U+FFFF).</summary>
+    /// <summary>Whether <paramref name="text"/> has a character that XML 1.0 does not allow.</summary>
+    internal static bool ContainsInvalidXmlCharacter(string text) =>
+        !ReferenceEquals(RemoveInvalidXmlCharacters(text), text);
+
+    /// <summary>
+    /// Removes characters that XML 1.0 does not allow (control characters, lone surrogates, U+FFFE/U+FFFF). Returns the
+    /// same instance when nothing was removed.
+    /// </summary>
     internal static string RemoveInvalidXmlCharacters(string text)
     {
         StringBuilder? builder = null;

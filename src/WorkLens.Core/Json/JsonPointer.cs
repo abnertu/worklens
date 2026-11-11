@@ -44,9 +44,12 @@ public static class JsonPointer
                 break;
             }
 
-            builder.Append('/').Append(segment.Replace("~", "~0").Replace("/", "~1"));
+            builder.Append('/').Append(Escape(segment));
         }
 
         return builder.ToString();
     }
+
+    /// <summary>Escapes one reference token (<c>~</c> → <c>~0</c>, <c>/</c> → <c>~1</c>).</summary>
+    public static string Escape(string token) => token.Replace("~", "~0").Replace("/", "~1");
 }

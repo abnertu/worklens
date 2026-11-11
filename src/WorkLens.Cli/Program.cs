@@ -82,7 +82,7 @@ public static class Program
         root.Subcommands.Add(report);
 
         root.Subcommands.Add(PresentCommand.Create());
-        root.Subcommands.Add(Stub("render", "Render presentation.json into a .pptx file."));
+        root.Subcommands.Add(RenderCommand.Create());
 
         return root;
     }
