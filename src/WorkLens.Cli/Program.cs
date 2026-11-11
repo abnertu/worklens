@@ -1,8 +1,6 @@
 using System.CommandLine;
 using System.Text;
-using System.Text.Json;
 using System.Text.Json.Nodes;
-using WorkLens.Core.Json;
 using WorkLens.Core.Schemas;
 
 namespace WorkLens.Cli;
@@ -22,21 +20,43 @@ public static class ExitCodes
 
 public static class Program
 {
-    private const string OutputVersion = "1";
-
     public static int Main(string[] args)
     {
         Console.OutputEncoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
+        var json = args.Contains("--json", StringComparer.Ordinal);
+        var command = string.Empty;
         try
         {
+            var parse = BuildRootCommand().Parse(args);
+            command = CommandName(parse.CommandResult);
+
+            // With --json, a parse error is still one envelope on stdout (parent backlog B5).
+            if (json && parse.Errors.Count > 0)
+            {
+                CliOutput.WriteFailure(
+                    command,
+                    ExitCodes.Usage,
+                    "command.usage_error",
+                    string.Join(" ", parse.Errors.Select(e => e.Message)));
+                return ExitCodes.Usage;
+            }
+
             // Disable System.CommandLine's handler so exceptions from actions reach the catch below
             // and map to ExitCodes.Internal instead of 1 (which means a usage error).
             var configuration = new InvocationConfiguration { EnableDefaultExceptionHandler = false };
-            return BuildRootCommand().Parse(args).Invoke(configuration);
+            return parse.Invoke(configuration);
         }
         catch (Exception ex)
         {
-            Console.Error.WriteLine($"internal error: {ex.Message}");
+            if (json)
+            {
+                CliOutput.WriteFailure(command, ExitCodes.Internal, "command.internal_error", ex.Message);
+            }
+            else
+            {
+                Console.Error.WriteLine($"internal error: {ex.Message}");
+            }
+
             return ExitCodes.Internal;
         }
     }
@@ -46,11 +66,8 @@ public static class Program
         var root = new RootCommand("WorkLens - evidence-backed work reports for agent CLIs.");
 
         var schema = new Command("schema", "Inspect built-in JSON Schemas.");
-        var schemaList = new Command("list", "List built-in schema ids.");
-        var schemaListJson = JsonOption();
-        schemaList.Options.Add(schemaListJson);
-        schemaList.SetAction(parse => ListSchemas(parse.GetValue(schemaListJson)));
-        schema.Subcommands.Add(schemaList);
+        schema.Subcommands.Add(SchemaCommands.List());
+        schema.Subcommands.Add(SchemaCommands.Show());
         root.Subcommands.Add(schema);
 
         // Registered stubs: no required options, so a bare invocation returns NotImplemented, not a parse error.
@@ -61,7 +78,7 @@ public static class Program
         root.Subcommands.Add(evidence);
 
         var report = new Command("report", "Work with Report IR.");
-        report.Subcommands.Add(Stub("validate", "Validate report.json against schema and evidence.", "report validate"));
+        report.Subcommands.Add(ReportCommands.Validate());
         root.Subcommands.Add(report);
 
         root.Subcommands.Add(Stub("present", "Resolve report.json into presentation.json using a template manifest."));
@@ -70,29 +87,31 @@ public static class Program
         return root;
     }
 
-    private static Option<bool> JsonOption() => new("--json") { Description = "Write a single JSON object to stdout." };
+    internal static Option<bool> JsonOption() => new("--json") { Description = "Write a single JSON object to stdout." };
 
-    private static int ListSchemas(bool json)
+    internal static Option<string?> WorkspaceOption() => new("--workspace")
     {
-        if (json)
-        {
-            var schemas = new JsonArray();
-            foreach (var info in IrSchemaCatalog.All)
-            {
-                schemas.Add(new JsonObject { ["id"] = info.Id, ["name"] = info.Name, ["version"] = info.Version });
-            }
+        Description = "Directory that holds the default input and output files (default: current directory).",
+    };
 
-            WriteJson(Envelope("schema list", ExitCodes.Success, new JsonObject { ["schemas"] = schemas }, error: null));
-        }
-        else
+    internal static Option<string?> FileOption(string name, string defaultFileName) => new(name)
+    {
+        Description = $"File path (default: <workspace>/{defaultFileName}).",
+    };
+
+    internal static Option<bool> StrictOption() => new("--strict") { Description = "Treat warnings as errors (exit 2)." };
+
+    /// <summary>Full command name without the root, e.g. <c>report validate</c>.</summary>
+    private static string CommandName(System.CommandLine.Parsing.CommandResult? result)
+    {
+        var names = new List<string>();
+        while (result is not null && result.Command is not RootCommand)
         {
-            foreach (var info in IrSchemaCatalog.All)
-            {
-                Console.Out.WriteLine(info.Id);
-            }
+            names.Insert(0, result.Command.Name);
+            result = result.Parent as System.CommandLine.Parsing.CommandResult;
         }
 
-        return ExitCodes.Success;
+        return string.Join(' ', names);
     }
 
     private static Command Stub(string name, string description, string? fullName = null)
@@ -105,36 +124,63 @@ public static class Program
         var json = JsonOption();
         command.Options.Add(json);
         var commandName = fullName ?? name;
-        command.SetAction(parse =>
+        command.SetAction(parse => CliOutput.Run(commandName, parse.GetValue(json), _ =>
+            throw new CliException(
+                ExitCodes.NotImplemented,
+                "command.not_implemented",
+                $"'{commandName}' is not implemented in WorkLens v0.1.")));
+        return command;
+    }
+}
+
+internal static class SchemaCommands
+{
+    public static Command List()
+    {
+        var command = new Command("list", "List built-in schema ids.");
+        var json = Program.JsonOption();
+        command.Options.Add(json);
+        command.SetAction(parse => CliOutput.Run("schema list", parse.GetValue(json), output =>
         {
-            const string code = "command.not_implemented";
-            var message = $"'{commandName}' is not implemented in WorkLens v0.1.";
-            if (parse.GetValue(json))
+            var schemas = new JsonArray();
+            foreach (var info in IrSchemaCatalog.All)
             {
-                var error = new JsonObject { ["code"] = code, ["message"] = message, ["details"] = null };
-                WriteJson(Envelope(commandName, ExitCodes.NotImplemented, result: null, error));
-            }
-            else
-            {
-                Console.Error.WriteLine($"{code}: {message}");
+                schemas.Add(new JsonObject { ["id"] = info.Id, ["name"] = info.Name, ["version"] = info.Version });
+                output.Lines.Add(info.Id);
             }
 
-            return ExitCodes.NotImplemented;
-        });
+            output.Result = new JsonObject { ["schemas"] = schemas };
+            return ExitCodes.Success;
+        }));
         return command;
     }
 
-    private static JsonObject Envelope(string command, int exitCode, JsonObject? result, JsonObject? error) => new()
+    /// <summary><c>schema show &lt;name&gt;[:&lt;version&gt;]</c>: writes the built-in schema bytes unchanged to stdout.</summary>
+    public static Command Show()
     {
-        ["output_version"] = OutputVersion,
-        ["command"] = command,
-        ["ok"] = exitCode == ExitCodes.Success,
-        ["exit_code"] = exitCode,
-        ["result"] = result,
-        ["issues"] = new JsonArray(),
-        ["error"] = error,
-    };
+        var command = new Command("show", "Print a built-in schema, e.g. 'report-ir' or 'report-ir:1.0'.");
+        var name = new Argument<string>("name") { Description = "Schema name, optionally with ':<version>'." };
+        command.Arguments.Add(name);
+        command.SetAction(parse =>
+        {
+            var value = parse.GetValue(name)!;
+            var separator = value.IndexOf(':', StringComparison.Ordinal);
+            var schemaName = separator < 0 ? value : value[..separator];
+            var version = separator < 0 ? null : value[(separator + 1)..];
+            var info = IrSchemaCatalog.FindByName(schemaName);
+            if (info is null || (version is not null && version != info.Version))
+            {
+                var known = string.Join(", ", IrSchemaCatalog.All.Select(i => $"{i.Name}:{i.Version}"));
+                Console.Error.WriteLine($"schema.not_found: No built-in schema '{value}'. Built-in schemas: {known}.");
+                return ExitCodes.Usage;
+            }
 
-    private static void WriteJson(JsonNode node) =>
-        Console.Out.WriteLine(node.ToJsonString(WorkLensJson.Options));
+            Console.Out.Flush();
+            using var stdout = Console.OpenStandardOutput();
+            stdout.Write(WorkLensSchemaRegistry.Default.GetBytes(info.Id).Span);
+            stdout.Flush();
+            return ExitCodes.Success;
+        });
+        return command;
+    }
 }

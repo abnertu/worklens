@@ -14,6 +14,7 @@ public sealed class WorkLensSchemaRegistry
 
     private readonly Dictionary<string, JsonSchema> _schemas = new(StringComparer.Ordinal);
     private readonly Dictionary<string, string> _texts = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, byte[]> _bytes = new(StringComparer.Ordinal);
 
     private WorkLensSchemaRegistry()
     {
@@ -21,7 +22,9 @@ public sealed class WorkLensSchemaRegistry
         var buildOptions = new BuildOptions { SchemaRegistry = registry };
         foreach (var info in IrSchemaCatalog.All)
         {
-            var text = ReadResource(info.ResourceName);
+            var bytes = ReadResource(info.ResourceName);
+            _bytes[info.Id] = bytes;
+            var text = new StreamReader(new MemoryStream(bytes)).ReadToEnd();
             _texts[info.Id] = text;
             _schemas[info.Id] = JsonSchema.FromText(text, buildOptions);
         }
@@ -39,13 +42,20 @@ public sealed class WorkLensSchemaRegistry
             ? text
             : throw new ArgumentException($"Unknown schema id '{schemaId}'.", nameof(schemaId));
 
-    private static string ReadResource(string resourceName)
+    /// <summary>The schema file exactly as shipped (byte-identical to the file under <c>schemas/</c>).</summary>
+    public ReadOnlyMemory<byte> GetBytes(string schemaId) =>
+        _bytes.TryGetValue(schemaId, out var bytes)
+            ? bytes
+            : throw new ArgumentException($"Unknown schema id '{schemaId}'.", nameof(schemaId));
+
+    private static byte[] ReadResource(string resourceName)
     {
         var assembly = typeof(WorkLensSchemaRegistry).Assembly;
         using var stream = assembly.GetManifestResourceStream(resourceName)
             ?? throw new InvalidOperationException(
                 $"Embedded schema '{resourceName}' not found in {assembly.GetName().Name}.");
-        using var reader = new StreamReader(stream);
-        return reader.ReadToEnd();
+        using var buffer = new MemoryStream();
+        stream.CopyTo(buffer);
+        return buffer.ToArray();
     }
 }
