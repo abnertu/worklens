@@ -3,7 +3,7 @@
   "presentation_id": "prs-2026-10-example-user",
   "source_report": {
     "report_id": "rpt-2026-10-example-user",
-    "sha256": "a3c5e7f9b1d3f5a7c9e1b3d5f7a9c1e3b5d7f9a1c3e5b7d9f1a3c5e7b9d1f3a5"
+    "sha256": "1fd403d56c9c585fdd7fdbba64a2fbf9b3eef8ac71887bd703d5e8fdc4ebd497"
   },
   "template": {
     "id": "sample-monthly",
@@ -111,6 +111,59 @@
     },
     {
       "id": "slide-004",
+      "layout_id": "achievement_detail_v1",
+      "bindings": {
+        "title": {
+          "kind": "text",
+          "text": "修正新台幣發票進位"
+        },
+        "facts": {
+          "kind": "bullets",
+          "items": [
+            {
+              "text": "Commit 將 TWD 進位改為四捨五入 (half away from zero)。",
+              "level": 0
+            },
+            {
+              "text": "(狀態: 待確認) 是否已部署無證據, 待人工確認。",
+              "level": 1
+            }
+          ]
+        }
+      },
+      "source_refs": [
+        "wi-billing-rounding-fix",
+        "ev-3c4d5e6f7a8b9c0d"
+      ]
+    },
+    {
+      "id": "slide-005",
+      "layout_id": "achievement_detail_v1",
+      "bindings": {
+        "title": {
+          "kind": "text",
+          "text": "新進同仁 Onboarding"
+        },
+        "facts": {
+          "kind": "bullets",
+          "items": [
+            {
+              "text": "協助兩位新進同仁完成開發環境建置與 code review 流程。",
+              "level": 0
+            },
+            {
+              "text": "(人工補充) 非 Git 活動。",
+              "level": 1
+            }
+          ]
+        }
+      },
+      "source_refs": [
+        "wi-onboarding-mentoring"
+      ]
+    },
+    {
+      "id": "slide-006",
       "layout_id": "narrative_v1",
       "bindings": {
         "title": {
@@ -132,7 +185,7 @@
       ]
     },
     {
-      "id": "slide-005",
+      "id": "slide-007",
       "layout_id": "narrative_v1",
       "bindings": {
         "title": {

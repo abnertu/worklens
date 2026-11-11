@@ -6,7 +6,7 @@
 
 ## 1. 範圍
 
-**輸入**: 手寫的 `report.json` + `evidence.json` (沿用 `schemas/*/1.0/examples/valid/`, 再加上壓力案例), 樣本模板 `templates/sample-monthly/sample-monthly.pptx` 與 `manifest.json`。
+**輸入**: 手寫的 `report.json` + `evidence.json` (沿用 `schemas/*/1.0/examples/valid/`; 其 sha256 綁定與 slide 結構彼此一致, 可作為 Layout Resolver 的 golden file, 再加上壓力案例), 樣本模板 `templates/sample-monthly/sample-monthly.pptx` 與 `manifest.json`。
 **輸出**: `presentation.json` (Layout Resolver) 與 `report.pptx` (Renderer)。
 **不在範圍**: GitHub/GitLab 擷取、agent、圖表 (chart)、圖片、動畫、SmartArt。
 
@@ -20,7 +20,7 @@
 | Layout `Title Slide` | title (idx 0)、subtitle (idx 1) | 一般 placeholder 填值 |
 | Layout `Title and Content` | title、body (多層級項目符號) | bullets 與 level; 自動縮排 |
 | Layout `Title and Table` | title、表格 placeholder | 表格建立、欄寬、表頭樣式 |
-| Layout `Two Content` | title、左右兩個 body | 依 `name` 而非 `idx` 找 placeholder |
+| Layout `Two Content` | title、左右兩個 content placeholder (`Content Placeholder 2` / `Content Placeholder 3`); summary 頁左側放 bullets、右側放表格 | 依 `name` 而非 `idx` 找 placeholder; 在 content placeholder 中建立表格 |
 | 主題字型 | 拉丁: Calibri; 東亞: Microsoft JhengHei (微軟正黑體) | 中文字型套用與替代 |
 | 範例 slides | 每個 layout 一頁「示範」 | 渲染後必須移除, 不留在輸出 |
 

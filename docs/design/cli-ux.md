@@ -14,12 +14,13 @@
 | `worklens collect --period <yyyy-MM> [--source <id>...]` | `worklens.json`、token 環境變數 | `evidence.json` | M1 |
 | `worklens evidence digest` | `evidence.json` | `digest.json` | M2 |
 | `worklens report validate [--report <file>] [--strict]` | `report.json`、`evidence.json` | 驗證結果 | 骨架為 stub; M0 |
+| `worklens report rebind` | `report.json`、新的 `evidence.json` | 更新 `report.json` 的 `evidence_document` (所有參照仍存在時) | M3 |
 | `worklens present [--manifest <file>]` | `report.json`、`evidence.json`、manifest | `presentation.json` | M0 |
 | `worklens render [--template <pptx>] [--output <file>]` | `presentation.json`、manifest、模板 | `.pptx` | M0 |
 | `worklens report generate --period <yyyy-MM> ...` | — | 依序執行 present + render (不含 agent 步驟) | M3 |
 | `worklens status` | 工作目錄 | 各檔案存在 / 過期 (stale) 狀態與建議的下一步 | M3 |
 
-v0.1 骨架: `--version` 與 `schema list` 可用; `collect`、`evidence digest`、`report validate`、`present`、`render` 已註冊但回 exit code **10** (not implemented)。Stub 命令**沒有必填參數**, 以確保 `worklens collect` 不帶參數也回 10 而不是解析錯誤 1。
+v0.1 骨架: `--version` 與 `schema list` 可用; `collect`、`evidence digest`、`report validate`、`present`、`render` 已註冊但回 exit code **10** (not implemented)。Stub 命令**沒有必填參數**且接受任何參數 (例 `collect --period 2026-10 --json`), 以確保回 10 而不是解析錯誤 1。
 
 交接文件 §5.4 的概念命令 `worklens report generate --period ... --author ... --template ... --output ...` 對應到 M3 的便利命令; 由於分析由 agent 執行, 它只負責 agent 完成 `report.json` 之後的步驟。
 
@@ -53,7 +54,12 @@ v0.1 骨架: `--version` 與 `schema list` 可用; `collect`、`evidence digest`
     { "id": "gl-billing", "platform": "gitlab", "base_url": "https://gitlab.example.com/api/v4", "repository": "platform/billing", "token_env": "WORKLENS_GITLAB_TOKEN_CORP" }
   ],
   "exclude": { "bots": true, "merge_commits": true, "paths": ["**/*.lock"] },
-  "digest": { "include_diff": false, "max_body_chars": 1000, "path_depth": 3, "redaction": "default" },
+  "digest": {
+    "include_diff": false,
+    "max_body_chars": 1000,
+    "path_depth": 3,
+    "redaction": { "mode": "default", "patterns": [ { "match": "Acme Corp", "replace": "[customer]" } ] }
+  },
   "report": { "template_manifest": "templates/sample-monthly/manifest.json" }
 }
 ```
@@ -173,6 +179,7 @@ description: 使用 WorkLens 產生具證據的工作月報 (GitHub/GitLab → P
 # 流程
 1. `worklens collect --period <yyyy-MM> --json`。exit 3 → 告知使用者缺少的設定或 token, 停止。
 2. `worklens evidence digest --json`, 讀取 result.files.digest 指向的 digest.json。
+   - Report IR 的 evidence_document 直接複製 digest 中的 evidence_document (document_id 與 sha256)。
 3. `worklens schema show report-ir` 取得 Report IR schema。
 4. 依 digest 撰寫 report.json:
    - 依主題把證據分組成 work_items; 每個 agent 產生的 work item 至少引用一個 evidence ID。

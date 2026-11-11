@@ -36,7 +36,7 @@
 - 只在 major 變更時提供, 形式為 `worklens migrate <file> --to <name>:<major.minor>` (M4 以後, 有第一個 major 變更時才實作)。
 - 每個 migration 是純函式 `JsonNode → JsonNode`, 一次只升一個 major, 以 valid 範例的前後對照測試。
 - **Report IR 的 migration 必須保留人工內容** (`human_notes`、`origin: human` 的項目、`review_status`)。無法自動對應的欄位寫入 migration 報告, 不默默丟棄。
-- Evidence IR 可以選擇重新 `collect` 取代 migration (穩定 ID 保證 Report IR 參照仍有效)。
+- Evidence IR 可以選擇重新 `collect` 取代 migration; 穩定 ID 讓 Report IR 的參照通常仍有效, 之後以 `worklens report rebind` 更新 Report IR 的 `evidence_document` 綁定 (所有參照都存在時才改寫, [domain-model.md §3.2](domain-model.md#32-驗證規則))。
 - Presentation IR 不需 migration: 從 Report IR 重新 `present` 即可。
 
 ## 5. Canonical JSON 形式

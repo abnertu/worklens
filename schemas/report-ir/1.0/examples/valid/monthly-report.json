@@ -7,12 +7,17 @@
     "end": "2026-10-31T16:00:00+00:00",
     "timezone": "Asia/Taipei"
   },
-  "subject": { "display_name": "Example User" },
+  "subject": {
+    "display_name": "Example User"
+  },
   "evidence_document": {
     "document_id": "evd-2026-10-3f9a1c2b",
-    "sha256": "5f2b0c8e3d9a7f1b6c4e2a0d8f6b4c2e0a9d7f5b3c1e9a7d5f3b1c9e7a5d3f1b"
+    "sha256": "7a407feb07a44ebaacfc8c9d1a670e3dd2d5b03c4369b8446a241ec5b5c96a75"
   },
-  "analysis": { "agent": "claude-code", "notes": "Grouped by repository and change request." },
+  "analysis": {
+    "agent": "claude-code",
+    "notes": "Grouped by repository and change request."
+  },
   "work_items": [
     {
       "id": "wi-auth-refresh-rotation",
@@ -24,18 +29,25 @@
       "observed_facts": [
         {
           "statement": "PR #42「Add refresh token rotation」於 2026-10-14 合併。",
-          "evidence_refs": [ "ev-1a2b3c4d5e6f7a8b" ]
+          "evidence_refs": [
+            "ev-1a2b3c4d5e6f7a8b"
+          ]
         },
         {
           "statement": "Commit 新增 TokenService 的輪替邏輯與對應測試。",
-          "evidence_refs": [ "ev-2b3c4d5e6f7a8b9c" ]
+          "evidence_refs": [
+            "ev-2b3c4d5e6f7a8b9c"
+          ]
         }
       ],
       "agent_inference": {
         "statement": "降低被竊取的 Refresh Token 被重複使用的風險。",
         "confidence": "medium"
       },
-      "evidence_refs": [ "ev-1a2b3c4d5e6f7a8b", "ev-2b3c4d5e6f7a8b9c" ],
+      "evidence_refs": [
+        "ev-1a2b3c4d5e6f7a8b",
+        "ev-2b3c4d5e6f7a8b9c"
+      ],
       "rank": 1,
       "review_status": "pending"
     },
@@ -49,10 +61,14 @@
       "observed_facts": [
         {
           "statement": "Commit 將 TWD 進位改為四捨五入 (half away from zero)。",
-          "evidence_refs": [ "ev-3c4d5e6f7a8b9c0d" ]
+          "evidence_refs": [
+            "ev-3c4d5e6f7a8b9c0d"
+          ]
         }
       ],
-      "evidence_refs": [ "ev-3c4d5e6f7a8b9c0d" ],
+      "evidence_refs": [
+        "ev-3c4d5e6f7a8b9c0d"
+      ],
       "rank": 2
     },
     {
@@ -74,7 +90,9 @@
       "kind": "challenge",
       "origin": "agent",
       "text": "既有 Session 需相容舊格式 Token, 以過渡期雙格式驗證處理。",
-      "evidence_refs": [ "ev-1a2b3c4d5e6f7a8b" ]
+      "evidence_refs": [
+        "ev-1a2b3c4d5e6f7a8b"
+      ]
     },
     {
       "id": "nr-next-plan-sso",

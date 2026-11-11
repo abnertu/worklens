@@ -33,7 +33,7 @@
 
 ## 4. Agent 輸入資料最小化 (digest)
 
-預設 (`redaction: default`), 可在設定中收緊, 放寬需明確設定:
+預設 (`digest.redaction.mode: default`), 可在設定中收緊, 放寬需明確設定:
 
 | 資料 | 預設處理 |
 |---|---|
@@ -42,7 +42,7 @@
 | Commit / PR body | 截斷至 `max_body_chars`; 套用 secret pattern redaction (同 §3, 外加常見 key 格式: AWS `AKIA…`、私鑰 header、`password=`、連線字串) |
 | 檔案路徑 | 只保留前 `path_depth` 層目錄 |
 | URL | 只保留 repository 與 external id, 移除 query |
-| 自訂規則 | 設定 `redaction.patterns` (regex → 取代字串), 例如客戶名稱 |
+| 自訂規則 | 設定 `digest.redaction.patterns` (`match` regex → `replace` 字串), 例如客戶名稱 |
 
 - Digest 的 `truncation` / `redaction` metadata 記錄被處理的數量 (不記錄原文), 讓使用者知道有內容被移除。
 - Skill 指引要求 agent 只使用 digest, 不自行讀取 diff 或原始碼 (除非使用者要求)。

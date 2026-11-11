@@ -32,7 +32,7 @@
     },
     {
       "id": "summary_v1",
-      "slide_layout_name": "Title and Content",
+      "slide_layout_name": "Two Content",
       "purpose": "summary",
       "slots": [
         {
@@ -47,7 +47,7 @@
         {
           "id": "highlights",
           "placeholder": {
-            "idx": 1
+            "name": "Content Placeholder 2"
           },
           "kind": "bullets",
           "max_items": 6,
@@ -57,7 +57,7 @@
         {
           "id": "activity",
           "placeholder": {
-            "name": "Table Placeholder 3"
+            "name": "Content Placeholder 3"
           },
           "kind": "table",
           "max_items": 8,

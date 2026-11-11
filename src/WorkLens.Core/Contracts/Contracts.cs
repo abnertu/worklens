@@ -1,3 +1,4 @@
+using System.Text.Json;
 using WorkLens.Core.Common;
 using WorkLens.Core.Errors;
 using WorkLens.Core.Evidence;
@@ -31,8 +32,16 @@ public interface IEvidenceDigester
 
 public sealed record DigestOptions(bool IncludeDiff = false, int MaxBodyChars = 1000, int PathDepth = 3);
 
-/// <summary>Agent input. Its content format is versioned by <see cref="DigestVersion"/> and defined in M2.</summary>
-public sealed record EvidenceDigest(string DigestVersion, string EvidenceDocumentId, string Content);
+/// <summary>
+/// Agent input. Its content format is versioned by <see cref="DigestVersion"/> and defined in M2. It carries the
+/// evidence document id and SHA-256 so the agent can fill Report IR <c>evidence_document</c> without reading
+/// evidence.json.
+/// </summary>
+public sealed record EvidenceDigest(
+    string DigestVersion,
+    string EvidenceDocumentId,
+    string EvidenceDocumentSha256,
+    string Content);
 
 /// <summary>
 /// Produces Report IR from a digest. In v0.1 the agent CLI plays this role and WorkLens has no implementation
@@ -47,10 +56,14 @@ public interface IAnalysisModule
 
 public sealed record AnalysisResult(ReportDocument? Report, IReadOnlyList<WorkLensError> Errors);
 
-/// <summary>Validates Report IR: schema, referential integrity and domain rules (M0).</summary>
+/// <summary>
+/// Validates Report IR (M0): schema first (on the raw JSON, so unknown fields are reported as
+/// <c>schema.additionalProperties</c> rather than failing deserialization), then referential integrity and
+/// domain rules against the evidence document and its SHA-256.
+/// </summary>
 public interface IReportValidator
 {
-    ValidationResult Validate(ReportDocument report, EvidenceDocument? evidence);
+    ValidationResult Validate(JsonElement report, EvidenceDocument? evidence, string? evidenceSha256);
 }
 
 /// <summary>Deterministically maps Report IR to Presentation IR using a Template Manifest (M0).</summary>

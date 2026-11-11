@@ -79,8 +79,8 @@ M0 與 M1 只透過 Evidence IR schema 相依, 可平行開發; 但 M0 的參照
 目標: 讓 agent 能從 digest 寫出通過驗證的 Report IR。
 
 工作項目:
-1. `IEvidenceDigester` 與 `digest.json` 格式 (`digest_version` 1); 截斷與 redaction metadata; `worklens evidence digest`。
-2. Secret pattern redaction 與自訂 `redaction.patterns`。
+1. `IEvidenceDigester` 與 `digest.json` 格式 (`digest_version` 1, 含 evidence `document_id` / `sha256`); 截斷與 redaction metadata; `worklens evidence digest`。
+2. Secret pattern redaction 與自訂 `digest.redaction.patterns`。
 3. `rule.unreferenced_numeric_claim` 等 domain 規則的 pattern 定案。
 4. Agent Skill 草案試用: 以 Claude Code 與 Codex CLI 各跑一次完整的 digest → report → validate 迴圈, 記錄失敗模式並調整 schema 描述 / 錯誤訊息。
 5. 評估 `--include-diff` (OQ-06)。
@@ -105,7 +105,7 @@ M0 與 M1 只透過 Evidence IR schema 相依, 可平行開發; 但 M0 的參照
 
 工作項目:
 1. `worklens init`、`worklens status` (工作目錄狀態與下一步建議)、`worklens report generate` (present + render 便利命令)。
-2. `manifest.json` provenance 與過期偵測 (exit 5); 工作目錄 lock。
+2. `manifest.json` provenance 與過期偵測 (exit 5); `worklens report rebind`; 工作目錄 lock。
 3. 人工內容保留: 重新產生 Report IR 時合併 `human_notes` 與 `origin: human` 項目 (OQ-08)。
 4. 正式的 agent Skill 檔 (Claude Code `SKILL.md`、Codex 指引) 與使用說明。
 5. 若出現第二個入口需求, 抽出 `WorkLens.Application` (ADR-0002)。

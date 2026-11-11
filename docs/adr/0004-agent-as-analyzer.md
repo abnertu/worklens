@@ -19,7 +19,7 @@ Accepted (使用者決策) — 2026-11-11
 - **限制輸出的機制**:
   1. Report IR schema 嚴格 (`additionalProperties: false`、enum、必填 evidence 參照)。
   2. 參照完整性: 每個 `evidence_refs` 必須存在於 `evidence.json`; `observed_facts` 必須引用證據 (M0 實作)。
-  3. Domain 規則: 例如狀態 `completed` 需有 merged PR/MR 或明確的人工確認; 數值性成效宣稱必須有證據來源 (規則清單見 [domain-model.md](../design/domain-model.md))。
+  3. Domain 規則: 例如狀態 `completed` 需有 merged PR/MR 或人工確認 (`review_status: approved`), 否則發 warning (`rule.completed_without_merged_change`); 數值性成效宣稱必須有證據來源 (規則清單見 [domain-model.md §3.2](../design/domain-model.md#32-驗證規則))。
   4. Agent 永遠不接觸 Presentation IR 與 PPTX 的生成 (由 `present` / `render` 確定性產生)。
 - `IAnalysisModule` 契約保留在 Core, v0.1 無實作; 未來的內建 LLM provider 或 headless runner 實作同一契約, 產出同一 Report IR。
 

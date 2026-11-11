@@ -35,6 +35,6 @@ Accepted (JsonSchema.Net 9.x: 使用者決策) / Proposed (其餘) — 2026-11-1
 
 ## Consequences
 
-- 若組織屬於需付 OSMF 維護費的範圍, 使用者需依協議處理; 退路是改用 8.0.5、Corvus.Json 或自行編譯, 替換範圍限於 `WorkLens.Core.Validation`。
+- 若組織屬於需付 OSMF 維護費的範圍, 使用者需依協議處理; 退路是改用 8.0.5、Corvus.Json 或自行編譯, 替換範圍限於 `WorkLens.Core.Schemas` (`WorkLensSchemaRegistry`)、`WorkLens.Core.Validation` (`IrSchemaValidator`) 與 schema 測試 (`MetaSchemas`); IR models 與其他模組不直接使用 JsonSchema.Net。
 - `CoreDependencyRulesTests` 把 `JsonSchema.Net` 列為 Core 唯一允許的直接套件相依。
 - 自寫的分頁與 retry 需要以錄製的 HTTP 回應 (fixture) 測試 (M1)。

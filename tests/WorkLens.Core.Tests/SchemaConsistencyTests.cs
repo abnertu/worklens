@@ -132,6 +132,25 @@ public sealed class SchemaConsistencyTests
         Assert.True(result.IsValid);
     }
 
+    // The valid examples form one consistent set (usable as M0 golden inputs): each document's SHA-256 binding
+    // matches the file it points to.
+    [Fact]
+    public void Valid_examples_have_consistent_sha256_bindings()
+    {
+        var evidencePath = SchemaExamples.ExamplePath("evidence-ir", "valid", "monthly-github-gitlab.json");
+        var reportPath = SchemaExamples.ExamplePath("report-ir", "valid", "monthly-report.json");
+        var presentationPath = SchemaExamples.ExamplePath("presentation-ir", "valid", "monthly-presentation.json");
+
+        var report = JsonNode.Parse(File.ReadAllText(reportPath))!;
+        var presentation = JsonNode.Parse(File.ReadAllText(presentationPath))!;
+
+        Assert.Equal(Sha256(evidencePath), report["evidence_document"]!["sha256"]!.GetValue<string>());
+        Assert.Equal(Sha256(reportPath), presentation["source_report"]!["sha256"]!.GetValue<string>());
+    }
+
+    private static string Sha256(string path) =>
+        Convert.ToHexStringLower(System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(path)));
+
     // (e) Every catalog schema has examples of both kinds, and every schema directory is in the catalog.
     [Fact]
     public void Every_schema_has_valid_and_invalid_examples()

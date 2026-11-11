@@ -107,15 +107,15 @@ ReportDocument
 
 | 層級 | code | 嚴重度 | 規則 |
 |---|---|---|---|
-| Schema | `schema.<keyword>` | error | JSON Schema 驗證失敗; `<keyword>` 為失敗節點 `evaluation_path` 的最後一段 (例 `schema.required`、`schema.enum`、`schema.additionalProperties`) |
-| 參照 | `ref.evidence_document_mismatch` | error | `evidence_document.sha256` 與實際 `evidence.json` 不符 |
+| Schema | `schema.<keyword>` | error | JSON Schema 驗證失敗; `<keyword>` 為失敗節點回報錯誤的 keyword (例 `schema.required`、`schema.enum`); 錯誤 key 為空字串時 (如 `additionalProperties: false`) 取該節點 evaluation path 的最後一段 (`schema.additionalProperties`) |
+| 參照 | `ref.evidence_document_mismatch` | error | `evidence_document.sha256` 與實際 `evidence.json` 不符。重新 `collect` 後, 以 `worklens report rebind` 更新綁定: 只有在所有 `evidence_refs` 仍存在於新的 Evidence IR 時才改寫 `document_id` / `sha256`, 否則列出失效的參照並維持錯誤 |
 | 參照 | `ref.evidence_missing` | error | `evidence_refs` 中的 ID 不存在於 Evidence IR |
 | 參照 | `ref.duplicate_id` | error | `work_items` / `narratives` 的 `id` 重複 |
-| 規則 | `rule.completed_without_merged_change` | warning | `status: completed` 但引用的證據中沒有 `state: merged` 的 change_request 也沒有 commit (需人工確認) |
+| 規則 | `rule.completed_without_merged_change` | warning | `status: completed`、`origin: agent`, 引用的證據中沒有 `state: merged` 的 change_request, 且 `review_status` 不是 `approved` (只有 commit 不足以判定完成; 需人工確認後設 `approved`) |
 | 規則 | `rule.evidence_outside_period` | warning | 引用的證據 `occurred_at` 不在 `period` 內 |
 | 規則 | `rule.unreferenced_numeric_claim` | warning | `summary` / `agent_inference.statement` 含百分比或倍數, 但該 work item 無 `observed_facts` 支持 (啟發式, M0 定義 pattern) |
 
-v0.1 骨架只實作 **Schema** 層; 參照與規則層於 M0 實作。warning 不影響 exit code (除非 `--strict`)。
+v0.1 骨架只實作 **Schema** 層 (`IrSchemaValidator`, 對原始 JSON 驗證); `IReportValidator` (先 schema、再反序列化、再參照與規則) 於 M0 實作。Schema 驗證必須在反序列化之前, 因為 C# models 拒絕未定義欄位, 反序列化會直接失敗而得不到 `schema.additionalProperties`。warning 不影響 exit code (除非 `--strict`)。
 
 ## 4. Presentation IR (`urn:worklens:schema:presentation-ir:1.0`)
 
@@ -169,6 +169,7 @@ Layout Resolver 規則 (M0 實作): 依 `sequence` 產生 slides; `work_item_det
 
 `worklens evidence digest` 的輸出 (`digest.json`), 版本化 (`digest_version`) 但不保證相容, 也不提供 JSON Schema (M2 可能補上)。內容:
 
+- 來源 Evidence IR 的 `document_id` 與 `sha256` — agent 原樣填入 Report IR 的 `evidence_document`, 不需讀 `evidence.json`。
 - 期間、本人身分 (只有 display name)、來源 repo 清單。
 - 每筆證據: `id`、`kind`、`repository`、`title`、`body` (redaction 後, 截斷至設定長度)、`state`、`occurred_at`、`stats`、`paths` (可設定只保留目錄層級)、`relations`。
 - **不含**: email、diff 內容 (除非 `--include-diff`, OQ-06)、token、URL 中的查詢參數。
@@ -202,7 +203,8 @@ public interface IAnalysisModule
 
 public interface IReportValidator
 {
-    ValidationResult Validate(ReportDocument report, EvidenceDocument? evidence);
+    // 對原始 JSON 驗證 (先 schema), 再以 evidence 與其 SHA-256 檢查參照與規則。
+    ValidationResult Validate(JsonElement report, EvidenceDocument? evidence, string? evidenceSha256);
 }
 
 public interface ILayoutResolver
@@ -227,7 +229,7 @@ public sealed record ValidationIssue(
     string Code,            // schema.required, ref.evidence_missing, ...
     IssueSeverity Severity,
     string InstancePath,    // JSON Pointer, 例 /work_items/0/evidence_refs/1
-    string? SchemaPath,     // 例 /properties/work_items/items/required
+    string? SchemaPath,     // 失敗節點的 evaluation path (JsonSchema.Net 格式, 含 $ref 段落), 供除錯, 不保證穩定
     string Message);
 
 public sealed record ValidationResult(IReadOnlyList<ValidationIssue> Issues)
@@ -250,4 +252,4 @@ public sealed record WorkLensError(string Code, string Message, IReadOnlyDiction
 
 - 只有入口 project (Cli) 組裝 DI (`Microsoft.Extensions.DependencyInjection`, M1 起需要時引入)。
 - Connectors 以 `ISourceConnector` 多重註冊, 依 `Platform` 選擇; Renderer 依 `Format` 選擇。
-- Core 型別不依賴 DI 容器; `SchemaRegistry` 為 process 內單例 (lazy 載入 embedded schemas)。
+- Core 型別不依賴 DI 容器; `WorkLensSchemaRegistry` 為 process 內單例 (lazy 載入 embedded schemas)。

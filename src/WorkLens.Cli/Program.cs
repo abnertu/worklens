@@ -29,7 +29,10 @@ public static class Program
         Console.OutputEncoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
         try
         {
-            return BuildRootCommand().Parse(args).Invoke();
+            // Disable System.CommandLine's handler so exceptions from actions reach the catch below
+            // and map to ExitCodes.Internal instead of 1 (which means a usage error).
+            var configuration = new InvocationConfiguration { EnableDefaultExceptionHandler = false };
+            return BuildRootCommand().Parse(args).Invoke(configuration);
         }
         catch (Exception ex)
         {
@@ -94,7 +97,11 @@ public static class Program
 
     private static Command Stub(string name, string description, string? fullName = null)
     {
-        var command = new Command(name, description + " (not implemented in v0.1)");
+        // Stubs accept any arguments (e.g. the documented --period) and still report NotImplemented.
+        var command = new Command(name, description + " (not implemented in v0.1)")
+        {
+            TreatUnmatchedTokensAsErrors = false,
+        };
         var json = JsonOption();
         command.Options.Add(json);
         var commandName = fullName ?? name;

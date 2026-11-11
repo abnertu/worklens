@@ -86,7 +86,7 @@ v0.1 的關鍵架構決策 (Decided, [ADR-0004](../adr/0004-agent-as-analyzer.md
 
 | Project | 內容 | 允許的相依 |
 |---|---|---|
-| `src/WorkLens.Core` | 三層 IR records、Template Manifest model、模組契約 interfaces、錯誤模型、`WorkLensJson` 序列化設定、`SchemaRegistry` / `IrSchemaValidator`、embedded schemas | BCL、`JsonSchema.Net` (與其遞移相依) |
+| `src/WorkLens.Core` | 三層 IR records、Template Manifest model、模組契約 interfaces、錯誤模型、`WorkLensJson` 序列化設定、`WorkLensSchemaRegistry` / `IrSchemaValidator`、embedded schemas | BCL、`JsonSchema.Net` (與其遞移相依) |
 | `src/WorkLens.Cli` | `worklens` 執行檔、命令解析、輸出格式、exit codes | Core、`System.CommandLine` |
 | `tests/WorkLens.Core.Tests` | Schema / 範例 / 模型一致性、Core 相依規則 | Core、xUnit v3 |
 
@@ -119,8 +119,8 @@ Layout Resolver (Report IR → Presentation IR) 是純函式, 放在 Core (`Work
 | `ISourceConnector` | `SourceQuery` → `EvidenceDocument` (片段) | M1: GitHub、GitLab |
 | `IEvidenceDigester` | `EvidenceDocument` + `DigestOptions` → `EvidenceDigest` | M2 |
 | `IAnalysisModule` | `EvidenceDigest` → `ReportDocument` | v0.1 由 **agent** 擔任, WorkLens 內無實作; 契約保留給未來內建 LLM / headless runner |
-| `IReportValidator` | `ReportDocument` + `EvidenceDocument` → `ValidationResult` | Schema 驗證 (本計畫) + 參照完整性 (M0) |
-| `ILayoutResolver` | `ReportDocument` + `TemplateManifest` → `PresentationDocument` | M0 |
+| `IReportValidator` | Report JSON + `EvidenceDocument` (+ SHA-256) → `ValidationResult` | M0 (組合 schema、參照完整性與規則); v0.1 骨架已提供其 schema 層 `IrSchemaValidator` |
+| `ILayoutResolver` | `ReportDocument` + `EvidenceDocument` + `TemplateManifest` → `PresentationDocument` | M0 |
 | `IOutputRenderer` | `PresentationDocument` + template 檔 → 輸出檔 | M0: PPTX |
 
 ## 6. 工作目錄 (Workspace)
