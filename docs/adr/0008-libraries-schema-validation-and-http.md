@@ -15,7 +15,7 @@ Accepted (JsonSchema.Net 9.x: 使用者決策) / Proposed (其餘) — 2026-11-1
 
 1. **Schema 驗證: JsonSchema.Net 9.x** (使用者已接受 OSMF EULA)。使用方式:
    - 所有 WorkLens schema 載入同一個非 global 的 `SchemaRegistry` (避免 global registry 重複 `$id` 例外, 並支援跨 schema `$ref`), 每份只 build 一次。
-   - `EvaluationOptions.RequireFormatValidation = true` (預設不驗證 `format`), `OutputFormat.List` (以取得每個失敗節點)。
+   - `EvaluationOptions.RequireFormatValidation = true` (預設不驗證 `format`); `OutputFormat.Hierarchical` + `IncludeApplicatorErrors = false`, 只走訪失敗節點並略過 `if` / `not` 子樹與通過的 `oneOf` 分支, 讓錯誤只剩可修正的 leaf keyword。
    - 注意: 未知的 `format` 名稱不會報錯, 因此以測試檢查 schema 中的 format 值與 keyword 拼字。
 2. **CLI: System.CommandLine 3.x** (MIT)。
 3. **HTTP: `HttpClient` + typed client** (`IHttpClientFactory`, M1), 自行實作分頁 (GitHub `Link` header、GitLab `x-next-page`) 與 retry / backoff (尊重 `Retry-After`、`x-ratelimit-reset`)。

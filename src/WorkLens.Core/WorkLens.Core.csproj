@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>WorkLens.Core</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="JsonSchema.Net" />
+  </ItemGroup>
+
+  <!-- One explicit item per schema: %(RecursiveDir) would produce backslashes in LogicalName on Windows. -->
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\schemas\evidence-ir\1.0\evidence-ir.schema.json" LogicalName="schemas/evidence-ir/1.0/evidence-ir.schema.json" />
+    <EmbeddedResource Include="..\..\schemas\report-ir\1.0\report-ir.schema.json" LogicalName="schemas/report-ir/1.0/report-ir.schema.json" />
+    <EmbeddedResource Include="..\..\schemas\presentation-ir\1.0\presentation-ir.schema.json" LogicalName="schemas/presentation-ir/1.0/presentation-ir.schema.json" />
+    <EmbeddedResource Include="..\..\schemas\template-manifest\1.0\template-manifest.schema.json" LogicalName="schemas/template-manifest/1.0/template-manifest.schema.json" />
+  </ItemGroup>
+
+</Project>

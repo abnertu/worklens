@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/WorkLens.Core/WorkLens.Core.csproj" />
+    <Project Path="src/WorkLens.Cli/WorkLens.Cli.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/WorkLens.Core.Tests/WorkLens.Core.Tests.csproj" />
+  </Folder>
+</Solution>

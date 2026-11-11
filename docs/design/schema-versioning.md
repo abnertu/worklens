@@ -59,7 +59,7 @@ WorkLens 寫出的 JSON, 以及 `schemas/**/examples/valid/` 的範例, 遵循�
 ## 6. 驗證設定
 
 - `EvaluationOptions.RequireFormatValidation = true` — 否則 `format` 只是註解。
-- `OutputFormat.List` — 取得每個失敗節點的 `evaluation_path` / `instance_location`, 轉成 `ValidationIssue` (code = `schema.` + `evaluation_path` 最後一段)。
+- `OutputFormat.Hierarchical` 且 `IncludeApplicatorErrors = false` — 從根節點只走訪失敗 (invalid) 的節點, 略過 `if` 與 `not` 子樹 (它們失敗不代表文件無效), 通過的 `oneOf` / `anyOf` 其不匹配分支因父節點有效而不會被走訪。每個錯誤轉成 `ValidationIssue`: code = `schema.` + 錯誤 key (key 為空字串時, 如 `additionalProperties: false`, 取 `evaluation_path` 最後一段), `instance_path` = `instance_location`。(List 輸出會把 `if` 條件不成立與父層 applicator 也列為錯誤, 不採用。)
 - 所有 schema 註冊在同一個非 global `SchemaRegistry`, 每份只 build 一次。
 - Schema 品質檢查 (測試): meta-schema 驗證、keyword allowlist (擋拼字錯誤如 `addtionalProperties`)、`format` 值 allowlist (擋 `date_time` 等未知格式, JsonSchema.Net 對未知格式不報錯)。
 
