@@ -21,7 +21,17 @@ public interface ISourceConnector
 
 public sealed record SourceQuery(Period Period, IReadOnlyList<Identity> Identities, SourceSpec Source);
 
-public sealed record SourceCollectResult(IReadOnlyList<EvidenceItem> Items, IReadOnlyList<WorkLensError> Errors);
+/// <summary>
+/// Items of one source, or the errors that stopped collection. <see cref="Warnings"/> are non-fatal problems
+/// (for example <c>source.truncated</c>) that the CLI reports as warning issues.
+/// </summary>
+public sealed record SourceCollectResult(
+    IReadOnlyList<EvidenceItem> Items,
+    IReadOnlyList<WorkLensError> Errors,
+    IReadOnlyList<WorkLensError> Warnings)
+{
+    public bool IsSuccess => Errors.Count == 0;
+}
 
 /// <summary>Builds the minimized, redacted agent input from Evidence IR (M2).</summary>
 public interface IEvidenceDigester
