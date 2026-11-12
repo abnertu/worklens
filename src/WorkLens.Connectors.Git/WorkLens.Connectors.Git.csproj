@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Depends on Core and the BCL only (docs/architecture/overview.md section 4.3 rule 6): no NuGet packages. -->
+  <PropertyGroup>
+    <RootNamespace>WorkLens.Connectors.Git</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WorkLens.Core\WorkLens.Core.csproj" />
+  </ItemGroup>
+
+</Project>

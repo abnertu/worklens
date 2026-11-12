@@ -1,0 +1,8 @@
+{
+  "method": "GET",
+  "path": "/repositories/1/commits",
+  "query": { "per_page": "100", "since": "2026-10-01T00:00:00Z", "page": "2" },
+  "responses": [
+    { "status": 200, "headers": { "Link": "<https://api.github.com/repositories/1/commits?per_page=100&since=2026-10-01T00%3A00%3A00Z&page=3>; rel=\"next\", <https://api.github.com/repositories/1/commits?per_page=100&since=2026-10-01T00%3A00%3A00Z&page=1>; rel=\"first\"" }, "body": [ { "sha": "p2a" }, { "sha": "p2b" } ] }
+  ]
+}

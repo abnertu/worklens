@@ -1,10 +1,12 @@
 <Solution>
   <Folder Name="/src/">
+    <Project Path="src/WorkLens.Connectors.Git/WorkLens.Connectors.Git.csproj" />
     <Project Path="src/WorkLens.Core/WorkLens.Core.csproj" />
     <Project Path="src/WorkLens.Cli/WorkLens.Cli.csproj" />
     <Project Path="src/WorkLens.Rendering.Pptx/WorkLens.Rendering.Pptx.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/WorkLens.Connectors.Git.Tests/WorkLens.Connectors.Git.Tests.csproj" />
     <Project Path="tests/WorkLens.Core.Tests/WorkLens.Core.Tests.csproj" />
     <Project Path="tests/WorkLens.Rendering.Pptx.Tests/WorkLens.Rendering.Pptx.Tests.csproj" />
   </Folder>

@@ -1,0 +1,8 @@
+{
+  "method": "GET",
+  "path": "/repositories/1/commits",
+  "query": { "per_page": "100", "since": "2026-10-01T00:00:00Z", "page": "3" },
+  "responses": [
+    { "status": 200,  "body": [ { "sha": "p3a" }, { "sha": "p3b" } ] }
+  ]
+}
