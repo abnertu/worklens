@@ -168,7 +168,15 @@
       "layout_id": "narrative_v1"
     },
     {
+      "section": "improvements",
+      "layout_id": "narrative_v1"
+    },
+    {
       "section": "next_plan",
+      "layout_id": "narrative_v1"
+    },
+    {
+      "section": "other_work",
       "layout_id": "narrative_v1"
     }
   ],

@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text.Json;
+using WorkLens.Core.Common;
 using WorkLens.Core.Evidence;
 using WorkLens.Core.Json;
 using WorkLens.Core.Layout;
@@ -176,18 +177,35 @@ public sealed class LayoutResolverTests
     [Fact]
     public void Empty_sections_produce_no_slide()
     {
-        var manifest = Manifest with
-        {
-            Sequence = [.. Manifest.Sequence, new SequenceEntry(ReportSection.Improvements, "narrative_v1")],
-        };
+        // The sample sequence includes improvements and other_work; the example report has neither.
         var report = Report with
         {
             WorkItems = [.. Report.WorkItems.Select(w => w with { ReviewStatus = ReviewStatus.Rejected })],
         };
 
-        var presentation = ResolveOk(report, Evidence, manifest);
+        var presentation = ResolveOk(report, Evidence, Manifest);
 
         Assert.Equal(["cover_v1", "summary_v1", "narrative_v1", "narrative_v1"], presentation.Slides.Select(s => s.LayoutId));
+    }
+
+    [Fact]
+    public void Every_narrative_kind_has_a_slide_in_the_sample_sequence()
+    {
+        var report = Report with
+        {
+            Narratives =
+            [
+                .. Report.Narratives,
+                new Narrative("nr-improvement", NarrativeKind.Improvement, ContentOrigin.Human, "改善項目"),
+                new Narrative("nr-other", NarrativeKind.OtherWork, ContentOrigin.Human, "其他工作項目"),
+            ],
+        };
+
+        var narratives = ResolveOk(report, Evidence, Manifest).Slides.Where(s => s.LayoutId == "narrative_v1").ToList();
+
+        Assert.Equal(["遇到的問題", "改善事項", "下月規劃", "其他工作"], narratives.Select(s => Text(s, "title")));
+        Assert.Equal(["nr-improvement"], narratives[1].SourceRefs);
+        Assert.Equal(["nr-other"], narratives[3].SourceRefs);
     }
 
     [Fact]
