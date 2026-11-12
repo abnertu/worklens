@@ -59,7 +59,7 @@ PowerPoint 中修改儲存格 (2, 1)、存檔、重開後內容保留 (P8)。
 | cover `title` | 60 / — | 24 / — |
 | 其他 `title` | 40 / — | 32 / — |
 | summary `highlights` | 80 / 6 | 28 / 5 |
-| summary `activity` (表格) | — / 8 | 30 / 5 |
+| summary `activity` (表格) | — / 8 | 24 / 4 (第二次校正, 見下) |
 | achievements `items` (表格) | 40 / 8 | 40 / 6 |
 | work item `facts` | 90 / 5 | 54 / 5 |
 | narrative `body` | — / 6 | 54 / 5 |
@@ -71,6 +71,10 @@ PowerPoint 中修改儲存格 (2, 1)、存檔、重開後內容保留 (P8)。
 | ![校正前: 2 行標題壓到 logo](pptx-poc-report/stress-before-08-title-logo.png) | ![校正後: 標題結束於 logo 左側](pptx-poc-report/stress-after-08-title-logo.png) |
 | ![校正前: challenges 溢出到頁尾以下](pptx-poc-report/stress-before-09-overflow.png) | ![校正後: 每項 ≤ 2 行, 5 項以內](pptx-poc-report/stress-after-09-overflow.png) |
 
+第二次校正 (activity 表格): 第一次校正的 30 字 / 5 列沒有經過滿列測試 (壓力案例只有 2 個 repository); 以表格幾何估算, 5 列 3 行的名稱會壓到頁尾。改為 24 字 / 4 列, 並以手工製作的最壞情況 (4 列 24 字: 一般路徑、全部 `W`、全部全形字; 每格最多 4 行) 在 PowerPoint 驗證: 表格結束於頁尾之上。同時 zh-TW 的 `summary_status` label 改為「完成 {completed} 項, 進行中 {in_progress} 項, 待確認 {unknown} 項」(原 label 不顯示進行中的項目), 範例 golden 只有這一行改變。
+
+![最壞情況: 4 列 24 字的 activity 表格](pptx-poc-report/worst-02-summary-table.png)
+
 已知限制: 容量以全形最壞情況計, 英文為主的句子大約在一半寬度就被截斷 (寬度意識的 `max_chars` 記入 backlog)。
 
 ## P6 中文換行
@@ -81,7 +85,7 @@ PowerPoint 中修改儲存格 (2, 1)、存檔、重開後內容保留 (P8)。
 - 標點不出現在行首: 全形標點測試行 (「引號」、(括號)、《書名號》、分號、驚嘆號、問號、句號、逗號、頓號、刪節號) 依 PowerPoint 的東亞換行規則斷行。
 - Run 沒有 `a:rPr` (因此沒有 `lang`), PowerPoint 仍依主題的東亞字型 (Microsoft JhengHei) 與拉丁字型 (Calibri) 為每個字元選字型; 沒有觀察到因缺少 `lang` 造成的字型或換行差異。
 - 長 URL 在 `/` 與字串中斷行; 截斷後的 `…` 顯示正確。
-- Activity 表格的 repository 欄為 1/3 寬, 長名稱會換 2–3 行 (可接受)。
+- Activity 表格的 repository 欄為 1/3 寬 (每格一行約 13 個半形字或 7 個全形字), 長名稱會換 2–4 行; 容量見 P5 的第二次校正。
 
 ![壓力案例: 純中文、中英混合、長 URL、全形標點](pptx-poc-report/stress-after-04-cjk-url.png)
 

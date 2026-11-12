@@ -61,8 +61,8 @@
             "name": "Content Placeholder 3"
           },
           "kind": "table",
-          "max_items": 5,
-          "max_chars": 30,
+          "max_items": 4,
+          "max_chars": 24,
           "overflow": "truncate"
         }
       ]
@@ -183,7 +183,7 @@
   "labels": {
     "cover_title": "{period} 工作月報",
     "summary_title": "本月重點",
-    "summary_status": "完成 {completed} 項工作, {unknown} 項待確認",
+    "summary_status": "完成 {completed} 項, 進行中 {in_progress} 項, 待確認 {unknown} 項",
     "summary_activity": "{repositories} 個 repository, {merged_changes} 個已合併的 PR",
     "activity_columns": [
       "Repository",

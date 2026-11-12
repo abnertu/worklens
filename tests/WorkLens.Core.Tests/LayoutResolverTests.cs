@@ -89,7 +89,7 @@ public sealed class LayoutResolverTests
         var summary = presentation.Slides[1];
         Assert.Equal(["title", "highlights", "activity"], summary.Bindings.Keys);
         Assert.Equal(
-            [new BulletItem("完成 2 項工作, 1 項待確認", 0), new BulletItem("2 個 repository, 1 個已合併的 PR", 1)],
+            [new BulletItem("完成 2 項, 進行中 0 項, 待確認 1 項", 0), new BulletItem("2 個 repository, 1 個已合併的 PR", 1)],
             Bullets(summary, "highlights"));
         var activity = Table(summary, "activity");
         Assert.Equal(["Repository", "Commits", "Merged PR/MR"], activity.Columns);
@@ -155,7 +155,9 @@ public sealed class LayoutResolverTests
 
         // Statistics exclude the out-of-period and duplicate commits.
         var summary = presentation.Slides.Single(s => s.LayoutId == "summary_v1");
-        Assert.Equal([["example-org/stress-service", "10", "1"], ["platform/stress-billing", "11", "0"]], Table(summary, "activity").Rows);
+        // The 27-character repository path exceeds the activity max_chars (24).
+        Assert.Equal([["example-org/stress-serv…", "10", "1"], ["platform/stress-billing", "11", "0"]], Table(summary, "activity").Rows);
+        Assert.True(Table(summary, "activity").Truncated);
         Assert.DoesNotContain("ev-c000000000000100", summary.SourceRefs);
         Assert.DoesNotContain("ev-c000000000000101", summary.SourceRefs);
         Assert.Contains("ev-c000000000000102", summary.SourceRefs);
