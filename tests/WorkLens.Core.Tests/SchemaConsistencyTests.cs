@@ -155,7 +155,7 @@ public sealed class SchemaConsistencyTests
     [Fact]
     public void Every_schema_has_valid_and_invalid_examples()
     {
-        Assert.Equal(4, IrSchemaCatalog.All.Count);
+        Assert.Equal(5, IrSchemaCatalog.All.Count);
         foreach (var info in IrSchemaCatalog.All)
         {
             Assert.True(File.Exists(SchemaExamples.SchemaFile(info)), $"Missing schema file for {info.Id}.");

@@ -1,0 +1,22 @@
+{
+  "config_version": "1.0",
+  "subject": { "display_name": "Example User" },
+  "timezone": "Asia/Taipei",
+  "identities": [
+    { "platform": "github", "username": "example-user" },
+    { "platform": "gitlab", "username": "example.user" },
+    { "email": "example-user@example.com" }
+  ],
+  "sources": [
+    { "id": "gh-auth", "platform": "github", "base_url": "https://api.github.com", "repository": "example-org/auth-service" },
+    { "id": "gl-billing", "platform": "gitlab", "base_url": "https://gitlab.example.com/api/v4", "repository": "platform/billing", "token_env": "WORKLENS_GITLAB_TOKEN_CORP" }
+  ],
+  "exclude": { "bots": true, "merge_commits": true, "paths": ["**/*.lock"] },
+  "digest": {
+    "include_diff": false,
+    "max_body_chars": 1000,
+    "path_depth": 3,
+    "redaction": { "mode": "default", "patterns": [ { "match": "Acme Corp", "replace": "[customer]" } ] }
+  },
+  "report": { "template_manifest": "templates/sample-monthly/manifest.json" }
+}

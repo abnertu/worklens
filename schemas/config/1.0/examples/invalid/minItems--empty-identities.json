@@ -1,0 +1,7 @@
+{
+  "config_version": "1.0",
+  "identities": [],
+  "sources": [
+    { "id": "gh-auth", "platform": "github", "base_url": "https://api.github.com", "repository": "example-org/auth-service" }
+  ]
+}

@@ -1,3 +1,4 @@
+using WorkLens.Core.Config;
 using WorkLens.Core.Evidence;
 using WorkLens.Core.Presentation;
 using WorkLens.Core.Report;
@@ -20,6 +21,7 @@ public static class IrSchemaCatalog
         new("report-ir", ReportDocument.CurrentSchemaVersion, ReportDocument.SchemaId, typeof(ReportDocument)),
         new("presentation-ir", PresentationDocument.CurrentSchemaVersion, PresentationDocument.SchemaId, typeof(PresentationDocument)),
         new("template-manifest", TemplateManifest.CurrentSchemaVersion, TemplateManifest.SchemaId, typeof(TemplateManifest)),
+        new("config", WorkLensConfig.CurrentSchemaVersion, WorkLensConfig.SchemaId, typeof(WorkLensConfig)),
     ];
 
     public static IrSchemaInfo? FindById(string id) => All.FirstOrDefault(s => s.Id == id);

@@ -14,6 +14,7 @@
     <EmbeddedResource Include="..\..\schemas\report-ir\1.0\report-ir.schema.json" LogicalName="schemas/report-ir/1.0/report-ir.schema.json" />
     <EmbeddedResource Include="..\..\schemas\presentation-ir\1.0\presentation-ir.schema.json" LogicalName="schemas/presentation-ir/1.0/presentation-ir.schema.json" />
     <EmbeddedResource Include="..\..\schemas\template-manifest\1.0\template-manifest.schema.json" LogicalName="schemas/template-manifest/1.0/template-manifest.schema.json" />
+    <EmbeddedResource Include="..\..\schemas\config\1.0\config.schema.json" LogicalName="schemas/config/1.0/config.schema.json" />
   </ItemGroup>
 
 </Project>
