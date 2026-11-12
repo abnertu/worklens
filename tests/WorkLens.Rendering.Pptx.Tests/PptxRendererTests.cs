@@ -304,7 +304,26 @@ public sealed class PptxRendererTests : IDisposable
     [Fact]
     public void Output_passes_OpenXmlValidator()
     {
-        foreach (var (presentation, name) in new[] { (MonthlyPresentation(), "monthly.pptx"), (StressPresentation(), "stress.pptx") })
+        // A hand-edited presentation may bind empty bullet lists (the schema allows them).
+        var monthly = MonthlyPresentation();
+        var emptyBullets = monthly with
+        {
+            Slides =
+            [
+                .. monthly.Slides.Select(s => s with
+                {
+                    Bindings = s.Bindings.ToDictionary(
+                        b => b.Key,
+                        b => b.Value is BulletsSlotValue bullets ? bullets with { Items = [] } : b.Value),
+                }),
+            ],
+        };
+        Assert.Contains(emptyBullets.Slides, s => s.Bindings.Values.OfType<BulletsSlotValue>().Any());
+
+        foreach (var (presentation, name) in new[]
+        {
+            (monthly, "monthly.pptx"), (StressPresentation(), "stress.pptx"), (emptyBullets, "empty-bullets.pptx"),
+        })
         {
             using var document = PackageDocument.Open(Render(presentation, name), false);
             var errors = new OpenXmlValidator(FileFormatVersions.Office2019).Validate(document, TestContext.Current.CancellationToken)

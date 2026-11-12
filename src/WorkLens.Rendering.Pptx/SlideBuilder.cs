@@ -66,6 +66,12 @@ internal static class SlideBuilder
     {
         var body = new P.TextBody(new A.BodyProperties(), new A.ListStyle());
         body.Append(paragraphs);
+        if (!body.Elements<A.Paragraph>().Any())
+        {
+            // txBody needs at least one a:p; a hand-edited presentation may bind an empty bullet list.
+            body.Append(new A.Paragraph());
+        }
+
         return new P.Shape(
             new P.NonVisualShapeProperties(
                 new P.NonVisualDrawingProperties { Id = id, Name = bound.Name },
