@@ -1,0 +1,129 @@
+{
+  "method": "GET",
+  "path": "/repos/octo/hello/pulls",
+  "query": {
+    "state": "all",
+    "sort": "updated",
+    "direction": "desc",
+    "per_page": "100"
+  },
+  "responses": [
+    {
+      "status": 200,
+      "headers": {
+        "Link": "<https://api.github.com/repositories/42/pulls?state=all&sort=updated&direction=desc&per_page=100&page=2>; rel=\"next\""
+      },
+      "body": [
+        {
+          "number": 12,
+          "id": 1012,
+          "node_id": "PR_12",
+          "html_url": "https://github.com/octo/hello/pull/12",
+          "state": "open",
+          "locked": false,
+          "title": "Next month's work",
+          "body": null,
+          "user": {
+            "login": "alice",
+            "id": 1,
+            "type": "User",
+            "site_admin": false
+          },
+          "labels": [],
+          "created_at": "2026-11-02T00:00:00Z",
+          "updated_at": "2026-11-03T00:00:00Z",
+          "closed_at": null,
+          "merged_at": null,
+          "draft": false
+        },
+        {
+          "number": 10,
+          "id": 1010,
+          "node_id": "PR_10",
+          "html_url": "https://github.com/octo/hello/pull/10",
+          "state": "closed",
+          "locked": false,
+          "title": "Token refresh",
+          "body": "Adds token refresh.",
+          "user": {
+            "login": "alice",
+            "id": 1,
+            "type": "User",
+            "site_admin": false
+          },
+          "labels": [],
+          "created_at": "2026-09-20T00:00:00Z",
+          "updated_at": "2026-10-04T00:00:00Z",
+          "closed_at": "2026-10-03T00:00:00Z",
+          "merged_at": "2026-10-03T00:00:00Z",
+          "draft": false
+        },
+        {
+          "number": 11,
+          "id": 1011,
+          "node_id": "PR_11",
+          "html_url": "https://github.com/octo/hello/pull/11",
+          "state": "closed",
+          "locked": false,
+          "title": "Bob's PR",
+          "body": null,
+          "user": {
+            "login": "bob",
+            "id": 2,
+            "type": "User"
+          },
+          "labels": [],
+          "created_at": "2026-10-06T00:00:00Z",
+          "updated_at": "2026-10-08T00:00:00Z",
+          "closed_at": "2026-10-08T00:00:00Z",
+          "merged_at": "2026-10-08T00:00:00Z",
+          "draft": false
+        },
+        {
+          "number": 9,
+          "id": 1009,
+          "node_id": "PR_9",
+          "html_url": "https://github.com/octo/hello/pull/9",
+          "state": "open",
+          "locked": false,
+          "title": "Apply Bob's patch",
+          "body": null,
+          "user": {
+            "login": "alice",
+            "id": 1,
+            "type": "User",
+            "site_admin": false
+          },
+          "labels": [],
+          "created_at": "2026-10-20T00:00:00Z",
+          "updated_at": "2026-10-21T00:00:00Z",
+          "closed_at": null,
+          "merged_at": null,
+          "draft": false
+        },
+        {
+          "number": 8,
+          "id": 1008,
+          "node_id": "PR_8",
+          "html_url": "https://github.com/octo/hello/pull/8",
+          "state": "closed",
+          "locked": false,
+          "title": "Old work",
+          "body": null,
+          "user": {
+            "login": "alice",
+            "id": 1,
+            "type": "User",
+            "site_admin": false
+          },
+          "labels": [],
+          "created_at": "2026-09-01T00:00:00Z",
+          "updated_at": "2026-09-29T00:00:00Z",
+          "closed_at": "2026-09-02T00:00:00Z",
+          "merged_at": null,
+          "draft": false
+        }
+      ]
+    }
+  ]
+}

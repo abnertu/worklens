@@ -1,0 +1,59 @@
+{
+  "method": "GET",
+  "path": "/repos/octo/hello/commits/c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3",
+  "query": {
+    "per_page": "100"
+  },
+  "responses": [
+    {
+      "status": 200,
+      "body": {
+        "sha": "c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3",
+        "node_id": "C_c3",
+        "url": "https://api.github.com/repos/octo/hello/commits/c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3",
+        "html_url": "https://github.com/octo/hello/commit/c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3",
+        "commit": {
+          "author": {
+            "name": "renovate[bot]",
+            "email": "29139614+renovate[bot]@users.noreply.github.com",
+            "date": "2026-10-05T03:00:00Z"
+          },
+          "committer": {
+            "name": "renovate[bot]",
+            "email": "29139614+renovate[bot]@users.noreply.github.com",
+            "date": "2026-10-05T03:00:00Z"
+          },
+          "message": "Update dependency foo to v2\n\nCo-authored-by: Alice <ALICE@example.com>",
+          "comment_count": 0
+        },
+        "author": {
+          "login": "renovate[bot]",
+          "id": 3,
+          "type": "Bot"
+        },
+        "committer": null,
+        "parents": [
+          {
+            "sha": "0000000000000000000000000000000000000000",
+            "url": "x"
+          }
+        ],
+        "stats": {
+          "total": 2,
+          "additions": 1,
+          "deletions": 1
+        },
+        "files": [
+          {
+            "sha": "f",
+            "filename": "package.json",
+            "status": "modified",
+            "additions": 1,
+            "deletions": 0,
+            "changes": 1
+          }
+        ]
+      }
+    }
+  ]
+}

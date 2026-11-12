@@ -16,7 +16,7 @@ namespace WorkLens.Tests.Shared;
 ///                  { "status": 200, "body_text": "not json" },
 ///                  { "throw": "http" | "timeout", "message": "..." } ] }
 /// </code>
-/// File names do not take part in matching. Every request is recorded; a request without a fixture throws
+/// Paths compare ignoring case, like GitHub owner / repository names. File names do not take part in matching. Every request is recorded; a request without a fixture throws
 /// <see cref="FixtureMismatchException"/> (not an HTTP exception, so retry logic cannot swallow it).
 /// Shared by test projects through <c>&lt;Compile Include=... Link=...&gt;</c> (overview section 4.3 rule 5).
 /// </summary>
@@ -158,7 +158,7 @@ internal sealed class FixtureHandler : HttpMessageHandler
         {
             var route = _routes.Find(r =>
                 string.Equals(r.Method, request.Method.Method, StringComparison.OrdinalIgnoreCase)
-                && string.Equals(r.Path, uri.AbsolutePath, StringComparison.Ordinal)
+                && string.Equals(r.Path, uri.AbsolutePath, StringComparison.OrdinalIgnoreCase)
                 && r.Query == query);
             if (route is null)
             {

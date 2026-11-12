@@ -1,0 +1,59 @@
+{
+  "method": "GET",
+  "path": "/repos/octo/hello/commits/c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8",
+  "query": {
+    "per_page": "100"
+  },
+  "responses": [
+    {
+      "status": 200,
+      "body": {
+        "sha": "c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8",
+        "node_id": "C_c8",
+        "url": "https://api.github.com/repos/octo/hello/commits/c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8",
+        "html_url": "https://github.com/octo/hello/commit/c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8",
+        "commit": {
+          "author": {
+            "name": "Bob",
+            "email": "bob@example.com",
+            "date": "2026-10-15T08:00:00Z"
+          },
+          "committer": {
+            "name": "Alice",
+            "email": "alice@example.com",
+            "date": "2026-10-15T09:00:00Z"
+          },
+          "message": "Apply Bob's patch",
+          "comment_count": 0
+        },
+        "author": {
+          "login": "bob",
+          "id": 2,
+          "type": "User"
+        },
+        "committer": null,
+        "parents": [
+          {
+            "sha": "0000000000000000000000000000000000000000",
+            "url": "x"
+          }
+        ],
+        "stats": {
+          "total": 5,
+          "additions": 5,
+          "deletions": 0
+        },
+        "files": [
+          {
+            "sha": "f",
+            "filename": "src/Patch.cs",
+            "status": "modified",
+            "additions": 1,
+            "deletions": 0,
+            "changes": 1
+          }
+        ]
+      }
+    }
+  ]
+}

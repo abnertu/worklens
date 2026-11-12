@@ -1,0 +1,60 @@
+{
+  "method": "GET",
+  "path": "/repos/octo/hello/commits/c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5",
+  "query": {
+    "per_page": "100"
+  },
+  "responses": [
+    {
+      "status": 200,
+      "body": {
+        "sha": "c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5",
+        "node_id": "C_c5",
+        "url": "https://api.github.com/repos/octo/hello/commits/c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5",
+        "html_url": "https://github.com/octo/hello/commit/c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5",
+        "commit": {
+          "author": {
+            "name": "Alice",
+            "email": "alice@example.com",
+            "date": "2026-10-12T08:00:00Z"
+          },
+          "committer": {
+            "name": "Alice",
+            "email": "alice@example.com",
+            "date": "2026-10-12T08:00:00Z"
+          },
+          "message": "Revert \"Add thing\"\n\nThis reverts commit 1234.",
+          "comment_count": 0
+        },
+        "author": {
+          "login": "alice",
+          "id": 1,
+          "type": "User",
+          "site_admin": false
+        },
+        "committer": null,
+        "parents": [
+          {
+            "sha": "0000000000000000000000000000000000000000",
+            "url": "x"
+          }
+        ],
+        "stats": {
+          "total": 10,
+          "additions": 0,
+          "deletions": 10
+        },
+        "files": [
+          {
+            "sha": "f",
+            "filename": "src/Thing.cs",
+            "status": "modified",
+            "additions": 1,
+            "deletions": 0,
+            "changes": 1
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "method": "GET",
+  "path": "/repos/octo/hello/commits/c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7",
+  "query": {
+    "per_page": "100"
+  },
+  "responses": [
+    {
+      "status": 200,
+      "body": {
+        "sha": "c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7",
+        "node_id": "C_c7",
+        "url": "https://api.github.com/repos/octo/hello/commits/c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7",
+        "html_url": "https://github.com/octo/hello/commit/c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7",
+        "commit": {
+          "author": {
+            "name": "Alice",
+            "email": "not-an-email",
+            "date": "2026-10-14T08:00:00Z"
+          },
+          "committer": {
+            "name": "Alice",
+            "email": "not-an-email",
+            "date": "2026-10-14T08:00:00Z"
+          },
+          "message": "Tidy up",
+          "comment_count": 0
+        },
+        "author": {
+          "login": "alice",
+          "id": 1,
+          "type": "User",
+          "site_admin": false
+        },
+        "committer": null,
+        "parents": [
+          {
+            "sha": "0000000000000000000000000000000000000000",
+            "url": "x"
+          }
+        ],
+        "stats": {
+          "total": 4,
+          "additions": 2,
+          "deletions": 2
+        },
+        "files": [
+          {
+            "sha": "f",
+            "filename": "README.md",
+            "status": "modified",
+            "additions": 1,
+            "deletions": 0,
+            "changes": 1
+          }
+        ]
+      }
+    }
+  ]
+}

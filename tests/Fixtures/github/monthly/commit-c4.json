@@ -1,0 +1,59 @@
+{
+  "method": "GET",
+  "path": "/repos/octo/hello/commits/c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4",
+  "query": {
+    "per_page": "100"
+  },
+  "responses": [
+    {
+      "status": 200,
+      "body": {
+        "sha": "c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4",
+        "node_id": "C_c4",
+        "url": "https://api.github.com/repos/octo/hello/commits/c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4",
+        "html_url": "https://github.com/octo/hello/commit/c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4",
+        "commit": {
+          "author": {
+            "name": "Alice",
+            "email": "alice@example.com",
+            "date": "2026-10-10T08:00:00Z"
+          },
+          "committer": {
+            "name": "GitHub",
+            "email": "noreply@github.com",
+            "date": "2026-10-10T08:00:00Z"
+          },
+          "message": "Merge branch 'feature/x'",
+          "comment_count": 0
+        },
+        "author": {
+          "login": "alice",
+          "id": 1,
+          "type": "User",
+          "site_admin": false
+        },
+        "committer": {
+          "login": "web-flow",
+          "id": 4,
+          "type": "User"
+        },
+        "parents": [
+          {
+            "sha": "0000000000000000000000000000000000000000",
+            "url": "x"
+          },
+          {
+            "sha": "1111111111111111111111111111111111111111",
+            "url": "x"
+          }
+        ],
+        "stats": {
+          "total": 0,
+          "additions": 0,
+          "deletions": 0
+        },
+        "files": []
+      }
+    }
+  ]
+}

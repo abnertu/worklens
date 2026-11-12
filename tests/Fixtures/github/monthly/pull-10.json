@@ -1,0 +1,38 @@
+{
+  "method": "GET",
+  "path": "/repos/octo/hello/pulls/10",
+  "query": {},
+  "responses": [
+    {
+      "status": 200,
+      "body": {
+        "number": 10,
+        "id": 1010,
+        "node_id": "PR_10",
+        "html_url": "https://github.com/octo/hello/pull/10",
+        "state": "closed",
+        "locked": false,
+        "title": "Token refresh",
+        "body": "Adds token refresh.",
+        "user": {
+          "login": "alice",
+          "id": 1,
+          "type": "User",
+          "site_admin": false
+        },
+        "labels": [],
+        "created_at": "2026-09-20T00:00:00Z",
+        "updated_at": "2026-10-04T00:00:00Z",
+        "closed_at": "2026-10-03T00:00:00Z",
+        "merged_at": "2026-10-03T00:00:00Z",
+        "draft": false,
+        "merged": true,
+        "additions": 50,
+        "deletions": 2,
+        "changed_files": 3,
+        "commits": 4,
+        "comments": 0
+      }
+    }
+  ]
+}

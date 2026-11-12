@@ -1,0 +1,21 @@
+{
+  "method": "GET",
+  "path": "/repos/octo/hello",
+  "query": {},
+  "responses": [
+    {
+      "status": 200,
+      "body": {
+        "id": 42,
+        "node_id": "R_1",
+        "name": "hello",
+        "full_name": "octo/hello",
+        "private": false,
+        "default_branch": "main",
+        "owner": {
+          "login": "octo"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "method": "GET",
+  "path": "/repos/octo/hello/commits/c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9",
+  "query": {
+    "per_page": "100"
+  },
+  "responses": [
+    {
+      "status": 200,
+      "body": {
+        "sha": "c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9",
+        "node_id": "C_c9",
+        "url": "https://api.github.com/repos/octo/hello/commits/c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9",
+        "html_url": "https://github.com/octo/hello/commit/c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9",
+        "commit": {
+          "author": {
+            "name": "Alice",
+            "email": "alice@example.com",
+            "date": "2026-09-25T08:00:00Z"
+          },
+          "committer": {
+            "name": "Alice",
+            "email": "alice@example.com",
+            "date": "2026-09-25T08:00:00Z"
+          },
+          "message": "Start token refresh",
+          "comment_count": 0
+        },
+        "author": {
+          "login": "alice",
+          "id": 1,
+          "type": "User",
+          "site_admin": false
+        },
+        "committer": null,
+        "parents": [
+          {
+            "sha": "0000000000000000000000000000000000000000",
+            "url": "x"
+          }
+        ],
+        "stats": {
+          "total": 10,
+          "additions": 10,
+          "deletions": 0
+        },
+        "files": [
+          {
+            "sha": "f",
+            "filename": "src/Auth/TokenRefresher.cs",
+            "status": "modified",
+            "additions": 1,
+            "deletions": 0,
+            "changes": 1
+          }
+        ]
+      }
+    }
+  ]
+}

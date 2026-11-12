@@ -1,0 +1,38 @@
+{
+  "method": "GET",
+  "path": "/repos/octo/hello/pulls/9",
+  "query": {},
+  "responses": [
+    {
+      "status": 200,
+      "body": {
+        "number": 9,
+        "id": 1009,
+        "node_id": "PR_9",
+        "html_url": "https://github.com/octo/hello/pull/9",
+        "state": "open",
+        "locked": false,
+        "title": "Apply Bob's patch",
+        "body": null,
+        "user": {
+          "login": "alice",
+          "id": 1,
+          "type": "User",
+          "site_admin": false
+        },
+        "labels": [],
+        "created_at": "2026-10-20T00:00:00Z",
+        "updated_at": "2026-10-21T00:00:00Z",
+        "closed_at": null,
+        "merged_at": null,
+        "draft": false,
+        "merged": false,
+        "additions": 5,
+        "deletions": 0,
+        "changed_files": 1,
+        "commits": 1,
+        "comments": 0
+      }
+    }
+  ]
+}
