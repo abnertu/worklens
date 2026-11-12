@@ -49,7 +49,7 @@ PowerPoint 中修改儲存格 (2, 1)、存檔、重開後內容保留 (P8)。
 
 量測 (28pt body, `Title and Content`): 一行約 28 個全形字, 約 10 行; `Two Content` 半寬約 14 字 / 行; 標題 44pt; 表格 18pt。
 
-決策 (commit `dee0f27`):
+決策 (commit `011a75b`):
 
 - 模板: master title 的寬度縮到 logo 左側 12pt (寬 9448800 EMU); 各 layout 的 title 繼承此位置。新 sha256 `07cfe14e…daa1f1`。
 - Manifest 容量以「全部是全形字」的最壞情況計, 每項 ≤ 2 行、總行數 ≤ 10:
