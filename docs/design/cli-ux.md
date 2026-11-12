@@ -128,9 +128,9 @@ stdout 恰好一個 JSON 物件, 結尾換行:
   "ok": false,
   "exit_code": 2,
   "result": {
-    "files": { "report": ".worklens/reports/2026-10/report.json" },
-    "error_count": 1,
-    "warning_count": 1
+    "files": { "report": "C:\\work\\2026-10\\report.json", "evidence": "C:\\work\\2026-10\\evidence.json" },
+    "error_count": 2,
+    "warning_count": 0
   },
   "issues": [
     {
@@ -138,19 +138,21 @@ stdout 恰好一個 JSON 物件, 結尾換行:
       "severity": "error",
       "instance_path": "/work_items/1/evidence_refs/0",
       "schema_path": null,
-      "message": "Evidence 'ev-0000000000000000' does not exist in evidence.json."
+      "message": "Evidence 'ev-0000000000000000' does not exist in the evidence document."
     },
     {
-      "code": "rule.completed_without_merged_change",
-      "severity": "warning",
-      "instance_path": "/work_items/0/status",
+      "code": "ref.duplicate_id",
+      "severity": "error",
+      "instance_path": "/work_items/2/id",
       "schema_path": null,
-      "message": "status is 'completed' but no referenced change request is merged; confirm manually."
+      "message": "..."
     }
   ],
   "error": null
 }
 ```
+
+`files` 為完整路徑。驗證分層執行 (domain-model §3.2): 參照層有 error 時不執行規則層, 所以 `rule.*` warning 只會在 `ref.*` error 修正後才出現; 同一次輸出不會同時有 `ref.*` error 與 `rule.*` warning。
 
 - `issues`: 驗證問題 (欄位同 [domain-model.md §7](domain-model.md) 的 `ValidationIssue`)。`schema_path` 只有 `schema.*` issue 有值 (JSON Schema evaluation path); 其他 issue 輸出 `null` (欄位一律存在)。
 - `error`: 非驗證類的失敗 `{ "code", "message", "details" }`, 例如 `config.missing_token`、`source.rate_limited`、`command.not_implemented`。
