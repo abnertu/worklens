@@ -12,10 +12,9 @@
 - 需決定於: M4 之前 (部署 / 排程)。
 
 ### OQ-02 GitLab 是 GitLab.com 還是 Self-managed? 是否需要 GitHub Enterprise?
-- Status: Open
+- Status: Decided — 採預設假設: 兩者都以可設定的 `base_url` 支援 (GitHub 預設 `https://api.github.com`, GitLab 預設 `https://gitlab.com/api/v4`), 包含 GitHub Enterprise (`https://<host>/api/v3`) 與 self-managed GitLab; `base_url` 只允許 `https`。實作以 REST API v3 / v4 公開文件為準; 真實環境驗證: GitHub 個人 repo (M1a)、self-managed GitLab (M1b)。決策者: 使用者 (2026-11-12)。
 - 影響: base URL 設定、API 版本差異、TLS / proxy、認證方式。
-- 預設假設: 兩者都以可設定的 `base_url` 支援 (GitHub 預設 `https://api.github.com`, GitLab 預設 `https://gitlab.com/api/v4`); 實作以 REST API v3 / v4 公開文件為準, Enterprise / Self-managed 版本差異於取得實際環境後驗證。
-- 需決定於: M1 之前。
+- 規則: `base_url` 正規化 (scheme / host 小寫、去除預設 port 443、去除結尾 `/`) 後參與 evidence ID ([domain-model.md](design/domain-model.md) §2.1); 預設 token 變數 (`WORKLENS_GITHUB_TOKEN` → `GITHUB_TOKEN`) 只用於 `https://api.github.com`, Enterprise 主機必須以 `token_env` 指定變數。
 
 ### OQ-03 使用者身份範圍: 僅個人月報, 還是未來支援團隊?
 - Status: Open
@@ -40,10 +39,13 @@
 - 需決定於: M2 之前。
 
 ### OQ-07 月份使用哪個時區? 以 Author Date、Committer Date、Merge Date 哪一種時間為準?
-- Status: Open
+- Status: Decided — 採預設假設: 期間以設定檔的 IANA 時區 (`timezone`, 未設定時為系統時區) 計算月界, 查詢時轉 UTC; commit 以 **author date** 歸屬期間, PR/MR 以 **merged_at** (未合併則 created_at) 歸屬。Evidence IR 同時保存 author / committer / merged 各時間, 規則可改不需重新蒐集。決策者: 使用者 (2026-11-12)。
 - 影響: 月界計算、跨月 PR、rebase 後的 commit 日期。
-- 預設假設: 期間以設定檔的 IANA 時區 (`timezone`, 預設為系統時區) 計算月界, 查詢時轉 UTC; commit 以 **author date** 歸屬期間, PR/MR 以 **merged_at** (未合併則 created_at) 歸屬。Evidence IR 同時保存 author / committer / merged 各時間, 規則可改不需重新蒐集。
-- 需決定於: M1 之前。
+- 規則:
+  - 月初午夜在該時區不存在 (DST 跳躍) 時, 取該日第一個有效時刻。
+  - Commit 範圍 = default branch 歷史 + 期間內 PR/MR 的 commits; 不列舉所有分支。
+  - GitHub commits API 依 committer date 篩選, 因此查詢窗為 `since = period.start`、`until = period.end + 30 天`, 本地再以 author date ∈ `[start, end)` 篩選; committer date 晚於 end + 30 天的 commit 不會被取得 (已知限制)。
+  - 期間內 PR 的 commits 中身分相符者全部收錄, `occurred_at` 為其 author date (可能在期間外), 由 PR 以 `contains` 關聯。
 
 ### OQ-08 首版人工修改是直接編輯 Report IR, 還是先輸出 PPTX 後自行修改?
 - Status: Open
@@ -84,7 +86,9 @@
 - Status: Decided — 接受, 使用 9.x。決策者: 使用者 (2026-11-11)。替代方案記錄於 [ADR-0008](adr/0008-libraries-schema-validation-and-http.md)。
 
 ### OQ-15 作者身分對照規則由誰維護?
-- Status: Open
+- Status: Decided — 採預設假設: 使用者在設定檔 `identities` 列出本人的 email 與各平台 username; 只計入明確列出的身分; `Co-authored-by` 中出現本人身分的 commit 也計入但標記 `role: co_author`; bot 帳號以 `bot` flag 標記, 由 digest (M2) 依 `exclude` 排除, collect 不排除。決策者: 使用者 (2026-11-12)。
 - 影響: 作者別名 (多個 email / username / bot-assisted commit, 如 `Co-authored-by`) 是否歸屬本人。
-- 預設假設: 設定檔 `identities` 列出本人的 email 與各平台 username; 只計入明確列出的身分; `Co-authored-by` 中出現本人身分的 commit 也計入但標記 `role: co_author`; bot 帳號預設排除。
-- 需決定於: M1 之前。
+- 規則:
+  - identity 沒有 `platform` 時適用所有平台; email 與 username 比對不分大小寫。
+  - GitHub noreply email (`<id>+<login>@users.noreply.github.com` 與舊式 `<login>@users.noreply.github.com`) 解析出 login 後以 username 比對。
+  - 角色優先序: author (author login 或 email) > co_author (`Co-authored-by` trailer email) > committer (committer login / email); 都不符合則不收錄。`author` 欄位記錄本人在該 item 中出現的身分。

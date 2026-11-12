@@ -23,7 +23,7 @@
 ```text
 EvidenceDocument
 ├── schema_version: "1.0"
-├── document_id            "evd-<period>-<hash8>"
+├── document_id            "evd-<period>-<hash8>" — 見 §2.1
 ├── generated_at
 ├── generator { name, version }
 ├── query
@@ -48,11 +48,18 @@ EvidenceDocument
 
 ### 2.1 規則
 
-- **穩定 ID**: `id = "ev-" + hex(SHA-256(platform | base_url | repository | kind | external_id))[0..16]`。同一證據重新蒐集得到相同 ID, 讓 Report IR 的參照在重跑 `collect` 後仍有效。
+- **穩定 ID**: `id = "ev-" + hex(SHA-256(platform | base_url | repository | kind | external_id))[0..16]`。同一證據重新蒐集得到相同 ID, 讓 Report IR 的參照在重跑 `collect` 後仍有效。細節 (M1, `WorkLens.Core.Evidence.EvidenceIds`):
+  - hash 輸入為 UTF-8 字串 `platform|base_url|repository|kind|external_id` (以 `|` 連接); `platform` / `kind` 為 JSON 的 snake_case 拼法 (`github`、`change_request`); hex 為小寫。
+  - `base_url` 先正規化: scheme / host 小寫、去除預設 port 443、去除結尾 `/` (例 `https://API.github.com:443/` → `https://api.github.com`); `repository` 轉小寫 (GitHub / GitLab 路徑不分大小寫)。
+  - Evidence 中 `source.base_url` 寫正規化值, `source.repository` 寫設定值。
+- **`document_id`** = `"evd-" + period.label + "-" + hex(SHA-256(UTF-8 of canonical JSON of query))[0..8]` (小寫 hex; `query.sources` 依設定順序, `base_url` 已正規化)。同一查詢重跑得到相同 ID。
 - `external_id`: commit 為完整 SHA; change_request 為 PR/MR number (`"!123"` / `"#123"` 前綴不存); issue 為 issue number。
 - **`occurred_at`** 是歸屬期間的時間 (OQ-07 預設: commit = author date; change_request = merged_at, 未合併為 created_at; issue = closed_at, 未關閉為 created_at)。其他時間原樣保存。
 - **時間區分**: `timestamps.*` 為來源事件時間; `fetched_at` 為擷取時間 (交接文件 §3.1)。
-- **去重**: 同一 commit 出現在多個分支時只保留一筆 (以 ID); cherry-pick / squash 產生的不同 SHA 不自動合併, 而以 `relations` (`contains`: PR → commits) 關聯, 由分析者判斷 (交接文件 §6)。`duplicate` flag 只在可確定時標記 (例如同 patch-id, M1 評估)。
+- **蒐集範圍** (M1, OQ-07): commit = default branch 歷史 + 期間內 PR/MR 的 commits, 不列舉所有分支。GitHub commits API 依 committer date 篩選, 查詢窗為 `[period.start, period.end + 30 天]`, 本地再以 author date ∈ `[start, end)` 篩選 (committer date 晚於 end + 30 天的 commit 不會被取得, 已知限制)。期間內 PR (以 `occurred_at` 判定) 的 commits 中身分相符者全部收錄, `occurred_at` 為其 author date (可能在期間外), 由該 PR 以 `contains` 關聯; 身分不符的 commit 不收錄, 也不出現在 relations。
+- **身分比對** (M1, OQ-15, `WorkLens.Core.Identities.IdentityMatcher`): identity 沒有 `platform` 時適用所有平台; email 與 username 比對不分大小寫; GitHub noreply email (`<id>+<login>@users.noreply.github.com` 與 `<login>@users.noreply.github.com`) 解析出 login 再以 username 比對。角色優先序: `author` (author login 或 email) > `co_author` (`Co-authored-by` trailer 的 email) > `committer` (committer login / email); 都不符合則不收錄。`author` 欄位記錄**本人在該 item 中出現的身分** (co_author 為 trailer 的 name / email, committer 為 committer 欄位); email 不符合 JSON Schema `format: email` 時省略該欄位。
+- **Flags** (M1): `merge_commit` = parents > 1; `revert` = 標題以 `Revert "` 開頭; `bot` = 作者帳號 `type: Bot` 或 login 以 `[bot]` 結尾。collect 只標記, 不排除; `exclude` 由 digest (M2) 套用。
+- **去重**: 同一 commit 出現在多個分支 (或同時在 default branch 與 PR 中) 時只保留一筆 (以 ID): relations 取聯集、role 取優先序最高者、其餘欄位以 commit detail 為準; cherry-pick / squash 產生的不同 SHA 不自動合併, 而以 `relations` (`contains`: PR → commits) 關聯, 由分析者判斷 (交接文件 §6)。`duplicate` flag 只在可確定時標記 (例如同 patch-id, M1 評估)。
 - **工作完成判準不在 Evidence IR**: `state: merged` 只是事實, 是否「完成」由 Report IR 判定。
 
 ## 3. Report IR (`urn:worklens:schema:report-ir:1.0`)
@@ -260,7 +267,7 @@ public sealed record ValidationResult(IReadOnlyList<ValidationIssue> Issues)
 public sealed record WorkLensError(string Code, string Message, IReadOnlyDictionary<string, string>? Details = null);
 ```
 
-`SourceCollectResult`、`AnalysisResult`、`LayoutResult`、`RenderResult` 皆為「成功值 或 `WorkLensError` 清單」的形式。M0: `LayoutResult(PresentationDocument? Presentation, Errors)`、`RenderResult(string? OutputPath, Errors)`; error 的 `Details["path"]` 為 manifest 的 JSON Pointer (CLI 轉成 `issues`)。
+`SourceCollectResult`、`AnalysisResult`、`LayoutResult`、`RenderResult` 皆為「成功值 或 `WorkLensError` 清單」的形式。M1: `SourceCollectResult(Items, Errors, Warnings)` — `Warnings` (`IReadOnlyList<WorkLensError>`) 為非致命問題 (例 `source.truncated`: PR commits 超過 250、commit files 達 3000), 不中止蒐集, CLI 以 warning issue 輸出。M0: `LayoutResult(PresentationDocument? Presentation, Errors)`、`RenderResult(string? OutputPath, Errors)`; error 的 `Details["path"]` 為 manifest 的 JSON Pointer (CLI 轉成 `issues`)。
 
 ### 7.1 版本契約
 
@@ -268,8 +275,8 @@ public sealed record WorkLensError(string Code, string Message, IReadOnlyDiction
 - 讀取時先讀 `schema_version`: 只接受內建的版本; 不是內建版本 (不同 major, 或比內建更新的 minor) 回 `schema.unsupported_version`, 不嘗試猜測 (migration 見 [schema-versioning.md](schema-versioning.md))。
 - Validator 依文件的 `schema_version` 選擇 schema, 不是依程式的最新版本。
 
-### 7.2 DI
+### 7.2 組裝 (無 DI 容器)
 
-- 只有入口 project (Cli) 組裝 DI (`Microsoft.Extensions.DependencyInjection`, M1 起需要時引入)。
-- Connectors 以 `ISourceConnector` 多重註冊, 依 `Platform` 選擇; Renderer 依 `Format` 選擇。
+- 只有入口 project (Cli) 組裝元件; v0.1 不使用 DI 容器 (`Microsoft.Extensions.DependencyInjection`) 與 `IHttpClientFactory` — CLI 是短命程序, 手動組裝即可 (M1 決策, [ADR-0008](../adr/0008-libraries-schema-validation-and-http.md))。
+- `collect` 為每個 source 建立一個 connector 與一個 `HttpClient` (共用同一個內層 `HttpMessageHandler`); connector 依 source 的 `platform` 選擇; Renderer 依 `Format` 選擇。
 - Core 型別不依賴 DI 容器; `WorkLensSchemaRegistry` 為 process 內單例 (lazy 載入 embedded schemas)。

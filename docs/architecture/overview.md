@@ -40,7 +40,7 @@ v0.1 的關鍵架構決策 (Decided, [ADR-0004](../adr/0004-agent-as-analyzer.md
 | PPTX 生成 | Open XML SDK (樣本模板 PoC 通過, [報告](../plans/pptx-poc-report.md)) | Decided | [ADR-0006](../adr/0006-pptx-open-xml-sdk.md) |
 | 儲存 | 工作目錄內 JSON 檔 + provenance manifest; SQLite 延後 | Proposed | [ADR-0007](../adr/0007-storage-workspace-json-files.md) |
 | Schema 驗證 | JsonSchema.Net 9.x (接受 OSMF EULA) | Decided | [ADR-0008](../adr/0008-libraries-schema-validation-and-http.md) |
-| Source connector HTTP | HttpClient typed client | Proposed | ADR-0008 |
+| Source connector HTTP | BCL `HttpClient` (每個 source 一個, 注入 connector); 無 `IHttpClientFactory` / DI | Proposed | ADR-0008 |
 | CLI 解析 | System.CommandLine 3.x | Proposed | ADR-0008 |
 | 企業 PPTX 模板 | 尚無; PoC 用自製樣本模板 | Decided (現況) | [pptx-poc-plan.md](../plans/pptx-poc-plan.md) |
 | 文件語言 | 繁中敘述 + 英文識別字 | Decided | — |
@@ -82,21 +82,23 @@ v0.1 的關鍵架構決策 (Decided, [ADR-0004](../adr/0004-agent-as-analyzer.md
 
 交接文件 §7 列出 8 個邏輯模組。v0.1 不為每個模組建立 `.csproj` (避免空專案與過早的邊界), 改以**命名空間 + 相依規則**維持邊界, 在實際需要隔離相依時才拆專案 (Proposed, [ADR-0002](../adr/0002-modular-monolith.md))。
 
-### 4.1 已建立 (v0.1 骨架 + M0)
+### 4.1 已建立 (v0.1 骨架 + M0 + M1)
 
 | Project | 內容 | 允許的相依 |
 |---|---|---|
 | `src/WorkLens.Core` | 三層 IR records、Template Manifest model、模組契約 interfaces、錯誤模型、`WorkLensJson` 序列化設定、`WorkLensSchemaRegistry` / `IrSchemaValidator`、embedded schemas | BCL、`JsonSchema.Net` (與其遞移相依) |
 | `src/WorkLens.Rendering.Pptx` | `PptxRenderer : IOutputRenderer` (Open XML; M0) | Core、`DocumentFormat.OpenXml` |
-| `src/WorkLens.Cli` | `worklens` 執行檔、命令解析、輸出格式、exit codes | Core、Rendering.Pptx、`System.CommandLine` |
+| `src/WorkLens.Cli` | `worklens` 執行檔、命令解析、輸出格式、exit codes | Core、Rendering.Pptx、Connectors.Git (M1)、`System.CommandLine` |
 | `tests/WorkLens.Core.Tests` | Schema / 範例 / 模型一致性、Core 相依規則、Validator / Layout Resolver | Core、xUnit v3 |
 | `tests/WorkLens.Rendering.Pptx.Tests` | Renderer 結構斷言、`OpenXmlValidator`、正規化 snapshot (不需 Office) | Core、Rendering.Pptx、`DocumentFormat.OpenXml`、xUnit v3 |
+| `src/WorkLens.Connectors.Git` (M1) | GitHub connector (M1a; GitLab 於 M1b)、HTTP 分頁 / retry / rate limit | Core、BCL (無 NuGet 直接相依) |
+| `tests/WorkLens.Connectors.Git.Tests` (M1) | HTTP client 與 connector 的 fixture 測試、Connectors 相依規則 | Core、Connectors.Git、xUnit v3 |
+| `tests/WorkLens.Cli.Tests` (M1) | 以 `CliHost` in-process 執行命令 (collect、token 不外洩、M0 命令 smoke) | Core、Connectors.Git、Cli、xUnit v3 |
 
 ### 4.2 之後依 Milestone 建立 (預計)
 
 | Project | Milestone | 內容 | 允許的相依 |
 |---|---|---|---|
-| `src/WorkLens.Connectors.Git` | M1 | GitHub / GitLab connectors、作者識別、去重 | Core、`Microsoft.Extensions.Http` |
 | `src/WorkLens.Application` | 視需要 (M3) | 若 CLI 以外出現第二個入口 (MCP / API), 把 pipeline 編排從 Cli 移出 | Core |
 
 Layout Resolver (Report IR → Presentation IR) 是純函式, 放在 Core (`WorkLens.Core.Layout` 命名空間), 不依賴 Open XML。
@@ -108,8 +110,9 @@ Layout Resolver (Report IR → Presentation IR) 是純函式, 放在 Core (`Work
    `DocumentFormat.OpenXml*`、`Octokit*`、`Microsoft.Extensions.AI*`、`OpenAI*`、`Anthropic*`、`System.CommandLine*`、`Microsoft.Extensions.Http*`。
    Core 的直接套件相依只允許 `JsonSchema.Net`。
 3. Connectors 與 Rendering 之間不得互相相依; 只透過 Core 的 IR 溝通。
-4. 只有入口 project (`WorkLens.Cli`, 未來的 MCP / API) 可以組裝 DI 與讀取環境變數 / 設定檔。
-5. 測試 project 可以相依任何 project, 但不得被其他 project 相依。
+4. 只有入口 project (`WorkLens.Cli`, 未來的 MCP / API) 可以組裝元件與讀取環境變數 / 設定檔 (v0.1 不使用 DI 容器, ADR-0008)。
+5. 測試 project 可以相依任何 project, 但不得被其他 project 相依 (也不互相相依; 共用的測試輔助檔以 `<Compile Include=... Link=...>` 編入)。
+6. **`WorkLens.Connectors.Git` 只相依 Core 與 BCL**: 不相依 Rendering、`System.CommandLine*`、`DocumentFormat.OpenXml*`, 也沒有 NuGet 直接相依 (以 `ConnectorsDependencyRulesTests` 檢查)。
 
 ## 5. 模組契約 (摘要)
 
@@ -117,7 +120,7 @@ Layout Resolver (Report IR → Presentation IR) 是純函式, 放在 Core (`Work
 
 | 契約 | 輸入 → 輸出 | v0.1 實作 |
 |---|---|---|
-| `ISourceConnector` | `SourceQuery` → `EvidenceDocument` (片段) | M1: GitHub、GitLab |
+| `ISourceConnector` | `SourceQuery` → `SourceCollectResult` (items + errors + warnings) | M1a: GitHub; M1b: GitLab |
 | `IEvidenceDigester` | `EvidenceDocument` + `DigestOptions` → `EvidenceDigest` | M2 |
 | `IAnalysisModule` | `EvidenceDigest` → `ReportDocument` | v0.1 由 **agent** 擔任, WorkLens 內無實作; 契約保留給未來內建 LLM / headless runner |
 | `IReportValidator` | `Validate(string reportJson, EvidenceDocument? evidence, string? evidenceSha256)` → `ValidationResult` | M0: `ReportValidator` (JSON 解析、schema、參照完整性、domain 規則) |

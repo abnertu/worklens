@@ -1,8 +1,8 @@
-# ADR-0008: 函式庫選型 — JsonSchema.Net、System.CommandLine、HttpClient typed client
+# ADR-0008: 函式庫選型 — JsonSchema.Net、System.CommandLine、HttpClient
 
 ## Status
 
-Accepted (JsonSchema.Net 9.x: 使用者決策) / Proposed (其餘) — 2026-11-11
+Accepted (JsonSchema.Net 9.x: 使用者決策) / Proposed (其餘) — 2026-11-11; Decision 3 於 M1 修訂 (2026-11-12)
 
 ## Context
 
@@ -18,7 +18,10 @@ Accepted (JsonSchema.Net 9.x: 使用者決策) / Proposed (其餘) — 2026-11-1
    - `EvaluationOptions.RequireFormatValidation = true` (預設不驗證 `format`); `OutputFormat.Hierarchical` + `IncludeApplicatorErrors = false`, 只走訪失敗節點並略過 `if` / `not` 子樹與通過的 `oneOf` 分支, 讓錯誤只剩可修正的 leaf keyword。
    - 注意: 未知的 `format` 名稱不會報錯, 因此以測試檢查 schema 中的 format 值與 keyword 拼字。
 2. **CLI: System.CommandLine 3.x** (MIT)。
-3. **HTTP: `HttpClient` + typed client** (`IHttpClientFactory`, M1), 自行實作分頁 (GitHub `Link` header、GitLab `x-next-page`) 與 retry / backoff (尊重 `Retry-After`、`x-ratelimit-reset`)。
+3. **HTTP: BCL `HttpClient`, 不使用 `IHttpClientFactory` / DI 容器 / `Microsoft.Extensions.Http`** (M1 修訂)。`worklens` 是短命 CLI 程序, 沒有 factory 要解決的 socket 耗盡與 DNS 更新問題:
+   - Cli 為每個 source 建立一個 `HttpClient` (`SocketsHttpHandler { AllowAutoRedirect = false }`, 以 `GitHubHttp.CreateClient` 設定 `BaseAddress`、`User-Agent`、API 版本 header 與 `Authorization`), 注入 connector; 測試注入 fixture `HttpMessageHandler`。
+   - 自行實作分頁 (GitHub `Link` header、GitLab `x-next-page`) 與 retry / backoff (尊重 `Retry-After`、`x-ratelimit-reset`、secondary rate limit; 等待上限與次數見 [domain-model.md](../design/domain-model.md) 與 cli-ux), 延遲與時間以注入的函式與 `TimeProvider` 執行, 測試不真的等待。
+   - `Connectors.Git` 只相依 Core 與 BCL。
 
 ## Alternatives
 
@@ -32,6 +35,8 @@ Accepted (JsonSchema.Net 9.x: 使用者決策) / Proposed (其餘) — 2026-11-1
 | CLI | 手寫解析 | 無相依, 但 help / 驗證需自行實作 |
 | HTTP | Octokit.NET | GitHub 專用, 型別完整; 但 GitLab 仍需另一套, 且只用到少數 endpoint; 引入大型相依 |
 | HTTP | GitLabApiClient 等社群套件 | 維護狀況不一 |
+| HTTP | `IHttpClientFactory` + typed client (原 Decision 3) | 為長駐服務設計 (handler 輪替、DNS 更新); 短命 CLI 不需要, 且引入 DI 容器與 `Microsoft.Extensions.Http` 相依 |
+| HTTP | Polly / `Microsoft.Extensions.Http.Resilience` | 功能完整, 但 retry 規則少 (rate limit 三種情況 + 5xx / 網路), 自行實作較易以 fixture 測試完整決策順序 |
 
 ## Consequences
 

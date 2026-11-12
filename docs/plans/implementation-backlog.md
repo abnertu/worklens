@@ -48,31 +48,36 @@ M0 與 M1 只透過 Evidence IR schema 相依, 可平行開發; 但 M0 的參照
 
 ## M1 — Git Collectors (Phase 1)
 
-子計畫: `m1-git-collectors`
+子計畫 (使用者決定拆成兩份, 2026-11-12):
+- `m1a-github-collect`: 設定 schema 與載入、期間計算、Redactor、身分比對、HTTP 基礎 (分頁 / retry / rate limit)、GitHub connector、`worklens collect`。
+- `m1b-gitlab-connector`: 在 m1a 的接縫 (`ISourceConnector`、HTTP 基礎、`collect`) 上加入 GitLab 與 self-managed GitLab 實測。
+
+狀態: m1a 進行中。
 
 目標: 從 GitHub / GitLab 取得期間內的活動, 產生 Evidence IR。
 
 工作項目:
-1. `worklens.json` 設定 schema 與載入 (含 `config.secret_in_file` 檢查)。
-2. 期間計算: IANA 時區月界 → UTC (OQ-07 預設規則)。
-3. `WorkLens.Connectors.Git`: GitHub (commits、PRs 及其 commits) 與 GitLab (commits、MRs 及其 commits) typed client; 分頁、retry / backoff、rate limit。
-4. 作者身分比對 (`identities`、`Co-authored-by`, OQ-15)、bot / merge commit 標記、跨分支去重、`contains` relations。
-5. 穩定 evidence ID; `worklens collect` (含 `--dry-run`); HTTP 快取。
-6. Redactor 與日誌脫敏 (security-privacy.md §3)。
+1. `worklens.json` 設定 schema 與載入 (含 `config.secret_in_file` 檢查) — m1a。
+2. 期間計算: IANA 時區月界 → UTC (OQ-07) — m1a。
+3. `WorkLens.Connectors.Git`: GitHub (default branch commits、PRs 及其 commits) typed client, 分頁、retry / backoff、rate limit — m1a; GitLab (default branch commits、MRs 及其 commits) — m1b。
+4. 作者身分比對 (`identities`、`Co-authored-by`, OQ-15)、bot / merge / revert 標記、同 SHA 去重、`contains` relations — m1a (GitLab 的對應於 m1b)。
+5. 穩定 evidence ID; `worklens collect` (含 `--dry-run`) — m1a。HTTP 回應快取 (ETag) 移至 Backlog (使用者決定)。
+6. Redactor 與日誌脫敏 (security-privacy.md §3) — m1a。
 
 ### Acceptance
-- 以錄製的 HTTP fixture 測試: 多頁分頁、429 + `Retry-After`、5xx 重試上限、權限不足 (exit 4)。
-- 同一 fixture 重跑 `collect`, evidence ID 與 `items` 內容相同 (`fetched_at` 除外)。
-- 期間邊界測試: 月初 / 月底跨時區的 commit 歸屬正確。
-- 失敗路徑輸出不含 token (security-privacy.md §8)。
-- 對一個真實的個人 repo 手動執行成功 (記錄於子計畫 evidence)。
+- 以錄製的 HTTP fixture 測試: 多頁分頁、429 + `Retry-After`、5xx 重試上限、權限不足 (exit 4) — m1a (GitHub)、m1b (GitLab)。
+- 同一 fixture 重跑 `collect`, evidence ID 與 `items` 內容相同 (`fetched_at` 除外) — m1a。
+- 期間邊界測試: 月初 / 月底跨時區的 commit 歸屬正確 — m1a。
+- 失敗路徑輸出不含 token (security-privacy.md §8) — m1a。
+- 對一個真實的 repo 手動執行成功 (記錄於子計畫 evidence): GitHub 個人 repo (m1a)、self-managed GitLab (m1b)。
 
 ### Depends on
 - Evidence IR schema 1.0 (已完成)。
-- OQ-02 (GitLab / GitHub Enterprise 型態)、OQ-07 (時間規則)、OQ-15 (身分規則) 在 M1 開始前確認或接受預設假設。
+- OQ-02、OQ-07、OQ-15: 已決定 (採預設假設, 使用者 2026-11-12)。
+- m1b 依賴 m1a。
 
 測試策略: typed client 以 `HttpMessageHandler` 替身回放 fixture; 正規化與去重為純函式單元測試。
-風險: GitLab self-managed 版本差異; 大型 repo 的 API 用量; squash / cherry-pick 的重複歸因只能部分處理。
+風險: GitLab self-managed 版本差異; 大型 repo 的 API 用量; squash / cherry-pick 的重複歸因只能部分處理; 只取 default branch 與 PR commits, 未進入 PR 的分支 commit 不會被蒐集。
 
 ## M2 — Agent Analysis Flow (Phase 2)
 
@@ -165,3 +170,4 @@ M0 與 M1 只透過 Evidence IR schema 相依, 可平行開發; 但 M0 的參照
 | Markdown / HTML / PDF renderer | 交接文件 §8 | 需要 PPTX 以外的輸出 |
 | 團隊報告 | OQ-03 | 需要多人報告 |
 | 像素級視覺回歸測試 | OQ-10 | 結構斷言不足以抓出版面回歸 |
+| HTTP 回應快取 (`<workspace>/cache/`, ETag / `If-None-Match`) | M1 (使用者決定延後) | 重跑 `collect` 的 API 用量或 rate limit 成為問題 |
