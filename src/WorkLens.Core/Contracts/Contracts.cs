@@ -81,6 +81,8 @@ public interface IReportValidator
 
 /// <summary>
 /// Deterministically maps a validated Report IR to Presentation IR using a Template Manifest (M0). A pure function.
+/// Manifest problems are errors and give no presentation; report content that the layout cannot show is a warning
+/// next to the presentation (see <see cref="LayoutResult.Warnings"/>).
 /// </summary>
 public interface ILayoutResolver
 {
@@ -92,7 +94,21 @@ public interface ILayoutResolver
 /// <see cref="Presentation"/> is <c>null</c> when <see cref="Errors"/> is not empty. Errors are manifest problems
 /// (<c>manifest.*</c>) whose <c>Details["path"]</c> is a JSON Pointer into the manifest.
 /// </summary>
-public sealed record LayoutResult(PresentationDocument? Presentation, IReadOnlyList<WorkLensError> Errors);
+/// <param name="Warnings">
+/// Problems that do not stop the layout, with a presentation: <c>layout.unplaced_narrative</c> for a report narrative
+/// that no slide shows. A 1.1 manifest reports each such narrative; a 1.0 manifest reports only support narratives.
+/// <c>Details["path"]</c> is a JSON Pointer into the report.
+/// </param>
+public sealed record LayoutResult(
+    PresentationDocument? Presentation,
+    IReadOnlyList<WorkLensError> Errors,
+    IReadOnlyList<WorkLensError> Warnings)
+{
+    public LayoutResult(PresentationDocument? presentation, IReadOnlyList<WorkLensError> errors)
+        : this(presentation, errors, [])
+    {
+    }
+}
 
 /// <summary>Renders a validated Presentation IR into an output file (M0: pptx).</summary>
 public interface IOutputRenderer

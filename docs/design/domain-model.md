@@ -224,8 +224,50 @@ Layout Resolver 規則 (M0, `WorkLens.Core.Layout.LayoutResolver`, 純函式; �
 - 每個 purpose 的 slot id 慣例: cover `title` (`labels.cover_title`, `{period}`)、`subtitle` (`subject.display_name`); summary `title`、`highlights` (bullets: 狀態統計 L0 + 活動統計 L1)、`activity` (table: repository、commit 數、merged change request 數); achievements `title`、`items` (table: 標題、狀態); work_item_detail `title` (work item 標題)、`facts` (bullets: facts L0 (無 facts 時用 `summary`) → 推論 L1 → 非 completed 的狀態 L1 → `human_notes` L1); narrative `title`、`body` (該 kind 的 narratives, L0); closing `title`。未列出的 slot 不綁定; 選填 slot 無內容時不綁定。narrative 與 achievements 無內容時不產生該 slide。
 - 統計只計 `occurred_at ∈ [period.start, period.end)` 且無 `duplicate` flag 的證據; 排除 `review_status: rejected` 的 work item; 順序依 `rank` (見 §3)。
 - Overflow: 文字超過 `max_chars` → 截為 `max_chars - 1` 個 text element + `…`; 超過 `max_items` → `overflow: split` 且為流動 slot (`facts`、`body`、`items`) 時拆成多頁並設 `continuation` (標題不變), 其他情況截斷; 有截斷的 SlotValue 設 `truncated: true`。
+- 1.1: 處理容量時保留值與項目的樣式角色。Layout 已標為 `truncated` 的值保持 `truncated`。欄有 `max_chars` 時, 該欄的儲存格用它。metric 的每個欄位依 `max_chars` 截斷, metric 不拆頁。
 - 所有輸出文字移除 XML 1.0 不允許的字元, 讓 resolver 產出的 presentation 必定可渲染。
 - 固定文字取自 `labels` (`{name}` 單次代入, 代入值內的大括號不展開), 未提供時用英文預設。容量值以 PowerPoint 實測校正 ([pptx-poc-report.md](../plans/pptx-poc-report.md) P5)。
+
+1.1 manifest 的 Layout Resolver 規則:
+
+- `schema_version` 不是 1.0 或 1.1 → `manifest.unsupported_version` (`/schema_version`)。只有以程式建立的 manifest 會有其他版本。
+- Resolver 也執行契約檢查, 所以以程式建立的 manifest 得到 `manifest.column_mismatch` 或 `manifest.unknown_style`, 而不是例外。
+- Slot 慣例 (`*` 標示 layout 必須有的 slot):
+  - cover: `title`*、`kicker`、`subtitle`、`subject`、`meta`、`band_year`、`band_month` (text)。
+  - summary: `title`*、`period` (text)、`metric_completed`、`metric_in_progress`、`metric_operations`、`metric_projects` (metric)、`highlights_title` (text)、`highlights` (bullets)、`support_title` (text)、`support` (bullets)、`activity_note` (text)。
+  - achievements、operations、challenge_table: `title`*、`status` (text)、`items` (table, 流動 slot)。
+  - work_item_detail: `title`*、`kicker`、`status`、`facts_title` (text)、`facts`* (bullets, 流動 slot)、`evidence_title` (text)、`evidence` (bullets)。
+  - narrative: `title`*、`body`* (bullets, 流動 slot)。closing: `title`*。
+- `required: true` 的 `metric_operations` slot → `manifest.slot_mismatch`。sequence 沒有 `operations` section 時, 這個 slot 不綁定。
+- 有代入的 labels (其他 1.1 labels 沒有代入): `period_title`: `{period}`、`{year}`、`{month}`; `cover_sources`: `{start}`、`{end}`、`{timezone}`、`{sources}`; `support_more`、`evidence_commits`: `{count}`; `continuation`: `{index}`、`{total}`; `challenges_status`: `{resolved}`、`{open}`; `evidence_issue`: `{id}`; `evidence_date`: `{date}`; `footer`: `{period}`; `detail_kicker`: `{section}`、`{project}`; `project_more`: `{project}`、`{count}`、`{more}`。
+- 期間值: `yyyy-MM` 的 `period.label` 給出 `{year}`、不補零的 `{month}`, 以及該月的第一天與最後一天 (`yyyy-MM-dd`)。其他 label 的年與月為空字串, 日期為 `period.start` 與 `period.end` 前一天的 UTC 日期。
+- 封面: `title` 為 `period_title`。`kicker` 與 `subtitle` 為 `cover_kicker` 與 `cover_subtitle`。`subject` 為 `subject.display_name`。`meta` 為 `cover_sources`。`band_year` 與 `band_month` 為年與月。封面沒有 `source_refs`。
+- `{sources}`: evidence query sources 的平台 (GitHub, 再 GitLab), 有未排除且沒有引用證據的 work item 時再加 `human_origin`。各部分以 ` · ` 連接。
+- 總覽數字卡: sequence 有 `operations` section 時, `metric_completed` 與 `metric_in_progress` 不計 ops 項目, `metric_operations` 計算 ops 項目。沒有時, 前兩張卡計入 ops 項目, `metric_operations` 不綁定。
+- `metric_projects` 計算計入證據 (不分 kind 與狀態) 的不重複 repository (平台、base URL、路徑)。`period` 為第一天、` – ` 與最後一天。
+- `highlights`: 前 3 個 completed work item, 依 rank 排序, 不分 category。每個項目為標題 (L0) 與一行 meta (L1, `meta`): 專案與證據文字, 沒有引用時為 `human_origin`。`max_items` 整項保留或捨去。沒有 completed 項目時, slot 為一項 `highlights_empty`, 樣式 `empty`。
+- `support`: 前 2 個 support narrative, 其餘以一行 `support_more` (`meta`) 表示。列出的 narrative 與這一行一定在 `max_items` 內, 需要空間時列出較少的 narrative。沒有 support 時, slot 為一項 `support_empty`。Slot 的樣式為 `support` 或 `support_empty`, `support_title` 的樣式為 `support_title` 或 `support_title_empty`。
+- `activity_note` 為 `summary_activity`。`{repositories}` 的算法同 `metric_projects`。`{commits}` 與 `{merged_changes}` 同 1.0。
+- 總覽的 `source_refs`: 同 1.0 的 work item 與計入的證據, layout 綁定 `support` 時再接前 2 個 support narrative。
+- 開發成果與維運表: 每個 work item 一列, 依 rank 排序。sequence 有 `operations` 時, 開發成果表不列 ops 項目。維運表只列 ops 項目。沒有列的表格不產生投影片。
+- 欄來自 `items` slot 的 `columns`, 欄名來自 `column_<key>`。沒有 `columns` 時, 開發成果表為 `title` 與 `status`, 欄名來自 `achievements_columns`; 維運表為 `title`、`status` 與 `evidence`, 欄名來自 `column_<key>`。
+- 狀態儲存格為 `cell_status_*`, 樣式為 `tag_completed`、`tag_in_progress` 或 `tag_unknown`。證據儲存格的樣式為 `meta`。`status` slot 為表中項目的 `summary_status`。`source_refs` 列出表中項目。
+- 專案文字: 引用證據 (`evidence_refs`, 再 facts 的 `evidence_refs`) 中第一個 repository 路徑的最後一段。有更多 repository 時用 `project_more`。找不到證據時為 `—`。Repository 以平台、base URL 與路徑區分。
+- 證據文字: 最多 3 個 change request 與 issue 的 ID, 其餘以 `+N` 表示, 再接項目引用且計入的 commit 數 (`evidence_commits`)。各部分以 ` · ` 連接。GitLab change request 為 `!<id>`; GitHub change request 與 issue 為 `#<id>`, issue 再經 `evidence_issue`。沒有引用時為 `human_origin`。有引用但沒有可顯示的內容時為 `—`。
+- 重複的 evidence ID 取第一個項目。指向不存在 ID 的引用被略過。
+- 細節投影片: sequence 有 `operation_details` 時, `work_item_details` 不列 ops 項目, `operation_details` 只列 ops 項目。`kicker` 為 `detail_kicker`: `{section}` 為 `achievements_title` 或 `operations_title`, `{project}` 為專案文字。`status` 為 `cell_status_*` 加 `tag_*` 樣式。`facts` 沒有狀態列。
+- 細節投影片的 `evidence`: 每個 change request 或 issue 為 ID (L0, `evidence_id`)、標題 (L1) 與一行 meta (L1, `meta`): 狀態、日期與包含且計入的 commit 數。之後, work item 引用、計入、且不被任何引用的 change request 包含的 commit 為一行 `evidence_commits` (L0, `meta`)。都沒有時為 `—`, 沒有引用時為 `human_origin`。`max_items` 整個 change request 保留或捨去。
+- Evidence IR 的標題經過投影片揭露處理 (ADR-0012)。Agent 或使用者撰寫的 work item 文字照原樣顯示。
+- 問題表: 每個 challenge 一列, 依 report 的順序。處理方式儲存格列出每個 `resolves` 指向該 challenge 的 improvement 的文字, 一項一行, 沒有時為 `—`。有 improvement 指向該 challenge 時, 狀態儲存格為 `challenge_resolved` 加 `tag_resolved`, 否則為 `challenge_open` 加 `tag_open`。
+- 欄來自 `items` slot 的 `columns`, 沒有時為 `problem`、`resolution` 與 `status`。欄名來自 `column_<key>`。`status` slot 為 `challenges_status` (`{resolved}`、`{open}`)。沒有 challenge 時不產生投影片。
+- Layout 綁定 `items` 時, `source_refs` 列出每個 challenge, 接著指向它的 improvements。
+- `challenges` 使用 `challenge_table` layout 時, 有 `resolves` 的 improvement 只出現在問題表。否則它留在改善事項頁。
+- Narrative 投影片列出該 kind 的 narratives。`support` 投影片的標題為 `support_title`。下月規劃的項目有樣式角色 `numbered`。
+- Closing 投影片沒有 `source_refs`。每張投影片的 `source_refs` 中每個 ID 只列一次, 依第一次出現的順序。
+- 拆頁的第 2 頁起, 標題為標題接上格式化後的 `continuation` label (`{index}`、`{total}`)。兩者之間不加字元。需要的空白寫在 label 中。
+- 標題超過 `max_chars` 時截掉標題的結尾, 保留整個標記。`max_chars` 小於標記長度加 2 時, 接起來的文字依一般規則截斷。
+- Manifest 有根層 `footer` 時, presentation 有 `footer`: `footer` label 代入 `{period}`, 依 `footer.max_chars` 截斷。沒有根層 `footer` 時, presentation 沒有 `footer`。
+- 每個不在任何投影片 `source_refs` 中的 narrative, Layout 回傳一個 `layout.unplaced_narrative` warning。`Details["path"]` 為 report 的 pointer `/narratives/<i>`。1.0 manifest 下, Layout 只回報 `support` narrative, 因為 1.0 manifest 沒有放置它的 section。
 
 ## 6. Evidence Digest (agent 輸入, 非正式 IR)
 
@@ -303,7 +345,7 @@ public sealed record ValidationResult(IReadOnlyList<ValidationIssue> Issues)
 public sealed record WorkLensError(string Code, string Message, IReadOnlyDictionary<string, string>? Details = null);
 ```
 
-`SourceCollectResult`、`AnalysisResult`、`LayoutResult`、`RenderResult` 皆為「成功值 或 `WorkLensError` 清單」的形式。M1: `SourceCollectResult(Items, Errors, Warnings)` — `Warnings` (`IReadOnlyList<WorkLensError>`) 為非致命問題 (例 `source.truncated`: GitHub PR commits 超過 250、GitHub 或 GitLab commit files 達 3000), 不中止蒐集, CLI 以 warning issue 輸出。M0: `LayoutResult(PresentationDocument? Presentation, Errors)`、`RenderResult(string? OutputPath, Errors)`; error 的 `Details["path"]` 為 manifest 的 JSON Pointer (CLI 轉成 `issues`)。
+`SourceCollectResult`、`AnalysisResult`、`LayoutResult`、`RenderResult` 皆為「成功值 或 `WorkLensError` 清單」的形式。M1: `SourceCollectResult(Items, Errors, Warnings)` — `Warnings` (`IReadOnlyList<WorkLensError>`) 為非致命問題 (例 `source.truncated`: GitHub PR commits 超過 250、GitHub 或 GitLab commit files 達 3000), 不中止蒐集, CLI 以 warning issue 輸出。`LayoutResult(PresentationDocument? Presentation, Errors, Warnings)`、`RenderResult(string? OutputPath, Errors)`; error 的 `Details["path"]` 為 manifest 的 JSON Pointer (CLI 轉成 `issues`)。`LayoutResult` 的 `Warnings` 為不中止 Layout 的問題 (`layout.unplaced_narrative`)。它們的 `Details["path"]` 為 report 的 JSON Pointer。
 
 ### 7.1 版本契約
 

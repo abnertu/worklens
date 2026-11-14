@@ -86,6 +86,7 @@
 
 - 統計數字由 WorkLens 從證據計算, agent 不能填寫。
 - 推論 (`agent_inference`) 在投影片上標示為推論與信心等級。
+- 投影片顯示的 change request 與 issue 標題先遮蔽 token 樣式, 再移除 URL、SSH remote、email 與 commit SHA ([ADR-0012](../adr/0012-slide-disclosure.md))。沒有路徑的主機名稱不移除。Agent 或使用者撰寫的文字照原樣顯示。
 - 驗證規則對無證據支持的百分比 / 倍數宣稱發出 warning (`rule.unreferenced_numeric_claim`)。
 - 不產生績效分數, 不以 commit 數排名。
 
@@ -96,4 +97,5 @@
 - [ ] Digest 預設不含 email、diff、URL query (M2)。
 - [ ] Secret pattern redaction 有單元測試 (M2)。
 - [x] `collect` 輸出未被 Git 忽略時警告 (`CollectCommandTests`, M1a; `init` 於 M3 提供)。
+- [x] 投影片的證據標題不含 URL、SSH remote、email、commit SHA 與 token (`SlideDisclosureTests`、`LayoutResolver11Tests`)。
 - [x] 模板範例 slides / 備註 / 文件屬性不帶入輸出 (M0; `PptxRendererTests` 斷言, 見 [pptx-poc-report.md](../plans/pptx-poc-report.md))。

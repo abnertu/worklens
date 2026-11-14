@@ -27,6 +27,46 @@
           },
           "kind": "text",
           "max_chars": 80
+        },
+        {
+          "id": "kicker",
+          "placeholder": {
+            "name": "Kicker"
+          },
+          "kind": "text",
+          "max_chars": 12
+        },
+        {
+          "id": "subject",
+          "placeholder": {
+            "name": "Subject"
+          },
+          "kind": "text",
+          "max_chars": 40
+        },
+        {
+          "id": "meta",
+          "placeholder": {
+            "name": "Meta"
+          },
+          "kind": "text",
+          "max_chars": 80
+        },
+        {
+          "id": "band_year",
+          "placeholder": {
+            "name": "Band Year"
+          },
+          "kind": "text",
+          "max_chars": 4
+        },
+        {
+          "id": "band_month",
+          "placeholder": {
+            "name": "Band Month"
+          },
+          "kind": "text",
+          "max_chars": 2
         }
       ],
       "brand": {
@@ -90,6 +130,54 @@
           "max_items": 3,
           "max_chars": 40,
           "overflow": "truncate"
+        },
+        {
+          "id": "period",
+          "placeholder": {
+            "name": "Period"
+          },
+          "kind": "text",
+          "max_chars": 40
+        },
+        {
+          "id": "metric_operations",
+          "placeholder": {
+            "name": "Metric 3"
+          },
+          "kind": "metric",
+          "max_chars": 12
+        },
+        {
+          "id": "metric_projects",
+          "placeholder": {
+            "name": "Metric 4"
+          },
+          "kind": "metric",
+          "max_chars": 12
+        },
+        {
+          "id": "highlights_title",
+          "placeholder": {
+            "name": "Highlights Title"
+          },
+          "kind": "text",
+          "max_chars": 16
+        },
+        {
+          "id": "support_title",
+          "placeholder": {
+            "name": "Support Title"
+          },
+          "kind": "text",
+          "max_chars": 16
+        },
+        {
+          "id": "activity_note",
+          "placeholder": {
+            "name": "Activity Note"
+          },
+          "kind": "text",
+          "max_chars": 80
         }
       ],
       "brand": {
@@ -154,6 +242,14 @@
             "table_row_alt"
           ],
           "table_style": "{2D5ABB26-0587-4C30-8999-92F81FD0307C}"
+        },
+        {
+          "id": "status",
+          "placeholder": {
+            "name": "Status"
+          },
+          "kind": "text",
+          "max_chars": 40
         }
       ],
       "brand": {
@@ -193,6 +289,48 @@
           "max_items": 5,
           "max_chars": 54,
           "overflow": "split"
+        },
+        {
+          "id": "kicker",
+          "placeholder": {
+            "name": "Kicker"
+          },
+          "kind": "text",
+          "max_chars": 40
+        },
+        {
+          "id": "status",
+          "placeholder": {
+            "name": "Status"
+          },
+          "kind": "text",
+          "max_chars": 12
+        },
+        {
+          "id": "facts_title",
+          "placeholder": {
+            "name": "Facts Title"
+          },
+          "kind": "text",
+          "max_chars": 16
+        },
+        {
+          "id": "evidence_title",
+          "placeholder": {
+            "name": "Evidence Title"
+          },
+          "kind": "text",
+          "max_chars": 16
+        },
+        {
+          "id": "evidence",
+          "placeholder": {
+            "name": "Evidence"
+          },
+          "kind": "bullets",
+          "max_items": 9,
+          "max_chars": 40,
+          "overflow": "truncate"
         }
       ],
       "brand": {
@@ -232,24 +370,18 @@
           "max_items": 6,
           "max_chars": 40,
           "overflow": "split",
-          "columns": [
-            {
-              "key": "title",
-              "width": 50
-            },
-            {
-              "key": "status",
-              "width": 20
-            },
-            {
-              "key": "evidence",
-              "width": 30
-            }
-          ],
           "header_style": "table_header",
           "row_styles": [
             "table_row"
           ]
+        },
+        {
+          "id": "status",
+          "placeholder": {
+            "name": "Status"
+          },
+          "kind": "text",
+          "max_chars": 40
         }
       ],
       "brand": {
@@ -348,6 +480,14 @@
             "table_row_alt"
           ],
           "table_style": "{2D5ABB26-0587-4C30-8999-92F81FD0307C}"
+        },
+        {
+          "id": "status",
+          "placeholder": {
+            "name": "Status"
+          },
+          "kind": "text",
+          "max_chars": 40
         }
       ],
       "brand": {
@@ -485,7 +625,7 @@
     "closing_title": "謝謝",
     "cover_kicker": "月報",
     "period_title": "{period}",
-    "cover_subtitle": "{name}",
+    "cover_subtitle": "研發工作月報",
     "cover_sources": "資料來源: {sources}",
     "metric_completed": "完成",
     "metric_completed_caption": "項工作完成",
@@ -500,7 +640,7 @@
     "support_title": "需要支援",
     "support_more": "另有 {count} 項",
     "support_empty": "目前不需要支援",
-    "continuation": "(續)",
+    "continuation": "（續 {index}/{total}）",
     "facts_title": "重點",
     "evidence_title": "證據",
     "evidence_state_open": "開啟",
@@ -508,7 +648,7 @@
     "evidence_state_merged": "已合併",
     "evidence_date": "{date}",
     "operations_title": "維運工作",
-    "challenges_status": "狀態",
+    "challenges_status": "已處理 {resolved} · 處理中 {open}",
     "challenge_resolved": "已解決",
     "challenge_open": "處理中",
     "column_title": "工作項目",
@@ -518,8 +658,10 @@
     "column_problem": "問題",
     "column_resolution": "解決方式",
     "evidence_commits": "{count} 個 commit",
-    "evidence_issue": "Issue",
+    "evidence_issue": "Issue {id}",
     "human_origin": "人工補充",
-    "footer": "{unit} · {period}"
+    "footer": "研發工作月報 · {period}",
+    "detail_kicker": "{section} · {project}",
+    "project_more": "{project} 等 {count} 個"
   }
 }

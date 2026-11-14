@@ -1,0 +1,267 @@
+{
+  "schema_version": "1.1",
+  "presentation_id": "prs-2026-10-example-user",
+  "source_report": {
+    "report_id": "rpt-2026-10-example-user",
+    "sha256": "c39d7cd11cb9cbf3394ea43d3b3792cc864303722f642836f6ae210c1715e28a"
+  },
+  "template": {
+    "id": "sample-monthly",
+    "version": "0.1.0"
+  },
+  "slides": [
+    {
+      "id": "slide-001",
+      "layout_id": "cover_v1",
+      "bindings": {
+        "title": {
+          "kind": "text",
+          "text": "2026-10 工作月報",
+          "style": "cover_title",
+          "truncated": false
+        },
+        "subtitle": {
+          "kind": "text",
+          "text": "Example User"
+        }
+      },
+      "source_refs": []
+    },
+    {
+      "id": "slide-002",
+      "layout_id": "summary_v1",
+      "bindings": {
+        "title": {
+          "kind": "text",
+          "text": "本月重點"
+        },
+        "highlights": {
+          "kind": "bullets",
+          "items": [
+            {
+              "text": "完成 2 項, 進行中 0 項, 待確認 1 項",
+              "level": 0,
+              "style": "emphasis"
+            },
+            {
+              "text": "2 個 repository, 1 個已合併的 PR",
+              "level": 1
+            }
+          ],
+          "style": "body",
+          "truncated": true
+        },
+        "activity": {
+          "kind": "table",
+          "columns": [
+            "Repository",
+            "Commits",
+            "Merged PR/MR"
+          ],
+          "rows": [
+            [
+              "example-org/auth-service",
+              "1",
+              "1"
+            ],
+            [
+              "platform/billing",
+              "1",
+              "0"
+            ]
+          ]
+        },
+        "merged": {
+          "kind": "metric",
+          "label": "已合併 PR",
+          "value": "1",
+          "caption": "2 個 repository",
+          "style": "metric_card",
+          "truncated": false
+        }
+      },
+      "source_refs": [
+        "wi-auth-refresh-rotation",
+        "wi-billing-rounding-fix",
+        "wi-onboarding-mentoring",
+        "ev-1a2b3c4d5e6f7a8b",
+        "ev-2b3c4d5e6f7a8b9c",
+        "ev-3c4d5e6f7a8b9c0d"
+      ]
+    },
+    {
+      "id": "slide-003",
+      "layout_id": "achievements_v1",
+      "bindings": {
+        "title": {
+          "kind": "text",
+          "text": "本月成果"
+        },
+        "items": {
+          "kind": "table",
+          "columns": [
+            "工作項目",
+            "狀態"
+          ],
+          "rows": [
+            [
+              "使用者驗證機制優化",
+              {
+                "text": "完成",
+                "style": "status_done"
+              }
+            ],
+            [
+              "修正新台幣發票進位",
+              {
+                "text": "待確認",
+                "style": "status_pending"
+              }
+            ],
+            [
+              "新進同仁 Onboarding",
+              "完成"
+            ]
+          ],
+          "style": "table_body",
+          "truncated": true
+        }
+      },
+      "source_refs": [
+        "wi-auth-refresh-rotation",
+        "wi-billing-rounding-fix",
+        "wi-onboarding-mentoring"
+      ]
+    },
+    {
+      "id": "slide-004",
+      "layout_id": "achievement_detail_v1",
+      "bindings": {
+        "title": {
+          "kind": "text",
+          "text": "使用者驗證機制優化"
+        },
+        "facts": {
+          "kind": "bullets",
+          "items": [
+            {
+              "text": "PR #42「Add refresh token rotation」於 2026-10-14 合併。",
+              "level": 0
+            },
+            {
+              "text": "Commit 新增 TokenService 的輪替邏輯與對應測試。",
+              "level": 0
+            },
+            {
+              "text": "(推論, 信心: 中) 降低被竊取的 Refresh Token 被重複使用的風險。",
+              "level": 1
+            }
+          ]
+        }
+      },
+      "source_refs": [
+        "wi-auth-refresh-rotation",
+        "ev-1a2b3c4d5e6f7a8b",
+        "ev-2b3c4d5e6f7a8b9c"
+      ]
+    },
+    {
+      "id": "slide-005",
+      "layout_id": "achievement_detail_v1",
+      "bindings": {
+        "title": {
+          "kind": "text",
+          "text": "修正新台幣發票進位"
+        },
+        "facts": {
+          "kind": "bullets",
+          "items": [
+            {
+              "text": "Commit 將 TWD 進位改為四捨五入 (half away from zero)。",
+              "level": 0
+            },
+            {
+              "text": "(狀態: 待確認)",
+              "level": 1
+            }
+          ]
+        }
+      },
+      "source_refs": [
+        "wi-billing-rounding-fix",
+        "ev-3c4d5e6f7a8b9c0d"
+      ]
+    },
+    {
+      "id": "slide-006",
+      "layout_id": "achievement_detail_v1",
+      "bindings": {
+        "title": {
+          "kind": "text",
+          "text": "新進同仁 Onboarding"
+        },
+        "facts": {
+          "kind": "bullets",
+          "items": [
+            {
+              "text": "協助兩位新進同仁完成開發環境建置與 code review 流程。",
+              "level": 0
+            },
+            {
+              "text": "(人工補充) 非 Git 活動, 人工補充。",
+              "level": 1
+            }
+          ]
+        }
+      },
+      "source_refs": [
+        "wi-onboarding-mentoring"
+      ]
+    },
+    {
+      "id": "slide-007",
+      "layout_id": "narrative_v1",
+      "bindings": {
+        "title": {
+          "kind": "text",
+          "text": "遇到的問題"
+        },
+        "body": {
+          "kind": "bullets",
+          "items": [
+            {
+              "text": "既有 Session 需相容舊格式 Token, 以過渡期雙格式驗證處理。",
+              "level": 0
+            }
+          ]
+        }
+      },
+      "source_refs": [
+        "nr-challenge-token-migration"
+      ]
+    },
+    {
+      "id": "slide-008",
+      "layout_id": "narrative_v1",
+      "bindings": {
+        "title": {
+          "kind": "text",
+          "text": "下月規劃"
+        },
+        "body": {
+          "kind": "bullets",
+          "items": [
+            {
+              "text": "11 月評估 SSO 整合方案。",
+              "level": 0
+            }
+          ]
+        }
+      },
+      "source_refs": [
+        "nr-next-plan-sso"
+      ]
+    }
+  ],
+  "footer": "Example User · 2026-10"
+}

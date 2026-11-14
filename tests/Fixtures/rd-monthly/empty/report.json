@@ -1,0 +1,47 @@
+{
+  "schema_version": "1.1",
+  "report_id": "rpt-2026-11-rd-empty",
+  "period": {
+    "label": "2026-11",
+    "start": "2026-10-31T16:00:00+00:00",
+    "end": "2026-11-30T16:00:00+00:00",
+    "timezone": "Asia/Taipei"
+  },
+  "subject": {
+    "display_name": "Example User"
+  },
+  "evidence_document": {
+    "document_id": "evd-2026-11-rd-empty",
+    "sha256": "45c30bd144d1e44278f807b42f186604acd4ee51df5380d5489488f5658023a9"
+  },
+  "work_items": [
+    {
+      "id": "wi-export-refactor",
+      "origin": "agent",
+      "category": "refactor",
+      "status": "in_progress",
+      "title": "匯出工作重構",
+      "summary": "重構進行中。",
+      "observed_facts": [
+        {
+          "statement": "一個進行中的 commit。",
+          "evidence_refs": [
+            "ev-d000000000000001"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "ev-d000000000000001"
+      ],
+      "rank": 1
+    }
+  ],
+  "narratives": [
+    {
+      "id": "nr-next-plan-1",
+      "kind": "next_plan",
+      "origin": "human",
+      "text": "完成匯出工作重構。"
+    }
+  ]
+}

@@ -80,6 +80,15 @@ public static class PresentationManifestChecker
                 IReadOnlyList<string?>?[] cellStyles = [];
                 if (value is TableSlotValue table)
                 {
+                    // The renderer sizes each column from the slot's columns, so the table must have one column for each.
+                    if (slot.Columns is { } columns && table.Columns.Count != columns.Count)
+                    {
+                        issues.Add(Issue(
+                            "presentation.table_column_count",
+                            $"{path}/columns",
+                            $"Slot '{slotId}' of layout '{layout.Id}' declares {columns.Count} columns, but slide {slide.Id} binds a table with {table.Columns.Count}."));
+                    }
+
                     cellStyles = CheckRows(table, path, issues);
                 }
 

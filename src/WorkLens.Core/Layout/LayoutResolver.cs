@@ -14,11 +14,12 @@ namespace WorkLens.Core.Layout;
 /// Deterministic Report IR → Presentation IR mapping (docs/design/domain-model.md section 5). A pure function: the
 /// same inputs always give the same output, with no clock, randomness or environment access.
 /// </summary>
-public sealed class LayoutResolver : ILayoutResolver
+public sealed partial class LayoutResolver : ILayoutResolver
 {
-    private const string Ellipsis = "…";
-
-    /// <summary>The slots each purpose binds, with their kinds; <c>Required</c> slots must exist in the layout.</summary>
+    /// <summary>
+    /// The slots each purpose binds under a 1.0 manifest, with their kinds; <c>Required</c> slots must exist in the
+    /// layout.
+    /// </summary>
     private static readonly Dictionary<LayoutPurpose, (string Id, SlotKind Kind, bool Required)[]> PurposeSlots = new()
     {
         [LayoutPurpose.Cover] = [("title", SlotKind.Text, true), ("subtitle", SlotKind.Text, false)],
@@ -29,13 +30,56 @@ public sealed class LayoutResolver : ILayoutResolver
         [LayoutPurpose.Closing] = [("title", SlotKind.Text, true)],
     };
 
+    /// <summary>The slots each purpose binds under a 1.1 manifest: one slot for each element of the report design.</summary>
+    private static readonly Dictionary<LayoutPurpose, (string Id, SlotKind Kind, bool Required)[]> PurposeSlots11 = new()
+    {
+        [LayoutPurpose.Cover] =
+        [
+            ("title", SlotKind.Text, true), ("kicker", SlotKind.Text, false), ("subtitle", SlotKind.Text, false),
+            ("subject", SlotKind.Text, false), ("meta", SlotKind.Text, false), ("band_year", SlotKind.Text, false),
+            ("band_month", SlotKind.Text, false),
+        ],
+        [LayoutPurpose.Summary] =
+        [
+            ("title", SlotKind.Text, true), ("period", SlotKind.Text, false), ("metric_completed", SlotKind.Metric, false),
+            ("metric_in_progress", SlotKind.Metric, false), ("metric_operations", SlotKind.Metric, false),
+            ("metric_projects", SlotKind.Metric, false), ("highlights_title", SlotKind.Text, false),
+            ("highlights", SlotKind.Bullets, false), ("support_title", SlotKind.Text, false), ("support", SlotKind.Bullets, false),
+            ("activity_note", SlotKind.Text, false),
+        ],
+        [LayoutPurpose.Achievements] = TableSlots(),
+        [LayoutPurpose.Operations] = TableSlots(),
+        [LayoutPurpose.ChallengeTable] = TableSlots(),
+        [LayoutPurpose.WorkItemDetail] =
+        [
+            ("title", SlotKind.Text, true), ("kicker", SlotKind.Text, false), ("status", SlotKind.Text, false),
+            ("facts_title", SlotKind.Text, false), ("facts", SlotKind.Bullets, true), ("evidence_title", SlotKind.Text, false),
+            ("evidence", SlotKind.Bullets, false),
+        ],
+        [LayoutPurpose.Narrative] = [("title", SlotKind.Text, true), ("body", SlotKind.Bullets, true)],
+        [LayoutPurpose.Closing] = [("title", SlotKind.Text, true)],
+    };
+
     /// <summary>The slot whose items flow onto continuation slides when <c>overflow: split</c>.</summary>
     private static readonly Dictionary<LayoutPurpose, string> FlowSlots = new()
     {
         [LayoutPurpose.Achievements] = "items",
+        [LayoutPurpose.Operations] = "items",
+        [LayoutPurpose.ChallengeTable] = "items",
         [LayoutPurpose.WorkItemDetail] = "facts",
         [LayoutPurpose.Narrative] = "body",
     };
+
+    /// <summary>
+    /// A 1.1 summary slot that stays unbound when the sequence has no operations section, so a manifest cannot
+    /// require it.
+    /// </summary>
+    private const string MetricOperationsSlot = "metric_operations";
+
+    private const string TitleSlot = "title";
+
+    private static (string Id, SlotKind Kind, bool Required)[] TableSlots() =>
+        [("title", SlotKind.Text, true), ("status", SlotKind.Text, false), ("items", SlotKind.Table, false)];
 
     public LayoutResult Resolve(ReportDocument report, string reportSha256, EvidenceDocument evidence, TemplateManifest manifest)
     {
@@ -43,13 +87,39 @@ public sealed class LayoutResolver : ILayoutResolver
         ArgumentNullException.ThrowIfNull(evidence);
         ArgumentNullException.ThrowIfNull(manifest);
 
+        bool v11;
+        switch (manifest.SchemaVersion)
+        {
+            case "1.0":
+                v11 = false;
+                break;
+            case "1.1":
+                v11 = true;
+                break;
+            default:
+                // Only a manifest built in code gets here: the CLI's schema validation refuses other versions first.
+                return new LayoutResult(null, [Error("manifest.unsupported_version", "/schema_version",
+                    $"Manifest schema_version {manifest.SchemaVersion} is not supported; use 1.0 or 1.1.")]);
+        }
+
         var idErrors = TemplateManifestChecker.CheckIds(manifest);
         if (idErrors.Count > 0)
         {
             return new LayoutResult(null, idErrors);
         }
 
-        var context = new Context(report, evidence, LayoutLabels.From(manifest.Labels));
+        // A 1.0 manifest has no table contracts, so this finds nothing for it. For a 1.1 manifest built in code, it
+        // keeps a bad column key from failing the table build.
+        var contractErrors = TemplateManifestChecker.CheckContracts(manifest);
+        if (contractErrors.Count > 0)
+        {
+            return new LayoutResult(null, contractErrors);
+        }
+
+        var conventions = v11 ? PurposeSlots11 : PurposeSlots;
+        var labels = LayoutLabels.From(manifest.Labels);
+        var context = new Context(report, evidence, labels, v11, manifest);
+        var continuation = v11 ? labels.Continuation : null;
         var errors = new List<WorkLensError>();
         var checkedLayouts = new Dictionary<int, bool>();
         var pages = new List<Page>();
@@ -66,17 +136,17 @@ public sealed class LayoutResolver : ILayoutResolver
             }
 
             var layout = manifest.Layouts[layoutIndex];
-            var expected = PurposeOf(entry.Section);
-            if (layout.Purpose != expected)
+            LayoutPurpose[] expected = v11 ? PurposesOf11(entry.Section) : [PurposeOf(entry.Section)];
+            if (!expected.Contains(layout.Purpose))
             {
                 errors.Add(Error("manifest.purpose_mismatch", $"/sequence/{s}/layout_id",
-                    $"Section {Name(entry.Section)} needs a layout with purpose {Name(expected)}, but '{layout.Id}' has purpose {Name(layout.Purpose)}."));
+                    $"Section {Name(entry.Section)} needs a layout with purpose {string.Join(" or ", expected.Select(Name))}, but '{layout.Id}' has purpose {Name(layout.Purpose)}."));
                 continue;
             }
 
             if (!checkedLayouts.TryGetValue(layoutIndex, out var layoutOk))
             {
-                layoutOk = CheckSlots(layout, layoutIndex, errors);
+                layoutOk = CheckSlots(layout, layoutIndex, conventions[layout.Purpose], v11, errors);
                 checkedLayouts[layoutIndex] = layoutOk;
             }
 
@@ -85,9 +155,9 @@ public sealed class LayoutResolver : ILayoutResolver
                 continue;
             }
 
-            foreach (var content in context.Contents(entry.Section))
+            foreach (var content in context.Contents(entry.Section, layout))
             {
-                pages.AddRange(Bind(layout, layoutIndex, content, errors));
+                pages.AddRange(Bind(layout, layoutIndex, conventions[layout.Purpose], content, continuation, errors));
             }
         }
 
@@ -101,7 +171,8 @@ public sealed class LayoutResolver : ILayoutResolver
                 $"slide-{i + 1:000}",
                 p.LayoutId,
                 p.Bindings,
-                p.SourceRefs,
+                // The 1.1 schema makes source_refs unique, and one improvement can resolve several challenges.
+                v11 ? p.SourceRefs.Distinct(StringComparer.Ordinal).ToList() : p.SourceRefs,
                 p.Continuation))
             .ToList();
 
@@ -110,8 +181,9 @@ public sealed class LayoutResolver : ILayoutResolver
             "prs-" + (report.ReportId.StartsWith("rpt-", StringComparison.Ordinal) ? report.ReportId[4..] : report.ReportId),
             new SourceReportRef(report.ReportId, reportSha256),
             new TemplateRef(manifest.Template.Id, manifest.Template.Version),
-            slides);
-        return new LayoutResult(presentation, []);
+            slides,
+            v11 && manifest.Footer is { } footer ? Footer(labels, report, footer) : null);
+        return new LayoutResult(presentation, [], UnplacedNarratives(report, slides, v11));
     }
 
     private static int IndexOfLayout(TemplateManifest manifest, string id)
@@ -137,11 +209,23 @@ public sealed class LayoutResolver : ILayoutResolver
         _ => LayoutPurpose.Narrative,
     };
 
+    private static LayoutPurpose[] PurposesOf11(ReportSection section) => section switch
+    {
+        ReportSection.Operations => [LayoutPurpose.Operations],
+        ReportSection.OperationDetails => [LayoutPurpose.WorkItemDetail],
+        ReportSection.Challenges => [LayoutPurpose.Narrative, LayoutPurpose.ChallengeTable],
+        _ => [PurposeOf(section)],
+    };
+
     /// <summary>Checks that the layout has the purpose's required slots and that known slots have the right kind.</summary>
-    private static bool CheckSlots(LayoutDefinition layout, int layoutIndex, List<WorkLensError> errors)
+    private static bool CheckSlots(
+        LayoutDefinition layout,
+        int layoutIndex,
+        (string Id, SlotKind Kind, bool Required)[] conventions,
+        bool v11,
+        List<WorkLensError> errors)
     {
         var before = errors.Count;
-        var conventions = PurposeSlots[layout.Purpose];
         foreach (var (id, _, required) in conventions)
         {
             if (required && !layout.Slots.Any(slot => slot.Id == id))
@@ -163,6 +247,12 @@ public sealed class LayoutResolver : ILayoutResolver
                     $"Slot '{slot.Id}' of layout '{layout.Id}' is required, but purpose {Name(layout.Purpose)} never fills it."));
             }
 
+            if (v11 && layout.Purpose == LayoutPurpose.Summary && slot.Id == MetricOperationsSlot && slot.Required == true)
+            {
+                errors.Add(Error("manifest.slot_mismatch", $"/layouts/{layoutIndex}/slots/{k}",
+                    $"Slot '{slot.Id}' of layout '{layout.Id}' cannot be required: it stays unbound when the sequence has no operations section."));
+            }
+
             if (convention.Id is not null && convention.Kind != slot.Kind)
             {
                 errors.Add(Error("manifest.slot_mismatch", $"/layouts/{layoutIndex}/slots/{k}/kind",
@@ -174,11 +264,17 @@ public sealed class LayoutResolver : ILayoutResolver
     }
 
     /// <summary>Binds one slide's content to the layout's slots, applying max_chars / max_items and splitting.</summary>
-    private static IEnumerable<Page> Bind(LayoutDefinition layout, int layoutIndex, SlideContent content, List<WorkLensError> errors)
+    private static IEnumerable<Page> Bind(
+        LayoutDefinition layout,
+        int layoutIndex,
+        (string Id, SlotKind Kind, bool Required)[] known,
+        SlideContent content,
+        string? continuation,
+        List<WorkLensError> errors)
     {
         FlowSlots.TryGetValue(layout.Purpose, out var flowSlot);
         var bound = new List<(string Id, List<SlotValue> Chunks)>();
-        var known = PurposeSlots[layout.Purpose];
+        SlotDefinition? titleSlot = null;
 
         for (var k = 0; k < layout.Slots.Count; k++)
         {
@@ -189,7 +285,7 @@ public sealed class LayoutResolver : ILayoutResolver
             }
 
             var value = content.Values.GetValueOrDefault(slot.Id);
-            if (value is null || IsEmpty(value))
+            if (value is null || SlotFitter.IsEmpty(value))
             {
                 if (slot.Required == true)
                 {
@@ -201,9 +297,16 @@ public sealed class LayoutResolver : ILayoutResolver
             }
 
             var split = slot.Overflow == OverflowPolicy.Split && slot.Id == flowSlot;
-            bound.Add((slot.Id, Fit(value, slot.MaxChars, slot.MaxItems, split)));
+            bound.Add((slot.Id, SlotFitter.Fit(value, slot, split, content.Grouped?.Contains(slot.Id) == true)));
+            if (slot.Id == TitleSlot)
+            {
+                titleSlot = slot;
+            }
         }
 
+        IReadOnlyList<string> sourceRefs = content.SlotRefs is { } slotRefs
+            ? [.. content.SourceRefs, .. bound.SelectMany(b => slotRefs.GetValueOrDefault(b.Id) ?? [])]
+            : content.SourceRefs;
         var total = bound.Count == 0 ? 1 : bound.Max(b => b.Chunks.Count);
         for (var page = 0; page < total; page++)
         {
@@ -213,97 +316,73 @@ public sealed class LayoutResolver : ILayoutResolver
                 bindings[id] = chunks[Math.Min(page, chunks.Count - 1)];
             }
 
+            if (page > 0 && continuation is not null && titleSlot is not null && content.Values[TitleSlot] is TextSlotValue title)
+            {
+                var marker = LayoutLabels.Format(continuation, new Dictionary<string, string>
+                {
+                    ["index"] = (page + 1).ToString(CultureInfo.InvariantCulture),
+                    ["total"] = total.ToString(CultureInfo.InvariantCulture),
+                });
+                bindings[TitleSlot] = ContinuedTitle(title, marker, titleSlot);
+            }
+
             yield return new Page(
                 layout.Id,
                 bindings,
-                content.SourceRefs,
+                sourceRefs,
                 total > 1 ? new SlideContinuation(page + 1, total) : null);
         }
     }
 
-    private static bool IsEmpty(SlotValue value) => value switch
-    {
-        TextSlotValue t => t.Text.Length == 0,
-        BulletsSlotValue b => b.Items.Count == 0,
-        TableSlotValue t => t.Rows.Count == 0,
-        _ => true,
-    };
-
     /// <summary>
-    /// Sanitizes and truncates text, then truncates or splits items. Returns one value per page; a page's value is
-    /// marked <c>truncated</c> when text on that page was shortened or items were dropped.
+    /// <c>layout.unplaced_narrative</c> for each narrative that no slide shows. Under 1.1, a narrative is placed when a
+    /// slide lists it in <c>source_refs</c>. A 1.0 manifest has no section for support, so only support narratives are
+    /// reported; the other kinds keep the 1.0 behavior.
     /// </summary>
-    private static List<SlotValue> Fit(SlotValue value, int? maxChars, int? maxItems, bool split)
+    private static List<WorkLensError> UnplacedNarratives(ReportDocument report, IReadOnlyList<Slide> slides, bool v11)
     {
-        (string Text, bool Truncated) Clip(string text)
+        var placed = slides.SelectMany(s => s.SourceRefs).ToHashSet(StringComparer.Ordinal);
+        var warnings = new List<WorkLensError>();
+        for (var i = 0; i < report.Narratives.Count; i++)
         {
-            var clean = RemoveInvalidXmlCharacters(text);
-            if (maxChars is { } max && new StringInfo(clean).LengthInTextElements > max)
+            var narrative = report.Narratives[i];
+            var unplaced = v11 ? !placed.Contains(narrative.Id) : narrative.Kind == NarrativeKind.Support;
+            if (unplaced)
             {
-                return (new StringInfo(clean).SubstringByTextElements(0, max - 1) + Ellipsis, true);
+                warnings.Add(new WorkLensError(
+                    "layout.unplaced_narrative",
+                    $"Report narrative '{narrative.Id}' ({Name(narrative.Kind)}) is on no slide: the manifest sequence has no section that shows it.",
+                    new Dictionary<string, string> { ["path"] = $"/narratives/{i}" }));
             }
-
-            return (clean, false);
         }
 
-        switch (value)
-        {
-            case TextSlotValue text:
-                {
-                    var (clipped, truncated) = Clip(text.Text);
-                    return [new TextSlotValue(clipped) { Truncated = Flag(truncated) }];
-                }
-
-            case BulletsSlotValue bullets:
-                {
-                    var items = bullets.Items
-                        .Select(i =>
-                        {
-                            var (text, truncated) = Clip(i.Text);
-                            return (new BulletItem(text, i.Level), truncated);
-                        })
-                        .ToList();
-                    return Chunk(items, maxItems, split)
-                        .Select(c => (SlotValue)new BulletsSlotValue(c.Items) { Truncated = Flag(c.Truncated) })
-                        .ToList();
-                }
-
-            case TableSlotValue table:
-                {
-                    var columns = table.Columns.Select(RemoveInvalidXmlCharacters).ToList();
-                    var rows = table.Rows
-                        .Select(r =>
-                        {
-                            var cells = r.Select(Clip).ToList();
-                            return ((IReadOnlyList<string>)cells.Select(c => c.Text).ToList(), cells.Any(c => c.Truncated));
-                        })
-                        .ToList();
-                    return Chunk(rows, maxItems, split)
-                        .Select(c => (SlotValue)new TableSlotValue(columns, c.Items) { Truncated = Flag(c.Truncated) })
-                        .ToList();
-                }
-
-            default:
-                throw new ArgumentOutOfRangeException(nameof(value));
-        }
-
-        static bool? Flag(bool truncated) => truncated ? true : null;
+        return warnings;
     }
 
-    /// <summary>Applies max_items: one chunk, a truncated chunk, or (split) one chunk per page.</summary>
-    private static List<(List<T> Items, bool Truncated)> Chunk<T>(List<(T Item, bool Truncated)> items, int? maxItems, bool split)
+    /// <summary>The footer of every slide: the <c>footer</c> label for the period, cut to the footer capacity.</summary>
+    private static string Footer(LayoutLabels labels, ReportDocument report, FooterDefinition footer)
     {
-        if (maxItems is not { } max || items.Count <= max)
+        var text = LayoutLabels.Format(labels.Footer, new Dictionary<string, string> { ["period"] = report.Period.Label });
+        var slot = new SlotDefinition("footer", new PlaceholderRef(), SlotKind.Text, MaxChars: footer.MaxChars);
+        return ((TextSlotValue)SlotFitter.Fit(new TextSlotValue(text), slot, split: false).Single()).Text;
+    }
+
+    /// <summary>
+    /// The title of a continuation slide: the title, then the marker with no character between. A title over
+    /// <c>max_chars</c> loses its own end, so that the whole marker stays readable. When <c>max_chars</c> leaves no
+    /// room for 2 characters of title, the joined text is truncated like any other text.
+    /// </summary>
+    private static SlotValue ContinuedTitle(TextSlotValue title, string marker, SlotDefinition slot)
+    {
+        var cleanMarker = RemoveInvalidXmlCharacters(marker);
+        var markerLength = new StringInfo(cleanMarker).LengthInTextElements;
+        if (slot.MaxChars is { } max && max < markerLength + 2)
         {
-            return [(items.Select(i => i.Item).ToList(), items.Any(i => i.Truncated))];
+            return SlotFitter.Fit(title with { Text = title.Text + cleanMarker }, slot, split: false).Single();
         }
 
-        if (!split)
-        {
-            return [(items.Take(max).Select(i => i.Item).ToList(), true)];
-        }
-
-        return items.Chunk(max).Select(c => (c.Select(i => i.Item).ToList(), c.Any(i => i.Truncated))).ToList();
+        var fitted = (TextSlotValue)SlotFitter.Fit(title, slot with { MaxChars = slot.MaxChars - markerLength }, split: false).Single();
+        return fitted with { Text = fitted.Text + cleanMarker };
     }
 
     /// <summary>Whether <paramref name="text"/> has a character that XML 1.0 does not allow.</summary>
@@ -356,22 +435,43 @@ public sealed class LayoutResolver : ILayoutResolver
         IReadOnlyList<string> SourceRefs,
         SlideContinuation? Continuation);
 
-    private sealed record SlideContent(Dictionary<string, SlotValue> Values, IReadOnlyList<string> SourceRefs);
+    /// <param name="SlotRefs">
+    /// IDs that a slide lists in <c>source_refs</c> only when it binds the slot that shows them, after
+    /// <paramref name="SourceRefs"/>.
+    /// </param>
+    /// <param name="Grouped">Slots whose items Layout already fitted to <c>max_items</c> in groups.</param>
+    private sealed record SlideContent(
+        Dictionary<string, SlotValue> Values,
+        IReadOnlyList<string> SourceRefs,
+        IReadOnlyDictionary<string, IReadOnlyList<string>>? SlotRefs = null,
+        IReadOnlySet<string>? Grouped = null);
 
     /// <summary>Report-derived content per section, computed once per resolve.</summary>
-    private sealed class Context
+    private sealed partial class Context
     {
         private readonly ReportDocument _report;
         private readonly EvidenceDocument _evidence;
         private readonly LayoutLabels _labels;
         private readonly List<WorkItem> _items;
         private readonly List<EvidenceItem> _counted;
+        private readonly bool _v11;
+        private readonly LayoutFacts _facts;
+        private readonly HashSet<ReportSection> _sections;
+        private readonly bool _challengeTable;
 
-        public Context(ReportDocument report, EvidenceDocument evidence, LayoutLabels labels)
+        public Context(ReportDocument report, EvidenceDocument evidence, LayoutLabels labels, bool v11, TemplateManifest manifest)
         {
             _report = report;
             _evidence = evidence;
             _labels = labels;
+            _v11 = v11;
+            _facts = new LayoutFacts(report, evidence, labels);
+            _sections = manifest.Sequence.Select(e => e.Section).ToHashSet();
+
+            // With a challenge table, an improvement that resolves a challenge shows in the table, not on its own page.
+            _challengeTable = manifest.Sequence.Any(e =>
+                e.Section == ReportSection.Challenges
+                && manifest.Layouts.FirstOrDefault(l => l.Id == e.LayoutId)?.Purpose == LayoutPurpose.ChallengeTable);
 
             // Rejected items are excluded; rank ascending with a missing rank last, ties in array order (stable sort).
             _items = report.WorkItems
@@ -388,7 +488,10 @@ public sealed class LayoutResolver : ILayoutResolver
                 .ToList();
         }
 
-        public IEnumerable<SlideContent> Contents(ReportSection section)
+        public IEnumerable<SlideContent> Contents(ReportSection section, LayoutDefinition layout) =>
+            _v11 ? Contents11(section, layout) : Contents10(section);
+
+        private IEnumerable<SlideContent> Contents10(ReportSection section)
         {
             switch (section)
             {

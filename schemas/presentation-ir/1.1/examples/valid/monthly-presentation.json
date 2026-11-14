@@ -6,8 +6,8 @@
     "sha256": "c39d7cd11cb9cbf3394ea43d3b3792cc864303722f642836f6ae210c1715e28a"
   },
   "template": {
-    "id": "sample-monthly",
-    "version": "0.1.0"
+    "id": "rd-monthly",
+    "version": "1.0.0"
   },
   "slides": [
     {
@@ -16,13 +16,31 @@
       "bindings": {
         "title": {
           "kind": "text",
-          "text": "2026-10 工作月報",
-          "style": "cover_title",
-          "truncated": false
+          "text": "2026-10"
         },
         "subtitle": {
           "kind": "text",
+          "text": "研發工作月報"
+        },
+        "kicker": {
+          "kind": "text",
+          "text": "月報"
+        },
+        "subject": {
+          "kind": "text",
           "text": "Example User"
+        },
+        "meta": {
+          "kind": "text",
+          "text": "資料來源: GitHub · GitLab · 人工補充"
+        },
+        "band_year": {
+          "kind": "text",
+          "text": "2026"
+        },
+        "band_month": {
+          "kind": "text",
+          "text": "10"
         }
       },
       "source_refs": []
@@ -33,51 +51,81 @@
       "bindings": {
         "title": {
           "kind": "text",
-          "text": "本月重點"
+          "text": "本月總覽"
+        },
+        "metric_completed": {
+          "kind": "metric",
+          "label": "完成",
+          "value": "1",
+          "caption": "項工作完成"
+        },
+        "metric_in_progress": {
+          "kind": "metric",
+          "label": "進行中",
+          "value": "0",
+          "caption": "項工作進行中"
         },
         "highlights": {
           "kind": "bullets",
           "items": [
             {
-              "text": "完成 2 項, 進行中 0 項, 待確認 1 項",
-              "level": 0,
-              "style": "emphasis"
+              "text": "使用者驗證機制優化",
+              "level": 0
             },
             {
-              "text": "2 個 repository, 1 個已合併的 PR",
-              "level": 1
+              "text": "auth-service · #42 · 1 個 commit",
+              "level": 1,
+              "style": "meta"
+            },
+            {
+              "text": "部署管線維護",
+              "level": 0
+            },
+            {
+              "text": "人工補充",
+              "level": 1,
+              "style": "meta"
             }
-          ],
-          "style": "body",
-          "truncated": true
-        },
-        "activity": {
-          "kind": "table",
-          "columns": [
-            "Repository",
-            "Commits",
-            "Merged PR/MR"
-          ],
-          "rows": [
-            [
-              "example-org/auth-service",
-              "1",
-              "1"
-            ],
-            [
-              "platform/billing",
-              "1",
-              "0"
-            ]
           ]
         },
-        "merged": {
+        "support": {
+          "kind": "bullets",
+          "items": [
+            {
+              "text": "需要帳務團隊提供 11 月對帳資料以驗證進位修正。",
+              "level": 0
+            }
+          ],
+          "style": "support"
+        },
+        "period": {
+          "kind": "text",
+          "text": "2026-10-01 – 2026-10-31"
+        },
+        "metric_operations": {
           "kind": "metric",
-          "label": "已合併 PR",
+          "label": "維運",
           "value": "1",
-          "caption": "2 個 repository",
-          "style": "metric_card",
-          "truncated": false
+          "caption": "項維運工作"
+        },
+        "metric_projects": {
+          "kind": "metric",
+          "label": "專案",
+          "value": "2",
+          "caption": "個專案"
+        },
+        "highlights_title": {
+          "kind": "text",
+          "text": "本月亮點"
+        },
+        "support_title": {
+          "kind": "text",
+          "text": "需要支援",
+          "style": "support_title"
+        },
+        "activity_note": {
+          "kind": "text",
+          "text": "2 repositories, 2 commits, 1 merged changes"
         }
       },
       "source_refs": [
@@ -86,7 +134,8 @@
         "wi-onboarding-mentoring",
         "ev-1a2b3c4d5e6f7a8b",
         "ev-2b3c4d5e6f7a8b9c",
-        "ev-3c4d5e6f7a8b9c0d"
+        "ev-3c4d5e6f7a8b9c0d",
+        "nr-support-billing-team"
       ]
     },
     {
@@ -95,47 +144,56 @@
       "bindings": {
         "title": {
           "kind": "text",
-          "text": "本月成果"
+          "text": "開發成果"
         },
         "items": {
           "kind": "table",
           "columns": [
             "工作項目",
-            "狀態"
+            "專案",
+            "狀態",
+            "證據"
           ],
           "rows": [
             [
               "使用者驗證機制優化",
+              "auth-service",
               {
-                "text": "完成",
-                "style": "status_done"
+                "text": "Completed",
+                "style": "tag_completed"
+              },
+              {
+                "text": "#42 · 1 個 commit",
+                "style": "meta"
               }
             ],
             [
               "修正新台幣發票進位",
+              "billing",
               {
-                "text": "待確認",
-                "style": "status_pending"
+                "text": "To confirm",
+                "style": "tag_unknown"
+              },
+              {
+                "text": "1 個 commit",
+                "style": "meta"
               }
-            ],
-            [
-              "新進同仁 Onboarding",
-              "完成"
             ]
-          ],
-          "style": "table_body",
-          "truncated": true
+          ]
+        },
+        "status": {
+          "kind": "text",
+          "text": "1 completed, 0 in progress, 1 to confirm"
         }
       },
       "source_refs": [
         "wi-auth-refresh-rotation",
-        "wi-billing-rounding-fix",
-        "wi-onboarding-mentoring"
+        "wi-billing-rounding-fix"
       ]
     },
     {
       "id": "slide-004",
-      "layout_id": "achievement_detail_v1",
+      "layout_id": "detail_v1",
       "bindings": {
         "title": {
           "kind": "text",
@@ -153,8 +211,45 @@
               "level": 0
             },
             {
-              "text": "(推論, 信心: 中) 降低被竊取的 Refresh Token 被重複使用的風險。",
+              "text": "(Inference, confidence: medium) 降低被竊取的 Refresh Token …",
               "level": 1
+            }
+          ],
+          "truncated": true
+        },
+        "kicker": {
+          "kind": "text",
+          "text": "開發成果 · auth-service"
+        },
+        "status": {
+          "kind": "text",
+          "text": "Completed",
+          "style": "tag_completed"
+        },
+        "facts_title": {
+          "kind": "text",
+          "text": "重點"
+        },
+        "evidence_title": {
+          "kind": "text",
+          "text": "證據"
+        },
+        "evidence": {
+          "kind": "bullets",
+          "items": [
+            {
+              "text": "#42",
+              "level": 0,
+              "style": "evidence_id"
+            },
+            {
+              "text": "Add refresh token rotation",
+              "level": 1
+            },
+            {
+              "text": "已合併 · 2026-10-14 · 1 個 commit",
+              "level": 1,
+              "style": "meta"
             }
           ]
         }
@@ -167,7 +262,7 @@
     },
     {
       "id": "slide-005",
-      "layout_id": "achievement_detail_v1",
+      "layout_id": "detail_v1",
       "bindings": {
         "title": {
           "kind": "text",
@@ -179,10 +274,33 @@
             {
               "text": "Commit 將 TWD 進位改為四捨五入 (half away from zero)。",
               "level": 0
-            },
+            }
+          ]
+        },
+        "kicker": {
+          "kind": "text",
+          "text": "開發成果 · billing"
+        },
+        "status": {
+          "kind": "text",
+          "text": "To confirm",
+          "style": "tag_unknown"
+        },
+        "facts_title": {
+          "kind": "text",
+          "text": "重點"
+        },
+        "evidence_title": {
+          "kind": "text",
+          "text": "證據"
+        },
+        "evidence": {
+          "kind": "bullets",
+          "items": [
             {
-              "text": "(狀態: 待確認)",
-              "level": 1
+              "text": "1 個 commit",
+              "level": 0,
+              "style": "meta"
             }
           ]
         }
@@ -194,22 +312,87 @@
     },
     {
       "id": "slide-006",
-      "layout_id": "achievement_detail_v1",
+      "layout_id": "operations_v1",
       "bindings": {
         "title": {
           "kind": "text",
-          "text": "新進同仁 Onboarding"
+          "text": "維運工作"
+        },
+        "items": {
+          "kind": "table",
+          "columns": [
+            "工作項目",
+            "狀態",
+            "證據"
+          ],
+          "rows": [
+            [
+              "部署管線維護",
+              {
+                "text": "Completed",
+                "style": "tag_completed"
+              },
+              {
+                "text": "人工補充",
+                "style": "meta"
+              }
+            ]
+          ]
+        },
+        "status": {
+          "kind": "text",
+          "text": "1 completed, 0 in progress, 0 to confirm"
+        }
+      },
+      "source_refs": [
+        "wi-onboarding-mentoring"
+      ]
+    },
+    {
+      "id": "slide-007",
+      "layout_id": "detail_v1",
+      "bindings": {
+        "title": {
+          "kind": "text",
+          "text": "部署管線維護"
         },
         "facts": {
           "kind": "bullets",
           "items": [
             {
-              "text": "協助兩位新進同仁完成開發環境建置與 code review 流程。",
+              "text": "更新 CI runner 映像檔並修正夜間部署排程。",
               "level": 0
             },
             {
-              "text": "(人工補充) 非 Git 活動, 人工補充。",
+              "text": "(Note) 非 Git 活動, 人工補充。",
               "level": 1
+            }
+          ]
+        },
+        "kicker": {
+          "kind": "text",
+          "text": "維運工作 · —"
+        },
+        "status": {
+          "kind": "text",
+          "text": "Completed",
+          "style": "tag_completed"
+        },
+        "facts_title": {
+          "kind": "text",
+          "text": "重點"
+        },
+        "evidence_title": {
+          "kind": "text",
+          "text": "證據"
+        },
+        "evidence": {
+          "kind": "bullets",
+          "items": [
+            {
+              "text": "人工補充",
+              "level": 0,
+              "style": "meta"
             }
           ]
         }
@@ -219,29 +402,43 @@
       ]
     },
     {
-      "id": "slide-007",
-      "layout_id": "narrative_v1",
+      "id": "slide-008",
+      "layout_id": "challenges_v1",
       "bindings": {
         "title": {
           "kind": "text",
-          "text": "遇到的問題"
+          "text": "問題與解決"
         },
-        "body": {
-          "kind": "bullets",
-          "items": [
-            {
-              "text": "既有 Session 需相容舊格式 Token, 以過渡期雙格式驗證處理。",
-              "level": 0
-            }
+        "items": {
+          "kind": "table",
+          "columns": [
+            "問題",
+            "解決方式",
+            "狀態"
+          ],
+          "rows": [
+            [
+              "既有 Session 需相容舊格式 Token, 以過渡期雙格式驗證處理。",
+              "以雙格式 Token 驗證過渡, 舊 Session 不需重新登入。",
+              {
+                "text": "已解決",
+                "style": "tag_resolved"
+              }
+            ]
           ]
+        },
+        "status": {
+          "kind": "text",
+          "text": "已處理 1 · 處理中 0"
         }
       },
       "source_refs": [
-        "nr-challenge-token-migration"
+        "nr-challenge-token-migration",
+        "nr-improvement-dual-token"
       ]
     },
     {
-      "id": "slide-008",
+      "id": "slide-009",
       "layout_id": "narrative_v1",
       "bindings": {
         "title": {
@@ -253,7 +450,8 @@
           "items": [
             {
               "text": "11 月評估 SSO 整合方案。",
-              "level": 0
+              "level": 0,
+              "style": "numbered"
             }
           ]
         }
@@ -261,7 +459,40 @@
       "source_refs": [
         "nr-next-plan-sso"
       ]
+    },
+    {
+      "id": "slide-010",
+      "layout_id": "narrative_v1",
+      "bindings": {
+        "title": {
+          "kind": "text",
+          "text": "需要支援"
+        },
+        "body": {
+          "kind": "bullets",
+          "items": [
+            {
+              "text": "需要帳務團隊提供 11 月對帳資料以驗證進位修正。",
+              "level": 0
+            }
+          ]
+        }
+      },
+      "source_refs": [
+        "nr-support-billing-team"
+      ]
+    },
+    {
+      "id": "slide-011",
+      "layout_id": "closing_v1",
+      "bindings": {
+        "title": {
+          "kind": "text",
+          "text": "謝謝"
+        }
+      },
+      "source_refs": []
     }
   ],
-  "footer": "Example User · 2026-10"
+  "footer": "研發工作月報 · 2026-10"
 }

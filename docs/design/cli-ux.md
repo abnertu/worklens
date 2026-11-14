@@ -231,12 +231,13 @@ stdout 恰好一個 JSON 物件, 結尾換行:
 | `schema.*` | JSON Schema 違規 (`schema.required`、`schema.additionalProperties`、`schema.type` 等) | 同上 |
 | `schema.unsupported_version` | 版本欄位缺少、不是字串, 或不是內建的版本。`instance_path` 為版本欄位: `/schema_version`, 設定檔為 `/config_version`。訊息列出內建的版本 | 同上 |
 | `ref.*`、`rule.*` | Report IR 參照完整性 (error, 含 `resolves`) 與 domain 規則 (warning), 見 domain-model §3.2 | 2 (`rule.*` 只在 `--strict` 時) |
-| `presentation.*` | presentation 與 manifest 不一致: `template_mismatch`、`unknown_layout`、`unknown_slot`、`slot_kind_mismatch`、`missing_required_slot`、`table_row_width`、`invalid_character` | 2 |
+| `presentation.*` | presentation 與 manifest 不一致: `template_mismatch`、`unknown_layout`、`unknown_slot`、`slot_kind_mismatch`、`missing_required_slot`、`table_row_width`、`table_column_count`、`invalid_character` | 2 |
+| `layout.unplaced_narrative` | `present` 對沒有出現在任何投影片的 report narrative 給 warning issue。1.1 manifest 回報每個這樣的 narrative。1.0 manifest 只回報 `support` narrative。1.0 manifest 下, 其他 kind 的未放置 narrative 沒有 issue。`instance_path` 為 report 的 pointer `/narratives/<i>` | 2 (只在 `--strict` 時) |
 | `input.not_found` | 輸入檔 (含模板) 不存在 | 3 |
 | `input.unreadable` | 輸入檔存在但讀取失敗 (IO 錯誤、權限) | 3 |
 | `input.invalid` | evidence / manifest 不是有效 JSON 或不符合 schema (`issues` 附上原因) | 3 |
 | `config.missing_manifest` | `present` / `render` 未給 `--manifest` | 3 |
-| `manifest.invalid` | manifest 內容有問題。`issues` 含 `manifest.duplicate_id` (layout id 或同一 layout 內的 slot id 重複)、`manifest.column_mismatch`、`manifest.unknown_style` 與 `manifest.unsupported_version` (`present` 與 `render`), 以及 `manifest.unknown_layout`、`manifest.purpose_mismatch` 與 `manifest.slot_mismatch` (只有 `present`) | 3 |
+| `manifest.invalid` | manifest 內容有問題。`issues` 含 `manifest.duplicate_id` (layout id 或同一 layout 內的 slot id 重複)、`manifest.column_mismatch`、`manifest.unknown_style` 與 `manifest.unsupported_version` (只有 `render`), 以及 `manifest.unknown_layout`、`manifest.purpose_mismatch` 與 `manifest.slot_mismatch` (只有 `present`) | 3 |
 | `template.invalid` | Renderer 回報模板問題; `issues` 含 `template.sha256_mismatch`、`template.unreadable`、`template.layout_missing`、`template.placeholder_missing`、`template.placeholder_position_missing` | 3 |
 | `output.write_failed` | 輸出目錄不存在或目標檔被鎖定 (例如在 PowerPoint 中開啟) | 3 |
 | `schema.not_found` | `schema show` 不認得的名稱或版本 (stderr) | 1 |
@@ -248,8 +249,10 @@ stdout 恰好一個 JSON 物件, 結尾換行:
 
 - `manifest.column_mismatch`: 欄 key 不屬於該 purpose 的集合、purpose 沒有集合卻有 `columns`、key 重複, 或寬度總和不是 100。
 - `manifest.unknown_style`: `header_style` 或 `row_styles` 的項目不是 `styles` 定義的角色。
-- `manifest.unsupported_version`: manifest 的版本不是 1.0。Layout 與 Renderer 尚未實作 1.1 的規則。`instance_path` 為 `/schema_version`。
+- `manifest.unsupported_version`: `render` 只接受 1.0 manifest, 因為 Renderer 尚未實作 1.1 的規則。`present` 接受 1.0 與 1.1 manifest。`instance_path` 為 `/schema_version`。
 - 契約檢查在版本檢查之前執行。
+
+`presentation.table_column_count`: 有 `columns` 的 slot, 其表格的欄數與 `columns` 不同。Renderer 實作 1.1 規則之前, `render` 拒絕 1.1 manifest, 所以這個 code 目前不會出現。
 
 `schema list --json` 的 `result` 每個 (name, version) 一筆:
 

@@ -135,20 +135,21 @@ internal static class InputFiles
 
     /// <summary>
     /// Loads the template manifest of <c>present</c> and <c>render</c> and checks it: duplicate ids and the 1.1
-    /// contracts first, then the supported version. Any problem is <c>manifest.invalid</c> (exit 3).
+    /// contracts first, then, for <c>render</c>, the supported version. Any problem is <c>manifest.invalid</c> (exit 3).
     /// </summary>
-    public static TemplateManifest LoadManifest(string manifestPath)
+    /// <param name="forRender">Refuse a manifest version that the renderer does not implement yet.</param>
+    public static TemplateManifest LoadManifest(string manifestPath, bool forRender)
     {
         var manifest = LoadUpstream<TemplateManifest>(Read(manifestPath), IrSchemaCatalog.TemplateManifest);
         IReadOnlyList<WorkLensError> errors =
             [.. TemplateManifestChecker.CheckIds(manifest), .. TemplateManifestChecker.CheckContracts(manifest)];
-        if (errors.Count == 0 && manifest.SchemaVersion != SupportedManifestVersion)
+        if (errors.Count == 0 && forRender && manifest.SchemaVersion != SupportedRenderManifestVersion)
         {
             errors =
             [
                 new WorkLensError(
                     "manifest.unsupported_version",
-                    $"Manifest schema_version {manifest.SchemaVersion} is not supported by present and render yet; use a {SupportedManifestVersion} manifest.",
+                    $"Manifest schema_version {manifest.SchemaVersion} is not supported by render yet; use a {SupportedRenderManifestVersion} manifest.",
                     new Dictionary<string, string> { ["path"] = "/schema_version" }),
             ];
         }
@@ -157,10 +158,10 @@ internal static class InputFiles
     }
 
     /// <summary>
-    /// The Layout Resolver and the renderer implement only the 1.0 manifest rules. A 1.1 manifest would give wrong
-    /// slides without an error, for example a support section filled with other work.
+    /// The renderer implements only the 1.0 manifest rules. A 1.1 presentation would lose its metrics and styles
+    /// without an error.
     /// </summary>
-    private const string SupportedManifestVersion = "1.0";
+    private const string SupportedRenderManifestVersion = "1.0";
 
     public static ValidationIssue Issue(string code, string pointer, string message) =>
         new(code, IssueSeverity.Error, pointer, null, message);

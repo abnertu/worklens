@@ -1,0 +1,249 @@
+{
+  "schema_version": "1.1",
+  "presentation_id": "prs-2026-11-rd-empty",
+  "source_report": {
+    "report_id": "rpt-2026-11-rd-empty",
+    "sha256": "1b97c66e5017f27b5b82622fe6c0d538cdc7c8916d192e2c0935168f47e4bcaf"
+  },
+  "template": {
+    "id": "rd-monthly",
+    "version": "1.0.0"
+  },
+  "slides": [
+    {
+      "id": "slide-001",
+      "layout_id": "cover_v1",
+      "bindings": {
+        "title": {
+          "kind": "text",
+          "text": "2026-11"
+        },
+        "subtitle": {
+          "kind": "text",
+          "text": "研發工作月報"
+        },
+        "kicker": {
+          "kind": "text",
+          "text": "月報"
+        },
+        "subject": {
+          "kind": "text",
+          "text": "Example User"
+        },
+        "meta": {
+          "kind": "text",
+          "text": "資料來源: GitLab"
+        },
+        "band_year": {
+          "kind": "text",
+          "text": "2026"
+        },
+        "band_month": {
+          "kind": "text",
+          "text": "11"
+        }
+      },
+      "source_refs": []
+    },
+    {
+      "id": "slide-002",
+      "layout_id": "summary_v1",
+      "bindings": {
+        "title": {
+          "kind": "text",
+          "text": "本月總覽"
+        },
+        "metric_completed": {
+          "kind": "metric",
+          "label": "完成",
+          "value": "0",
+          "caption": "項工作完成"
+        },
+        "metric_in_progress": {
+          "kind": "metric",
+          "label": "進行中",
+          "value": "1",
+          "caption": "項工作進行中"
+        },
+        "highlights": {
+          "kind": "bullets",
+          "items": [
+            {
+              "text": "本月沒有亮點",
+              "level": 0,
+              "style": "empty"
+            }
+          ]
+        },
+        "support": {
+          "kind": "bullets",
+          "items": [
+            {
+              "text": "目前不需要支援",
+              "level": 0
+            }
+          ],
+          "style": "support_empty"
+        },
+        "period": {
+          "kind": "text",
+          "text": "2026-11-01 – 2026-11-30"
+        },
+        "metric_operations": {
+          "kind": "metric",
+          "label": "維運",
+          "value": "0",
+          "caption": "項維運工作"
+        },
+        "metric_projects": {
+          "kind": "metric",
+          "label": "專案",
+          "value": "1",
+          "caption": "個專案"
+        },
+        "highlights_title": {
+          "kind": "text",
+          "text": "本月亮點"
+        },
+        "support_title": {
+          "kind": "text",
+          "text": "需要支援",
+          "style": "support_title_empty"
+        },
+        "activity_note": {
+          "kind": "text",
+          "text": "1 repositories, 1 commits, 0 merged changes"
+        }
+      },
+      "source_refs": [
+        "wi-export-refactor",
+        "ev-d000000000000001"
+      ]
+    },
+    {
+      "id": "slide-003",
+      "layout_id": "achievements_v1",
+      "bindings": {
+        "title": {
+          "kind": "text",
+          "text": "開發成果"
+        },
+        "items": {
+          "kind": "table",
+          "columns": [
+            "工作項目",
+            "專案",
+            "狀態",
+            "證據"
+          ],
+          "rows": [
+            [
+              "匯出工作重構",
+              "backend-api",
+              {
+                "text": "In progress",
+                "style": "tag_in_progress"
+              },
+              {
+                "text": "1 個 commit",
+                "style": "meta"
+              }
+            ]
+          ]
+        },
+        "status": {
+          "kind": "text",
+          "text": "0 completed, 1 in progress, 0 to confirm"
+        }
+      },
+      "source_refs": [
+        "wi-export-refactor"
+      ]
+    },
+    {
+      "id": "slide-004",
+      "layout_id": "detail_v1",
+      "bindings": {
+        "title": {
+          "kind": "text",
+          "text": "匯出工作重構"
+        },
+        "facts": {
+          "kind": "bullets",
+          "items": [
+            {
+              "text": "一個進行中的 commit。",
+              "level": 0
+            }
+          ]
+        },
+        "kicker": {
+          "kind": "text",
+          "text": "開發成果 · backend-api"
+        },
+        "status": {
+          "kind": "text",
+          "text": "In progress",
+          "style": "tag_in_progress"
+        },
+        "facts_title": {
+          "kind": "text",
+          "text": "重點"
+        },
+        "evidence_title": {
+          "kind": "text",
+          "text": "證據"
+        },
+        "evidence": {
+          "kind": "bullets",
+          "items": [
+            {
+              "text": "1 個 commit",
+              "level": 0,
+              "style": "meta"
+            }
+          ]
+        }
+      },
+      "source_refs": [
+        "wi-export-refactor",
+        "ev-d000000000000001"
+      ]
+    },
+    {
+      "id": "slide-005",
+      "layout_id": "narrative_v1",
+      "bindings": {
+        "title": {
+          "kind": "text",
+          "text": "下月規劃"
+        },
+        "body": {
+          "kind": "bullets",
+          "items": [
+            {
+              "text": "完成匯出工作重構。",
+              "level": 0,
+              "style": "numbered"
+            }
+          ]
+        }
+      },
+      "source_refs": [
+        "nr-next-plan-1"
+      ]
+    },
+    {
+      "id": "slide-006",
+      "layout_id": "closing_v1",
+      "bindings": {
+        "title": {
+          "kind": "text",
+          "text": "謝謝"
+        }
+      },
+      "source_refs": []
+    }
+  ],
+  "footer": "研發工作月報 · 2026-11"
+}

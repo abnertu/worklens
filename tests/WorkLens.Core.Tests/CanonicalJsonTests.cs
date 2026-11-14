@@ -26,7 +26,7 @@ public sealed class CanonicalJsonTests
     [Fact]
     public void Presentation_1_1_example_round_trips_byte_for_byte()
     {
-        var path = SchemaExamples.ExamplePath("presentation-ir", "1.1", "valid", "monthly-presentation.json");
+        var path = SchemaExamples.ExamplePath("presentation-ir", "1.1", "valid", "all-fields.json");
         var bytes = File.ReadAllBytes(path);
         var model = JsonSerializer.Deserialize<PresentationDocument>(bytes, WorkLensJson.Options);
 

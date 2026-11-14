@@ -129,6 +129,8 @@
         "evidence_commits": { "$ref": "#/$defs/label" },
         "evidence_issue": { "$ref": "#/$defs/label" },
         "human_origin": { "$ref": "#/$defs/label" },
+        "detail_kicker": { "$ref": "#/$defs/label" },
+        "project_more": { "$ref": "#/$defs/label" },
         "footer": { "$ref": "#/$defs/label" }
       }
     },

@@ -129,13 +129,31 @@ internal static class PresentCommand
                 return checkedReport.ExitCode;
             }
 
-            var manifestDocument = InputFiles.LoadManifest(manifestPath);
+            var manifestDocument = InputFiles.LoadManifest(manifestPath, forRender: false);
             var reportDocument = JsonSerializer.Deserialize<ReportDocument>(checkedReport.Report.Content.Span, WorkLensJson.Options)!;
 
             var layout = new LayoutResolver().Resolve(reportDocument, checkedReport.Report.Sha256, checkedReport.Evidence, manifestDocument);
             if (layout.Presentation is null)
             {
                 throw CliException.FromErrors(layout.Errors, "manifest.invalid", manifestPath);
+            }
+
+            // A Layout warning points into the report, so the issue says that it is a report narrative.
+            foreach (var warning in layout.Warnings)
+            {
+                result.Issues.Add(new ValidationIssue(
+                    warning.Code,
+                    IssueSeverity.Warning,
+                    warning.Details?.GetValueOrDefault("path") ?? string.Empty,
+                    null,
+                    $"{reportPath}: {warning.Message}"));
+            }
+
+            result.Result["warning_count"] = (int)result.Result["warning_count"]! + layout.Warnings.Count;
+            if (parse.GetValue(strict) && layout.Warnings.Count > 0)
+            {
+                result.Lines.Add($"{reportPath}: {layout.Warnings.Count} Layout warning(s) with --strict; presentation not written.");
+                return ExitCodes.ValidationFailed;
             }
 
             AtomicFile.WriteAllBytes(outputPath, WorkLensJson.SerializeCanonicalUtf8(layout.Presentation));

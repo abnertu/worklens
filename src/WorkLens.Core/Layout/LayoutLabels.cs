@@ -33,6 +33,48 @@ public sealed record LayoutLabels
     public string StatusUnknown { get; init; } = "(Status: to confirm)";
     public string HumanNotes { get; init; } = "(Note) {notes}";
 
+    // 1.1 labels.
+    public string CoverKicker { get; init; } = "Monthly report";
+    public string PeriodTitle { get; init; } = "{period}";
+    public string CoverSubtitle { get; init; } = "Work report";
+    public string CoverSources { get; init; } = "{start} – {end} ({timezone}) · {sources}";
+    public string MetricCompleted { get; init; } = "Completed";
+    public string MetricCompletedCaption { get; init; } = "work items completed";
+    public string MetricInProgress { get; init; } = "In progress";
+    public string MetricInProgressCaption { get; init; } = "work items in progress";
+    public string MetricOperations { get; init; } = "Operations";
+    public string MetricOperationsCaption { get; init; } = "operations work items";
+    public string MetricProjects { get; init; } = "Projects";
+    public string MetricProjectsCaption { get; init; } = "projects with activity";
+    public string HighlightsTitle { get; init; } = "Highlights";
+    public string HighlightsEmpty { get; init; } = "No work item was completed this month.";
+    public string SupportTitle { get; init; } = "Support needed";
+    public string SupportMore { get; init; } = "{count} more";
+    public string SupportEmpty { get; init; } = "No support needed.";
+    public string Continuation { get; init; } = " (cont. {index}/{total})";
+    public string FactsTitle { get; init; } = "Key facts";
+    public string EvidenceTitle { get; init; } = "Evidence";
+    public string EvidenceStateOpen { get; init; } = "Open";
+    public string EvidenceStateClosed { get; init; } = "Closed";
+    public string EvidenceStateMerged { get; init; } = "Merged";
+    public string EvidenceDate { get; init; } = "{date}";
+    public string OperationsTitle { get; init; } = "Operations";
+    public string ChallengesStatus { get; init; } = "{resolved} resolved, {open} open";
+    public string ChallengeResolved { get; init; } = "Resolved";
+    public string ChallengeOpen { get; init; } = "Open";
+    public string ColumnTitle { get; init; } = "Work item";
+    public string ColumnProject { get; init; } = "Project";
+    public string ColumnStatus { get; init; } = "Status";
+    public string ColumnEvidence { get; init; } = "Evidence";
+    public string ColumnProblem { get; init; } = "Problem";
+    public string ColumnResolution { get; init; } = "Resolution";
+    public string EvidenceCommits { get; init; } = "{count} commits";
+    public string EvidenceIssue { get; init; } = "Issue {id}";
+    public string HumanOrigin { get; init; } = "Added by hand";
+    public string DetailKicker { get; init; } = "{section} · {project}";
+    public string ProjectMore { get; init; } = "{project} +{more}";
+    public string Footer { get; init; } = "{period}";
+
     public static LayoutLabels From(TemplateLabels? labels)
     {
         if (labels is null)
@@ -65,6 +107,46 @@ public sealed record LayoutLabels
             StatusInProgress = labels.StatusInProgress ?? d.StatusInProgress,
             StatusUnknown = labels.StatusUnknown ?? d.StatusUnknown,
             HumanNotes = labels.HumanNotes ?? d.HumanNotes,
+            CoverKicker = labels.CoverKicker ?? d.CoverKicker,
+            PeriodTitle = labels.PeriodTitle ?? d.PeriodTitle,
+            CoverSubtitle = labels.CoverSubtitle ?? d.CoverSubtitle,
+            CoverSources = labels.CoverSources ?? d.CoverSources,
+            MetricCompleted = labels.MetricCompleted ?? d.MetricCompleted,
+            MetricCompletedCaption = labels.MetricCompletedCaption ?? d.MetricCompletedCaption,
+            MetricInProgress = labels.MetricInProgress ?? d.MetricInProgress,
+            MetricInProgressCaption = labels.MetricInProgressCaption ?? d.MetricInProgressCaption,
+            MetricOperations = labels.MetricOperations ?? d.MetricOperations,
+            MetricOperationsCaption = labels.MetricOperationsCaption ?? d.MetricOperationsCaption,
+            MetricProjects = labels.MetricProjects ?? d.MetricProjects,
+            MetricProjectsCaption = labels.MetricProjectsCaption ?? d.MetricProjectsCaption,
+            HighlightsTitle = labels.HighlightsTitle ?? d.HighlightsTitle,
+            HighlightsEmpty = labels.HighlightsEmpty ?? d.HighlightsEmpty,
+            SupportTitle = labels.SupportTitle ?? d.SupportTitle,
+            SupportMore = labels.SupportMore ?? d.SupportMore,
+            SupportEmpty = labels.SupportEmpty ?? d.SupportEmpty,
+            Continuation = labels.Continuation ?? d.Continuation,
+            FactsTitle = labels.FactsTitle ?? d.FactsTitle,
+            EvidenceTitle = labels.EvidenceTitle ?? d.EvidenceTitle,
+            EvidenceStateOpen = labels.EvidenceStateOpen ?? d.EvidenceStateOpen,
+            EvidenceStateClosed = labels.EvidenceStateClosed ?? d.EvidenceStateClosed,
+            EvidenceStateMerged = labels.EvidenceStateMerged ?? d.EvidenceStateMerged,
+            EvidenceDate = labels.EvidenceDate ?? d.EvidenceDate,
+            OperationsTitle = labels.OperationsTitle ?? d.OperationsTitle,
+            ChallengesStatus = labels.ChallengesStatus ?? d.ChallengesStatus,
+            ChallengeResolved = labels.ChallengeResolved ?? d.ChallengeResolved,
+            ChallengeOpen = labels.ChallengeOpen ?? d.ChallengeOpen,
+            ColumnTitle = labels.ColumnTitle ?? d.ColumnTitle,
+            ColumnProject = labels.ColumnProject ?? d.ColumnProject,
+            ColumnStatus = labels.ColumnStatus ?? d.ColumnStatus,
+            ColumnEvidence = labels.ColumnEvidence ?? d.ColumnEvidence,
+            ColumnProblem = labels.ColumnProblem ?? d.ColumnProblem,
+            ColumnResolution = labels.ColumnResolution ?? d.ColumnResolution,
+            EvidenceCommits = labels.EvidenceCommits ?? d.EvidenceCommits,
+            EvidenceIssue = labels.EvidenceIssue ?? d.EvidenceIssue,
+            HumanOrigin = labels.HumanOrigin ?? d.HumanOrigin,
+            DetailKicker = labels.DetailKicker ?? d.DetailKicker,
+            ProjectMore = labels.ProjectMore ?? d.ProjectMore,
+            Footer = labels.Footer ?? d.Footer,
         };
     }
 

@@ -8,6 +8,10 @@
     <PackageReference Include="JsonSchema.Net" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="WorkLens.Core.Tests" />
+  </ItemGroup>
+
   <!-- One explicit item per schema: %(RecursiveDir) would produce backslashes in LogicalName on Windows. -->
   <ItemGroup>
     <EmbeddedResource Include="..\..\schemas\evidence-ir\1.0\evidence-ir.schema.json" LogicalName="schemas/evidence-ir/1.0/evidence-ir.schema.json" />

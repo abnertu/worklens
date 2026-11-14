@@ -12,6 +12,7 @@ public sealed class CliSmokeTests : IDisposable
     private const string ManifestExample = "schemas/template-manifest/1.0/examples/valid/sample-monthly.json";
     private const string PresentationExample = "schemas/presentation-ir/1.0/examples/valid/monthly-presentation.json";
     private const string Manifest11Example = "schemas/template-manifest/1.1/examples/valid/rd-monthly.json";
+    private const string Report11Example = "schemas/report-ir/1.1/examples/valid/monthly-report.json";
 
     private readonly CliRunner _cli = new();
 
@@ -139,25 +140,64 @@ public sealed class CliSmokeTests : IDisposable
         Assert.False(File.Exists(Path.Combine(_cli.Workspace, "report.pptx")));
     }
 
-    // Layout and the renderer implement only 1.0 manifest rules; a 1.1 manifest is refused, not rendered wrongly.
-    [Theory]
-    [InlineData("present")]
-    [InlineData("render")]
-    public async Task Present_and_render_refuse_a_1_1_manifest(string command)
+    // The renderer implements only 1.0 manifest rules; a 1.1 manifest is refused, not rendered wrongly.
+    [Fact]
+    public async Task Render_refuses_a_1_1_manifest()
     {
-        var manifest = CopyManifestInputs(command);
+        var manifest = CopyManifestInputs("render");
 
-        var run = await _cli.RunAsync(command, "--workspace", _cli.Workspace, "--manifest", manifest, "--json");
+        var run = await _cli.RunAsync("render", "--workspace", _cli.Workspace, "--manifest", manifest, "--json");
 
         Assert.Equal(ExitCodes.Configuration, run.ExitCode);
         Assert.Equal("manifest.invalid", run.Json["error"]!["code"]!.GetValue<string>());
         var issue = Assert.Single(run.Json["issues"]!.AsArray());
         Assert.Equal("manifest.unsupported_version", issue!["code"]!.GetValue<string>());
         Assert.Equal("/schema_version", issue["instance_path"]!.GetValue<string>());
-        Assert.False(File.Exists(Path.Combine(_cli.Workspace, command == "present" ? "presentation.json" : "report.pptx")));
+        Assert.False(File.Exists(Path.Combine(_cli.Workspace, "report.pptx")));
     }
 
-    // The contract checks run before the version guard, so a 1.1 manifest author sees the manifest's own problems.
+    // Layout implements the 1.1 rules, so present resolves a 1.1 report with a 1.1 manifest.
+    [Fact]
+    public async Task Present_writes_a_presentation_with_a_1_1_manifest()
+    {
+        _cli.CopyToWorkspace(Report11Example, "report.json");
+        _cli.CopyToWorkspace(EvidenceExample, "evidence.json");
+        var manifest = _cli.CopyToWorkspace(Manifest11Example, "manifest.json");
+
+        var run = await _cli.RunAsync("present", "--workspace", _cli.Workspace, "--manifest", manifest, "--json", "--strict");
+
+        Assert.Equal(ExitCodes.Success, run.ExitCode);
+        Assert.Empty(run.Json["issues"]!.AsArray());
+        var presentation = JsonNode.Parse(File.ReadAllText(Path.Combine(_cli.Workspace, "presentation.json")))!;
+        Assert.Equal("1.1", presentation["schema_version"]!.GetValue<string>());
+        Assert.Equal("cover_v1", presentation["slides"]![0]!["layout_id"]!.GetValue<string>());
+    }
+
+    // A 1.0 manifest has no section for the support narrative of a 1.1 report. Layout warns instead of dropping it
+    // without a sign, and --strict stops on that warning like on a report rule warning.
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task Present_reports_a_narrative_that_no_slide_shows(bool strict)
+    {
+        _cli.CopyToWorkspace(Report11Example, "report.json");
+        _cli.CopyToWorkspace(EvidenceExample, "evidence.json");
+        var manifest = _cli.CopyToWorkspace(ManifestExample, "manifest.json");
+        string[] args = ["present", "--workspace", _cli.Workspace, "--manifest", manifest, "--json"];
+
+        var run = await _cli.RunAsync(strict ? [.. args, "--strict"] : args);
+
+        Assert.Equal(strict ? ExitCodes.ValidationFailed : ExitCodes.Success, run.ExitCode);
+        // The report itself has no issue, so the Layout warning alone decides the --strict exit code.
+        var issue = Assert.Single(run.Json["issues"]!.AsArray());
+        Assert.Equal("layout.unplaced_narrative", issue!["code"]!.GetValue<string>());
+        Assert.Equal("warning", issue["severity"]!.GetValue<string>());
+        Assert.Equal("/narratives/3", issue["instance_path"]!.GetValue<string>());
+        Assert.Equal(1, run.Json["result"]!["warning_count"]!.GetValue<int>());
+        Assert.Equal(!strict, File.Exists(Path.Combine(_cli.Workspace, "presentation.json")));
+    }
+
+    // The contract checks run first, also before the render version guard, so a 1.1 manifest author sees the manifest's own problems.
     [Theory]
     [InlineData("present")]
     [InlineData("render")]

@@ -99,6 +99,31 @@ public sealed class PresentationManifestCheckerTests
                 ["a", "b"],
                 [["1", "2"], ["only one"]])))));
 
+    // The golden achievements table has 2 columns; this manifest gives its items slot the columns of the keys.
+    private static TemplateManifest ItemsColumnsManifest(params string[] keys)
+    {
+        var manifest = Manifest();
+        var layouts = manifest.Layouts.ToList();
+        var index = layouts.FindIndex(l => l.Id == "achievements_v1");
+        layouts[index] = layouts[index] with
+        {
+            Slots = [.. layouts[index].Slots.Select(s => s.Id == "items" ? s with { Columns = [.. keys.Select(k => new TableColumn(k, 100 / keys.Length))] } : s)],
+        };
+        return manifest with { Layouts = layouts };
+    }
+
+    [Fact]
+    public void Table_with_another_column_count_than_the_slot_columns()
+    {
+        var issue = Assert.Single(Issues(Golden(), ItemsColumnsManifest("title", "status", "evidence")));
+
+        Assert.Equal(("presentation.table_column_count", "/slides/2/bindings/items/columns"), (issue.Code, issue.InstancePath));
+    }
+
+    [Fact]
+    public void Table_with_the_slot_column_count_passes() =>
+        Assert.Empty(Issues(Golden(), ItemsColumnsManifest("title", "status")));
+
     [Theory]
     [InlineData(0, "title", "/slides/0/bindings/title/text")]
     [InlineData(3, "facts", "/slides/3/bindings/facts/items/0/text")]

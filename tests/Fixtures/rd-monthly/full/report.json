@@ -1,0 +1,281 @@
+{
+  "schema_version": "1.1",
+  "report_id": "rpt-2026-11-rd-full",
+  "period": {
+    "label": "2026-11",
+    "start": "2026-10-31T16:00:00+00:00",
+    "end": "2026-11-30T16:00:00+00:00",
+    "timezone": "Asia/Taipei"
+  },
+  "subject": {
+    "display_name": "Example User"
+  },
+  "evidence_document": {
+    "document_id": "evd-2026-11-rd-full",
+    "sha256": "0f1b09629612c22912c1db378490c3068365a657a8af818e5ee74a31a1e541c4"
+  },
+  "work_items": [
+    {
+      "id": "wi-token-rotation",
+      "origin": "agent",
+      "category": "feature",
+      "status": "completed",
+      "title": "使用者驗證機制優化",
+      "summary": "實作 Refresh Token 輪替。",
+      "observed_facts": [
+        {
+          "statement": "PR #51 於 2026-11-05 合併。",
+          "evidence_refs": [
+            "ev-a000000000000001"
+          ]
+        },
+        {
+          "statement": "Commit 新增輪替邏輯。",
+          "evidence_refs": [
+            "ev-a000000000000002"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "ev-a000000000000001",
+        "ev-a000000000000002",
+        "ev-a000000000000003",
+        "ev-a000000000000004"
+      ],
+      "rank": 1,
+      "agent_inference": {
+        "statement": "降低 Token 被重複使用的風險。",
+        "confidence": "medium"
+      },
+      "human_notes": "已在測試環境驗證。"
+    },
+    {
+      "id": "wi-csv-export",
+      "origin": "agent",
+      "category": "fix",
+      "status": "completed",
+      "title": "修正 CSV 匯出",
+      "summary": "修正匯出的欄位跳脫與逾時。",
+      "observed_facts": [
+        {
+          "statement": "MR !128 合併。",
+          "evidence_refs": [
+            "ev-b000000000000001"
+          ]
+        },
+        {
+          "statement": "另一個 commit 處理空的匯出。",
+          "evidence_refs": [
+            "ev-b000000000000008",
+            "ev-b000000000000003"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "ev-b000000000000001",
+        "ev-b000000000000005",
+        "ev-b000000000000004",
+        "ev-c000000000000003",
+        "ev-b000000000000002"
+      ],
+      "rank": 2,
+      "agent_inference": {
+        "statement": "匯出逾時可能還有其他原因。",
+        "confidence": "low"
+      }
+    },
+    {
+      "id": "wi-export-refactor",
+      "origin": "agent",
+      "category": "refactor",
+      "status": "in_progress",
+      "title": "匯出工作重構",
+      "summary": "準備重構匯出工作。",
+      "observed_facts": [
+        {
+          "statement": "上個月的準備 commit。",
+          "evidence_refs": [
+            "ev-b000000000000006"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "ev-b000000000000006"
+      ],
+      "rank": 3
+    },
+    {
+      "id": "wi-runner-image",
+      "origin": "agent",
+      "category": "ops",
+      "status": "completed",
+      "title": "CI runner 映像更新 (build-01)",
+      "summary": "更新 runner 映像與部署排程。",
+      "observed_facts": [
+        {
+          "statement": "兩個 infra commit。",
+          "evidence_refs": [
+            "ev-c000000000000001",
+            "ev-c000000000000002"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "ev-c000000000000001",
+        "ev-c000000000000002"
+      ],
+      "rank": 4,
+      "agent_inference": {
+        "statement": "部署排程已恢復正常。",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "wi-backup-check",
+      "origin": "human",
+      "category": "ops",
+      "status": "in_progress",
+      "title": "備份還原演練 (db-02)",
+      "summary": "每月備份還原演練進行中。",
+      "observed_facts": [],
+      "evidence_refs": [],
+      "rank": 5
+    },
+    {
+      "id": "wi-docs-onboarding",
+      "origin": "human",
+      "category": "docs",
+      "status": "unknown",
+      "title": "新人文件整理",
+      "summary": "整理新人上手文件。",
+      "observed_facts": [],
+      "evidence_refs": []
+    },
+    {
+      "id": "wi-rejected",
+      "origin": "agent",
+      "category": "feature",
+      "status": "completed",
+      "title": "被退回的項目",
+      "summary": "審閱後退回。",
+      "observed_facts": [
+        {
+          "statement": "與 PR #51 重複。",
+          "evidence_refs": [
+            "ev-a000000000000001"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "ev-a000000000000001"
+      ],
+      "rank": 6,
+      "review_status": "rejected"
+    }
+  ],
+  "narratives": [
+    {
+      "id": "nr-challenge-token-compat",
+      "kind": "challenge",
+      "origin": "human",
+      "text": "既有 Session 需相容舊格式 Token。"
+    },
+    {
+      "id": "nr-challenge-export-timeout",
+      "kind": "challenge",
+      "origin": "human",
+      "text": "大型帳號的匯出逾時。"
+    },
+    {
+      "id": "nr-challenge-flaky-tests",
+      "kind": "challenge",
+      "origin": "human",
+      "text": "整合測試偶爾失敗。"
+    },
+    {
+      "id": "nr-improvement-dual-token",
+      "kind": "improvement",
+      "origin": "human",
+      "text": "以雙格式 Token 驗證過渡。",
+      "resolves": [
+        "nr-challenge-token-compat",
+        "nr-challenge-export-timeout"
+      ]
+    },
+    {
+      "id": "nr-improvement-stream-export",
+      "kind": "improvement",
+      "origin": "human",
+      "text": "改為串流匯出。",
+      "resolves": [
+        "nr-challenge-export-timeout"
+      ]
+    },
+    {
+      "id": "nr-improvement-review-checklist",
+      "kind": "improvement",
+      "origin": "human",
+      "text": "新增程式碼審查清單。"
+    },
+    {
+      "id": "nr-next-plan-1",
+      "kind": "next_plan",
+      "origin": "human",
+      "text": "下月規劃 1"
+    },
+    {
+      "id": "nr-next-plan-2",
+      "kind": "next_plan",
+      "origin": "human",
+      "text": "下月規劃 2"
+    },
+    {
+      "id": "nr-next-plan-3",
+      "kind": "next_plan",
+      "origin": "human",
+      "text": "下月規劃 3"
+    },
+    {
+      "id": "nr-next-plan-4",
+      "kind": "next_plan",
+      "origin": "human",
+      "text": "下月規劃 4"
+    },
+    {
+      "id": "nr-next-plan-5",
+      "kind": "next_plan",
+      "origin": "human",
+      "text": "下月規劃 5"
+    },
+    {
+      "id": "nr-next-plan-6",
+      "kind": "next_plan",
+      "origin": "human",
+      "text": "下月規劃 6"
+    },
+    {
+      "id": "nr-support-finance",
+      "kind": "support",
+      "origin": "human",
+      "text": "需要帳務團隊提供對帳資料。"
+    },
+    {
+      "id": "nr-support-security",
+      "kind": "support",
+      "origin": "human",
+      "text": "需要資安團隊審查 Token 設計。"
+    },
+    {
+      "id": "nr-support-infra",
+      "kind": "support",
+      "origin": "human",
+      "text": "需要基礎架構團隊提供備份空間。"
+    },
+    {
+      "id": "nr-other-mentoring",
+      "kind": "other_work",
+      "origin": "human",
+      "text": "帶領新人熟悉部署流程。"
+    }
+  ]
+}

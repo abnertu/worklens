@@ -313,6 +313,11 @@ Label 是 template manifest 中的固定文字。
 - Change request 與 issue 的 ID。
 - Commit 數。
 - Ops 標題中的主機名稱。
+- Change request 與 issue 的標題, 經過揭露處理。
 
 在 WorkLens 計算的儲存格中, 投影片不顯示 URL、email 或 commit SHA。
 Agent 或使用者撰寫的文字照原樣顯示。
+
+WorkLens 從這些標題移除 URL、SSH remote、email 與 commit SHA, 並先遮蔽 token 樣式 ([ADR-0012](../adr/0012-slide-disclosure.md))。
+沒有路徑的主機名稱不移除, 例如 `gitlab.example.com`。
+`README.md/x` 這類字詞會被當成 URL 移除。

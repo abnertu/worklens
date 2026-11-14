@@ -1,0 +1,918 @@
+{
+  "schema_version": "1.1",
+  "presentation_id": "prs-2026-11-rd-full",
+  "source_report": {
+    "report_id": "rpt-2026-11-rd-full",
+    "sha256": "feb587e4676169113061a751c4fad9ebf2943fd3a3ff49ffe4c05ce9b829376e"
+  },
+  "template": {
+    "id": "rd-monthly",
+    "version": "1.0.0"
+  },
+  "slides": [
+    {
+      "id": "slide-001",
+      "layout_id": "cover_v1",
+      "bindings": {
+        "title": {
+          "kind": "text",
+          "text": "2026-11"
+        },
+        "subtitle": {
+          "kind": "text",
+          "text": "研發工作月報"
+        },
+        "kicker": {
+          "kind": "text",
+          "text": "月報"
+        },
+        "subject": {
+          "kind": "text",
+          "text": "Example User"
+        },
+        "meta": {
+          "kind": "text",
+          "text": "資料來源: GitHub · GitLab · 人工補充"
+        },
+        "band_year": {
+          "kind": "text",
+          "text": "2026"
+        },
+        "band_month": {
+          "kind": "text",
+          "text": "11"
+        }
+      },
+      "source_refs": []
+    },
+    {
+      "id": "slide-002",
+      "layout_id": "summary_v1",
+      "bindings": {
+        "title": {
+          "kind": "text",
+          "text": "本月總覽"
+        },
+        "metric_completed": {
+          "kind": "metric",
+          "label": "完成",
+          "value": "2",
+          "caption": "項工作完成"
+        },
+        "metric_in_progress": {
+          "kind": "metric",
+          "label": "進行中",
+          "value": "1",
+          "caption": "項工作進行中"
+        },
+        "highlights": {
+          "kind": "bullets",
+          "items": [
+            {
+              "text": "使用者驗證機制優化",
+              "level": 0
+            },
+            {
+              "text": "auth-service · #51 · #60 · 2 個 commit",
+              "level": 1,
+              "style": "meta"
+            },
+            {
+              "text": "修正 CSV 匯出",
+              "level": 0
+            },
+            {
+              "text": "backend-api 等 2 個 · !128 · Issue #42 · …",
+              "level": 1,
+              "style": "meta"
+            }
+          ],
+          "truncated": true
+        },
+        "support": {
+          "kind": "bullets",
+          "items": [
+            {
+              "text": "需要帳務團隊提供對帳資料。",
+              "level": 0
+            },
+            {
+              "text": "需要資安團隊審查 Token 設計。",
+              "level": 0
+            },
+            {
+              "text": "另有 1 項",
+              "level": 0,
+              "style": "meta"
+            }
+          ],
+          "style": "support"
+        },
+        "period": {
+          "kind": "text",
+          "text": "2026-11-01 – 2026-11-30"
+        },
+        "metric_operations": {
+          "kind": "metric",
+          "label": "維運",
+          "value": "2",
+          "caption": "項維運工作"
+        },
+        "metric_projects": {
+          "kind": "metric",
+          "label": "專案",
+          "value": "3",
+          "caption": "個專案"
+        },
+        "highlights_title": {
+          "kind": "text",
+          "text": "本月亮點"
+        },
+        "support_title": {
+          "kind": "text",
+          "text": "需要支援",
+          "style": "support_title"
+        },
+        "activity_note": {
+          "kind": "text",
+          "text": "3 repositories, 7 commits, 3 merged changes"
+        }
+      },
+      "source_refs": [
+        "wi-token-rotation",
+        "wi-csv-export",
+        "wi-export-refactor",
+        "wi-runner-image",
+        "wi-backup-check",
+        "wi-docs-onboarding",
+        "ev-a000000000000001",
+        "ev-a000000000000002",
+        "ev-a000000000000004",
+        "ev-b000000000000001",
+        "ev-b000000000000002",
+        "ev-b000000000000003",
+        "ev-b000000000000008",
+        "ev-c000000000000001",
+        "ev-c000000000000002",
+        "ev-c000000000000003",
+        "nr-support-finance",
+        "nr-support-security"
+      ]
+    },
+    {
+      "id": "slide-003",
+      "layout_id": "achievements_v1",
+      "bindings": {
+        "title": {
+          "kind": "text",
+          "text": "開發成果"
+        },
+        "items": {
+          "kind": "table",
+          "columns": [
+            "工作項目",
+            "專案",
+            "狀態",
+            "證據"
+          ],
+          "rows": [
+            [
+              "使用者驗證機制優化",
+              "auth-service",
+              {
+                "text": "Completed",
+                "style": "tag_completed"
+              },
+              {
+                "text": "#51 · #60 · 2 個 commit",
+                "style": "meta"
+              }
+            ],
+            [
+              "修正 CSV 匯出",
+              "backend-api 等 2 個",
+              {
+                "text": "Completed",
+                "style": "tag_completed"
+              },
+              {
+                "text": "!128 · Issue #42 · !131 · +1 · 3 個 comm…",
+                "style": "meta"
+              }
+            ],
+            [
+              "匯出工作重構",
+              "backend-api",
+              {
+                "text": "In progress",
+                "style": "tag_in_progress"
+              },
+              {
+                "text": "—",
+                "style": "meta"
+              }
+            ],
+            [
+              "新人文件整理",
+              "—",
+              {
+                "text": "To confirm",
+                "style": "tag_unknown"
+              },
+              {
+                "text": "人工補充",
+                "style": "meta"
+              }
+            ]
+          ],
+          "truncated": true
+        },
+        "status": {
+          "kind": "text",
+          "text": "2 completed, 1 in progress, 1 to confirm"
+        }
+      },
+      "source_refs": [
+        "wi-token-rotation",
+        "wi-csv-export",
+        "wi-export-refactor",
+        "wi-docs-onboarding"
+      ]
+    },
+    {
+      "id": "slide-004",
+      "layout_id": "detail_v1",
+      "bindings": {
+        "title": {
+          "kind": "text",
+          "text": "使用者驗證機制優化"
+        },
+        "facts": {
+          "kind": "bullets",
+          "items": [
+            {
+              "text": "PR #51 於 2026-11-05 合併。",
+              "level": 0
+            },
+            {
+              "text": "Commit 新增輪替邏輯。",
+              "level": 0
+            },
+            {
+              "text": "(Inference, confidence: medium) 降低 Token 被重複使用的風險。",
+              "level": 1
+            },
+            {
+              "text": "(Note) 已在測試環境驗證。",
+              "level": 1
+            }
+          ]
+        },
+        "kicker": {
+          "kind": "text",
+          "text": "開發成果 · auth-service"
+        },
+        "status": {
+          "kind": "text",
+          "text": "Completed",
+          "style": "tag_completed"
+        },
+        "facts_title": {
+          "kind": "text",
+          "text": "重點"
+        },
+        "evidence_title": {
+          "kind": "text",
+          "text": "證據"
+        },
+        "evidence": {
+          "kind": "bullets",
+          "items": [
+            {
+              "text": "#51",
+              "level": 0,
+              "style": "evidence_id"
+            },
+            {
+              "text": "Rotate refresh tokens, see",
+              "level": 1
+            },
+            {
+              "text": "已合併 · 2026-11-05 · 1 個 commit",
+              "level": 1,
+              "style": "meta"
+            },
+            {
+              "text": "#60",
+              "level": 0,
+              "style": "evidence_id"
+            },
+            {
+              "text": "Revert login page change",
+              "level": 1
+            },
+            {
+              "text": "關閉 · 2026-11-18",
+              "level": 1,
+              "style": "meta"
+            },
+            {
+              "text": "1 個 commit",
+              "level": 0,
+              "style": "meta"
+            }
+          ]
+        }
+      },
+      "source_refs": [
+        "wi-token-rotation",
+        "ev-a000000000000001",
+        "ev-a000000000000002",
+        "ev-a000000000000003",
+        "ev-a000000000000004"
+      ]
+    },
+    {
+      "id": "slide-005",
+      "layout_id": "detail_v1",
+      "bindings": {
+        "title": {
+          "kind": "text",
+          "text": "修正 CSV 匯出"
+        },
+        "facts": {
+          "kind": "bullets",
+          "items": [
+            {
+              "text": "MR !128 合併。",
+              "level": 0
+            },
+            {
+              "text": "另一個 commit 處理空的匯出。",
+              "level": 0
+            },
+            {
+              "text": "(Inference, confidence: low) 匯出逾時可能還有其他原因。",
+              "level": 1
+            }
+          ]
+        },
+        "kicker": {
+          "kind": "text",
+          "text": "開發成果 · backend-api 等 2 個"
+        },
+        "status": {
+          "kind": "text",
+          "text": "Completed",
+          "style": "tag_completed"
+        },
+        "facts_title": {
+          "kind": "text",
+          "text": "重點"
+        },
+        "evidence_title": {
+          "kind": "text",
+          "text": "證據"
+        },
+        "evidence": {
+          "kind": "bullets",
+          "items": [
+            {
+              "text": "!128",
+              "level": 0,
+              "style": "evidence_id"
+            },
+            {
+              "text": "Fix CSV export (cc )",
+              "level": 1
+            },
+            {
+              "text": "已合併 · 2026-11-12 · 2 個 commit",
+              "level": 1,
+              "style": "meta"
+            },
+            {
+              "text": "Issue #42",
+              "level": 0,
+              "style": "evidence_id"
+            },
+            {
+              "text": "修正的匯出逾時",
+              "level": 1
+            },
+            {
+              "text": "開啟 · 2026-11-08",
+              "level": 1,
+              "style": "meta"
+            },
+            {
+              "text": "!131",
+              "level": 0,
+              "style": "evidence_id"
+            },
+            {
+              "text": "Refactor export job after",
+              "level": 1
+            },
+            {
+              "text": "開啟 · 2026-11-20",
+              "level": 1,
+              "style": "meta"
+            }
+          ],
+          "truncated": true
+        }
+      },
+      "source_refs": [
+        "wi-csv-export",
+        "ev-b000000000000001",
+        "ev-b000000000000002",
+        "ev-b000000000000003",
+        "ev-b000000000000004",
+        "ev-b000000000000005",
+        "ev-b000000000000008",
+        "ev-c000000000000003"
+      ]
+    },
+    {
+      "id": "slide-006",
+      "layout_id": "detail_v1",
+      "bindings": {
+        "title": {
+          "kind": "text",
+          "text": "匯出工作重構"
+        },
+        "facts": {
+          "kind": "bullets",
+          "items": [
+            {
+              "text": "上個月的準備 commit。",
+              "level": 0
+            }
+          ]
+        },
+        "kicker": {
+          "kind": "text",
+          "text": "開發成果 · backend-api"
+        },
+        "status": {
+          "kind": "text",
+          "text": "In progress",
+          "style": "tag_in_progress"
+        },
+        "facts_title": {
+          "kind": "text",
+          "text": "重點"
+        },
+        "evidence_title": {
+          "kind": "text",
+          "text": "證據"
+        },
+        "evidence": {
+          "kind": "bullets",
+          "items": [
+            {
+              "text": "—",
+              "level": 0,
+              "style": "meta"
+            }
+          ]
+        }
+      },
+      "source_refs": [
+        "wi-export-refactor",
+        "ev-b000000000000006"
+      ]
+    },
+    {
+      "id": "slide-007",
+      "layout_id": "detail_v1",
+      "bindings": {
+        "title": {
+          "kind": "text",
+          "text": "新人文件整理"
+        },
+        "facts": {
+          "kind": "bullets",
+          "items": [
+            {
+              "text": "整理新人上手文件。",
+              "level": 0
+            }
+          ]
+        },
+        "kicker": {
+          "kind": "text",
+          "text": "開發成果 · —"
+        },
+        "status": {
+          "kind": "text",
+          "text": "To confirm",
+          "style": "tag_unknown"
+        },
+        "facts_title": {
+          "kind": "text",
+          "text": "重點"
+        },
+        "evidence_title": {
+          "kind": "text",
+          "text": "證據"
+        },
+        "evidence": {
+          "kind": "bullets",
+          "items": [
+            {
+              "text": "人工補充",
+              "level": 0,
+              "style": "meta"
+            }
+          ]
+        }
+      },
+      "source_refs": [
+        "wi-docs-onboarding"
+      ]
+    },
+    {
+      "id": "slide-008",
+      "layout_id": "operations_v1",
+      "bindings": {
+        "title": {
+          "kind": "text",
+          "text": "維運工作"
+        },
+        "items": {
+          "kind": "table",
+          "columns": [
+            "工作項目",
+            "狀態",
+            "證據"
+          ],
+          "rows": [
+            [
+              "CI runner 映像更新 (build-01)",
+              {
+                "text": "Completed",
+                "style": "tag_completed"
+              },
+              {
+                "text": "2 個 commit",
+                "style": "meta"
+              }
+            ],
+            [
+              "備份還原演練 (db-02)",
+              {
+                "text": "In progress",
+                "style": "tag_in_progress"
+              },
+              {
+                "text": "人工補充",
+                "style": "meta"
+              }
+            ]
+          ]
+        },
+        "status": {
+          "kind": "text",
+          "text": "1 completed, 1 in progress, 0 to confirm"
+        }
+      },
+      "source_refs": [
+        "wi-runner-image",
+        "wi-backup-check"
+      ]
+    },
+    {
+      "id": "slide-009",
+      "layout_id": "detail_v1",
+      "bindings": {
+        "title": {
+          "kind": "text",
+          "text": "CI runner 映像更新 (build-01)"
+        },
+        "facts": {
+          "kind": "bullets",
+          "items": [
+            {
+              "text": "兩個 infra commit。",
+              "level": 0
+            },
+            {
+              "text": "(Inference, confidence: high) 部署排程已恢復正常。",
+              "level": 1
+            }
+          ]
+        },
+        "kicker": {
+          "kind": "text",
+          "text": "維運工作 · infra"
+        },
+        "status": {
+          "kind": "text",
+          "text": "Completed",
+          "style": "tag_completed"
+        },
+        "facts_title": {
+          "kind": "text",
+          "text": "重點"
+        },
+        "evidence_title": {
+          "kind": "text",
+          "text": "證據"
+        },
+        "evidence": {
+          "kind": "bullets",
+          "items": [
+            {
+              "text": "2 個 commit",
+              "level": 0,
+              "style": "meta"
+            }
+          ]
+        }
+      },
+      "source_refs": [
+        "wi-runner-image",
+        "ev-c000000000000001",
+        "ev-c000000000000002"
+      ]
+    },
+    {
+      "id": "slide-010",
+      "layout_id": "detail_v1",
+      "bindings": {
+        "title": {
+          "kind": "text",
+          "text": "備份還原演練 (db-02)"
+        },
+        "facts": {
+          "kind": "bullets",
+          "items": [
+            {
+              "text": "每月備份還原演練進行中。",
+              "level": 0
+            }
+          ]
+        },
+        "kicker": {
+          "kind": "text",
+          "text": "維運工作 · —"
+        },
+        "status": {
+          "kind": "text",
+          "text": "In progress",
+          "style": "tag_in_progress"
+        },
+        "facts_title": {
+          "kind": "text",
+          "text": "重點"
+        },
+        "evidence_title": {
+          "kind": "text",
+          "text": "證據"
+        },
+        "evidence": {
+          "kind": "bullets",
+          "items": [
+            {
+              "text": "人工補充",
+              "level": 0,
+              "style": "meta"
+            }
+          ]
+        }
+      },
+      "source_refs": [
+        "wi-backup-check"
+      ]
+    },
+    {
+      "id": "slide-011",
+      "layout_id": "challenges_v1",
+      "bindings": {
+        "title": {
+          "kind": "text",
+          "text": "問題與解決"
+        },
+        "items": {
+          "kind": "table",
+          "columns": [
+            "問題",
+            "解決方式",
+            "狀態"
+          ],
+          "rows": [
+            [
+              "既有 Session 需相容舊格式 Token。",
+              "以雙格式 Token 驗證過渡。",
+              {
+                "text": "已解決",
+                "style": "tag_resolved"
+              }
+            ],
+            [
+              "大型帳號的匯出逾時。",
+              "以雙格式 Token 驗證過渡。\n改為串流匯出。",
+              {
+                "text": "已解決",
+                "style": "tag_resolved"
+              }
+            ],
+            [
+              "整合測試偶爾失敗。",
+              "—",
+              {
+                "text": "處理中",
+                "style": "tag_open"
+              }
+            ]
+          ]
+        },
+        "status": {
+          "kind": "text",
+          "text": "已處理 2 · 處理中 1"
+        }
+      },
+      "source_refs": [
+        "nr-challenge-token-compat",
+        "nr-improvement-dual-token",
+        "nr-challenge-export-timeout",
+        "nr-improvement-stream-export",
+        "nr-challenge-flaky-tests"
+      ]
+    },
+    {
+      "id": "slide-012",
+      "layout_id": "narrative_v1",
+      "bindings": {
+        "title": {
+          "kind": "text",
+          "text": "改善事項"
+        },
+        "body": {
+          "kind": "bullets",
+          "items": [
+            {
+              "text": "新增程式碼審查清單。",
+              "level": 0
+            }
+          ]
+        }
+      },
+      "source_refs": [
+        "nr-improvement-review-checklist"
+      ]
+    },
+    {
+      "id": "slide-013",
+      "layout_id": "narrative_v1",
+      "bindings": {
+        "title": {
+          "kind": "text",
+          "text": "下月規劃"
+        },
+        "body": {
+          "kind": "bullets",
+          "items": [
+            {
+              "text": "下月規劃 1",
+              "level": 0,
+              "style": "numbered"
+            },
+            {
+              "text": "下月規劃 2",
+              "level": 0,
+              "style": "numbered"
+            },
+            {
+              "text": "下月規劃 3",
+              "level": 0,
+              "style": "numbered"
+            },
+            {
+              "text": "下月規劃 4",
+              "level": 0,
+              "style": "numbered"
+            },
+            {
+              "text": "下月規劃 5",
+              "level": 0,
+              "style": "numbered"
+            }
+          ]
+        }
+      },
+      "source_refs": [
+        "nr-next-plan-1",
+        "nr-next-plan-2",
+        "nr-next-plan-3",
+        "nr-next-plan-4",
+        "nr-next-plan-5",
+        "nr-next-plan-6"
+      ],
+      "continuation": {
+        "index": 1,
+        "total": 2
+      }
+    },
+    {
+      "id": "slide-014",
+      "layout_id": "narrative_v1",
+      "bindings": {
+        "title": {
+          "kind": "text",
+          "text": "下月規劃（續 2/2）"
+        },
+        "body": {
+          "kind": "bullets",
+          "items": [
+            {
+              "text": "下月規劃 6",
+              "level": 0,
+              "style": "numbered"
+            }
+          ]
+        }
+      },
+      "source_refs": [
+        "nr-next-plan-1",
+        "nr-next-plan-2",
+        "nr-next-plan-3",
+        "nr-next-plan-4",
+        "nr-next-plan-5",
+        "nr-next-plan-6"
+      ],
+      "continuation": {
+        "index": 2,
+        "total": 2
+      }
+    },
+    {
+      "id": "slide-015",
+      "layout_id": "narrative_v1",
+      "bindings": {
+        "title": {
+          "kind": "text",
+          "text": "需要支援"
+        },
+        "body": {
+          "kind": "bullets",
+          "items": [
+            {
+              "text": "需要帳務團隊提供對帳資料。",
+              "level": 0
+            },
+            {
+              "text": "需要資安團隊審查 Token 設計。",
+              "level": 0
+            },
+            {
+              "text": "需要基礎架構團隊提供備份空間。",
+              "level": 0
+            }
+          ]
+        }
+      },
+      "source_refs": [
+        "nr-support-finance",
+        "nr-support-security",
+        "nr-support-infra"
+      ]
+    },
+    {
+      "id": "slide-016",
+      "layout_id": "narrative_v1",
+      "bindings": {
+        "title": {
+          "kind": "text",
+          "text": "其他工作"
+        },
+        "body": {
+          "kind": "bullets",
+          "items": [
+            {
+              "text": "帶領新人熟悉部署流程。",
+              "level": 0
+            }
+          ]
+        }
+      },
+      "source_refs": [
+        "nr-other-mentoring"
+      ]
+    },
+    {
+      "id": "slide-017",
+      "layout_id": "closing_v1",
+      "bindings": {
+        "title": {
+          "kind": "text",
+          "text": "謝謝"
+        }
+      },
+      "source_refs": []
+    }
+  ],
+  "footer": "研發工作月報 · 2026-11"
+}

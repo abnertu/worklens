@@ -124,7 +124,7 @@ Layout Resolver (Report IR → Presentation IR) 是純函式, 放在 Core (`Work
 | `IEvidenceDigester` | `EvidenceDocument` + `DigestOptions` → `EvidenceDigest` | M2 |
 | `IAnalysisModule` | `EvidenceDigest` → `ReportDocument` | v0.1 由 **agent** 擔任, WorkLens 內無實作; 契約保留給未來內建 LLM / headless runner |
 | `IReportValidator` | `Validate(string reportJson, EvidenceDocument? evidence, string? evidenceSha256)` → `ValidationResult` | M0: `ReportValidator` (JSON 解析、schema、參照完整性、domain 規則) |
-| `ILayoutResolver` | `Resolve(ReportDocument, string reportSha256, EvidenceDocument, TemplateManifest)` → `LayoutResult` (`PresentationDocument?` + errors) | M0: `LayoutResolver` |
+| `ILayoutResolver` | `Resolve(ReportDocument, string reportSha256, EvidenceDocument, TemplateManifest)` → `LayoutResult` (`PresentationDocument?` + errors + warnings) | M0: `LayoutResolver` |
 | `IOutputRenderer` | `RenderAsync(PresentationDocument, TemplateManifest, string templatePath, string outputPath, CancellationToken)` → `RenderResult` | M0: `PptxRenderer` |
 
 ## 6. 工作目錄 (Workspace)

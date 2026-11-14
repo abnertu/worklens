@@ -108,6 +108,8 @@ public sealed record TemplateLabels
     public string? EvidenceCommits { get; init; }
     public string? EvidenceIssue { get; init; }
     public string? HumanOrigin { get; init; }
+    public string? DetailKicker { get; init; }
+    public string? ProjectMore { get; init; }
     public string? Footer { get; init; }
 }
 
