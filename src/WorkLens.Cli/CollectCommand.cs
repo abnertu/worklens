@@ -1,4 +1,5 @@
 using System.CommandLine;
+using System.Globalization;
 using System.Text;
 using System.Text.Json.Nodes;
 using WorkLens.Connectors.Git;
@@ -17,9 +18,8 @@ using WorkLens.Core.Validation;
 namespace WorkLens.Cli;
 
 /// <summary>
-/// <c>collect</c>: reads <c>worklens.json</c>, collects the subject's evidence of one period from each selected
-/// source and writes <c>evidence.json</c> (docs/design/cli-ux.md section 1). All configuration checks run before
-/// the first network request; any source failure stops the command without writing a file (D16).
+/// Collects one month or an inclusive month range. Configuration and periods are checked before requests.
+/// A failed month writes no evidence. A stopped range keeps the evidence of completed months.
 /// </summary>
 internal static class CollectCommand
 {
@@ -40,19 +40,12 @@ internal static class CollectCommand
     public static Command Create(CliHost host)
     {
         var command = new Command("collect", "Collect evidence from GitHub and GitLab into evidence.json.");
-        var period = new Option<string>("--period")
+        var period = new Option<string?>("--period")
         {
             Description = "Report month, yyyy-MM (for example 2026-10).",
-            Required = true,
         };
-        period.Validators.Add(result =>
-        {
-            var value = result.GetValueOrDefault<string>();
-            if (value is null || !PeriodCalculator.IsValidLabel(value))
-            {
-                result.AddError($"--period must be a month in the form yyyy-MM, got '{value}'.");
-            }
-        });
+        var from = new Option<string?>("--from") { Description = "First month of an inclusive range, yyyy-MM." };
+        var to = new Option<string?>("--to") { Description = "Last month of an inclusive range, yyyy-MM (at most 24 months)." };
         var source = new Option<string[]>("--source")
         {
             Description = "Collect only this source id (repeatable; default: every source).",
@@ -64,7 +57,7 @@ internal static class CollectCommand
         var dryRun = new Option<bool>("--dry-run") { Description = "Show what would be requested; send nothing, write nothing." };
         var verbose = new Option<bool>("--verbose") { Description = "Log each HTTP request to stderr (redacted)." };
         var json = Program.JsonOption();
-        foreach (var option in new Option[] { period, source, config, workspace, output, dryRun, verbose, json })
+        foreach (var option in new Option[] { period, from, to, source, config, workspace, output, dryRun, verbose, json })
         {
             command.Options.Add(option);
         }
@@ -75,7 +68,8 @@ internal static class CollectCommand
             (result, token) => RunAsync(
                 host,
                 new CollectOptions(
-                    parse.GetValue(period)!,
+                    MonthLabels(parse.GetValue(period), parse.GetValue(from), parse.GetValue(to), parse.GetValue(output)),
+                    parse.GetValue(from) is not null,
                     parse.GetValue(source) ?? [],
                     parse.GetValue(config),
                     InputFiles.Resolve(host, parse.GetValue(output), parse.GetValue(workspace), InputFiles.EvidenceFileName),
@@ -101,10 +95,10 @@ internal static class CollectCommand
         }
 
         var (zone, zoneName) = ResolveTimeZone(host, config);
-        Period period;
+        Period[] periods;
         try
         {
-            period = PeriodCalculator.Calculate(options.Period, zone, zoneName);
+            periods = [.. options.Periods.Select(label => PeriodCalculator.Calculate(label, zone, zoneName))];
         }
         catch (FormatException ex)
         {
@@ -113,11 +107,172 @@ internal static class CollectCommand
 
         if (options.DryRun)
         {
-            DryRun(host, options, period, sources, result);
+            if (!options.IsRange)
+            {
+                DryRun(host, options, periods[0], sources, result);
+            }
+            else
+            {
+                var months = new JsonArray();
+                foreach (var period in periods)
+                {
+                    var month = new CommandResultBuilder();
+                    DryRun(host, options with { OutputPath = MonthOutput(options.OutputPath, period.Label) }, period, sources, month);
+                    var node = month.Result!.AsObject();
+                    node.Remove("dry_run");
+                    months.Add(node);
+                    result.Lines.Add($"{period.Label}: {string.Join("; ", month.Lines)}");
+                }
+
+                result.Result = new JsonObject
+                {
+                    ["dry_run"] = true,
+                    ["files"] = new JsonObject { ["config"] = configPath },
+                    ["months"] = months,
+                };
+            }
             return ExitCodes.Success;
         }
 
         var tokens = sources.Select(s => ResolveToken(host, s)).ToList();
+        if (!options.IsRange)
+        {
+            return await CollectMonthAsync(host, options, configPath, config, sources, tokens, periods[0], result, null, cancellationToken).ConfigureAwait(false);
+        }
+
+        return await CollectRangeAsync(host, options, configPath, config, sources, tokens, periods, result, cancellationToken).ConfigureAwait(false);
+    }
+
+    private static IReadOnlyList<string> MonthLabels(string? period, string? from, string? to, string? output)
+    {
+        if (period is not null && (from is not null || to is not null)
+            || period is null && (from is null || to is null))
+        {
+            throw new CliException(ExitCodes.Usage, "command.usage_error", "Specify --period or both --from and --to.");
+        }
+
+        if (period is not null)
+        {
+            if (!PeriodCalculator.IsValidLabel(period))
+            {
+                throw new CliException(ExitCodes.Usage, "command.usage_error", "--period must be a representable month in the form yyyy-MM.");
+            }
+
+            return [period];
+        }
+
+        if (output is not null || !PeriodCalculator.IsValidLabel(from!) || !PeriodCalculator.IsValidLabel(to!))
+        {
+            throw new CliException(ExitCodes.Usage, "command.usage_error", "A range requires representable yyyy-MM months and cannot use --output.");
+        }
+
+        var first = DateOnly.ParseExact(from!, "yyyy-MM", CultureInfo.InvariantCulture);
+        var last = DateOnly.ParseExact(to!, "yyyy-MM", CultureInfo.InvariantCulture);
+        var count = (last.Year - first.Year) * 12 + last.Month - first.Month + 1;
+        if (count is < 1 or > 24)
+        {
+            throw new CliException(ExitCodes.Usage, "command.usage_error", "The month range must be ascending and contain at most 24 months.");
+        }
+
+        return [.. Enumerable.Range(0, count).Select(i => first.AddMonths(i).ToString("yyyy-MM", CultureInfo.InvariantCulture))];
+    }
+
+    private static string MonthOutput(string defaultOutput, string label) =>
+        Path.Combine(Path.GetDirectoryName(defaultOutput)!, label, InputFiles.EvidenceFileName);
+
+    private static async Task<int> CollectRangeAsync(
+        CliHost host, CollectOptions options, string configPath, WorkLensConfig config,
+        List<ConfigSource> sources, List<string> tokens, Period[] periods,
+        CommandResultBuilder result, CancellationToken cancellationToken)
+    {
+        var months = new JsonArray([.. periods.Select(period => (JsonNode)new JsonObject
+        {
+            ["period"] = PeriodNode(period),
+            ["status"] = "skipped",
+            ["files"] = new JsonObject { ["evidence"] = MonthOutput(options.OutputPath, period.Label) },
+        })]);
+        var requests = 0;
+        var summary = new JsonObject
+        {
+            ["files"] = new JsonObject { ["config"] = configPath },
+            ["months"] = months,
+        };
+        result.Result = summary;
+        try
+        {
+            for (var i = 0; i < periods.Length; i++)
+            {
+                var period = periods[i];
+                var output = MonthOutput(options.OutputPath, period.Label);
+                var directory = Path.GetDirectoryName(output)!;
+                var existed = Directory.Exists(directory);
+                var month = new CommandResultBuilder();
+                try
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    await CollectMonthAsync(host, options with { OutputPath = output }, configPath, config,
+                        sources, tokens, period, month, count => requests += count, cancellationToken).ConfigureAwait(false);
+                    months[i]!["status"] = "written";
+                    months[i]!["document_id"] = month.Result!["document_id"]!.DeepClone();
+                    months[i]!["item_count"] = month.Result["items_by_kind"]!.AsObject().Sum(pair => pair.Value!.GetValue<int>());
+                }
+                catch (Exception ex)
+                {
+                    var cancelled = ex is OperationCanceledException && cancellationToken.IsCancellationRequested;
+                    months[i]!["status"] = cancelled ? "cancelled" : "failed";
+                    var written = months.Where(m => m!["status"]!.GetValue<string>() == "written")
+                        .Select(m => m!["period"]!["label"]!.GetValue<string>()).ToArray();
+                    var failure = ex as CliException;
+                    var message = cancelled ? "The command was cancelled." : ex.Message;
+                    message += $" Written months: {(written.Length == 0 ? "none" : string.Join(", ", written))}.";
+                    throw new CollectStoppedException(
+                        failure?.ExitCode ?? (cancelled ? ExitCodes.Cancelled : ExitCodes.Internal),
+                        failure?.Code ?? (cancelled ? "command.cancelled" : "command.internal_error"),
+                        message, failure?.Details, failure?.Issues);
+                }
+                finally
+                {
+                    result.Issues.AddRange(month.Issues.Select(issue => issue with { Message = $"[{period.Label}] {issue.Message}" }));
+                    if (!existed)
+                    {
+                        TryDeleteEmptyDirectory(directory);
+                    }
+                }
+            }
+        }
+        finally
+        {
+            summary["requests"] = requests;
+            summary["warnings"] = result.Issues.Count;
+            foreach (var month in months)
+            {
+                result.Lines.Add($"{month!["period"]!["label"]}: {month["status"]} {month["files"]!["evidence"]}.");
+            }
+        }
+
+        return ExitCodes.Success;
+    }
+
+    private static void TryDeleteEmptyDirectory(string directory)
+    {
+        try
+        {
+            if (Directory.Exists(directory) && !Directory.EnumerateFileSystemEntries(directory).Any())
+            {
+                Directory.Delete(directory);
+            }
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            // Cleanup must not replace the original failure or delete existing files.
+        }
+    }
+
+    private static async Task<int> CollectMonthAsync(
+        CliHost host, CollectOptions options, string configPath, WorkLensConfig config,
+        List<ConfigSource> sources, List<string> tokens, Period period, CommandResultBuilder result,
+        Action<int>? countRequests, CancellationToken cancellationToken)
+    {
         CreateOutputDirectory(options.OutputPath);
 
         var items = new List<EvidenceItem>();
@@ -133,10 +288,18 @@ internal static class CollectCommand
                 using var http = s.Platform == SourcePlatform.Gitlab
                     ? GitLabHttp.CreateClient(counter, new Uri(s.BaseUrl), tokens[i], Program.Version)
                     : GitHubHttp.CreateClient(counter, new Uri(s.BaseUrl), tokens[i], Program.Version);
-                var collected = await Connector(host, s.Platform, http)
-                    .CollectAsync(new SourceQuery(period, config.Identities, Spec(s)), cancellationToken)
-                    .ConfigureAwait(false);
-                requests += counter.Count;
+                SourceCollectResult collected;
+                try
+                {
+                    collected = await Connector(host, s.Platform, http)
+                        .CollectAsync(new SourceQuery(period, config.Identities, Spec(s)), cancellationToken)
+                        .ConfigureAwait(false);
+                }
+                finally
+                {
+                    requests += counter.Count;
+                    countRequests?.Invoke(counter.Count);
+                }
                 warnings.AddRange(collected.Warnings);
                 if (!collected.IsSuccess)
                 {
@@ -422,7 +585,8 @@ internal static class CollectCommand
     };
 
     private sealed record CollectOptions(
-        string Period,
+        IReadOnlyList<string> Periods,
+        bool IsRange,
         IReadOnlyList<string> SourceIds,
         string? ConfigPath,
         string OutputPath,

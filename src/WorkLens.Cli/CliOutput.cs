@@ -4,6 +4,17 @@ using WorkLens.Core.Json;
 
 namespace WorkLens.Cli;
 
+/// <summary>A stopped range keeps its partial result and the cause of the failed month.</summary>
+internal sealed class CollectStoppedException(
+    int exitCode, string code, string message, JsonObject? details,
+    IReadOnlyList<ValidationIssue>? issues) : Exception(message)
+{
+    public int ExitCode { get; } = exitCode;
+    public string Code { get; } = code;
+    public JsonObject? Details { get; } = details;
+    public IReadOnlyList<ValidationIssue> Issues { get; } = issues ?? [];
+}
+
 /// <summary>
 /// An expected command failure (configuration, input, output) that maps to an exit code and a
 /// <c>{code, message, details}</c> error, optionally with the validation issues that caused it.
@@ -75,6 +86,12 @@ internal sealed class CliOutput(CliHost host)
         try
         {
             exitCode = await body(builder, cancellationToken).ConfigureAwait(false);
+        }
+        catch (CollectStoppedException ex)
+        {
+            exitCode = ex.ExitCode;
+            builder.Issues.AddRange(ex.Issues);
+            error = Error(ex.Code, ex.Message, ex.Details);
         }
         catch (CliException ex)
         {

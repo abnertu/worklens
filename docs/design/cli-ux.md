@@ -11,7 +11,7 @@
 | `worklens schema list [--json]` | — | 內建 schema 的 `$id` 清單, 每個版本一筆 | v0.1 骨架 |
 | `worklens schema show <name>[:<version>]` | — | schema 內容 (stdout); 未指定版本時為內建的最新 minor | M0 |
 | `worklens init [--workspace <dir>]` | — | `worklens.json` 範本 | M3 |
-| `worklens collect --period <yyyy-MM> [--source <id>...]` | `worklens.json`、token 環境變數 | `evidence.json` | M1 |
+| `worklens collect (--period <yyyy-MM> 或 --from <yyyy-MM> --to <yyyy-MM>) [--source <id>...]` | `worklens.json`、token 環境變數 | `evidence.json` | M1 |
 | `worklens evidence digest` | `evidence.json` | `digest.json` | M2 |
 | `worklens report validate [--report <file>] [--evidence <file>] [--strict]` | `report.json`、`evidence.json` | 驗證結果 | M0 |
 | `worklens report rebind` | `report.json`、新的 `evidence.json` | 更新 `report.json` 的 `evidence_document` (所有參照仍存在時) | M3 |
@@ -29,7 +29,7 @@ M1 現況: `collect` 支援 GitHub 與 GitLab。M0 命令維持可用。
 
 | 選項 | 說明 |
 |---|---|
-| `--workspace <dir>` | 工作目錄; 目前預設為目前目錄, 自動期間目錄於 M3 提供 |
+| `--workspace <dir>` | 工作目錄; 預設為目前目錄。`collect` 區間模式為每個月建立子目錄 |
 | `--config <file>` | 設定檔; 搜尋順序見 §3.1 |
 | `--json` | stdout 輸出單一 JSON 物件 (見 §5); 不輸出進度文字 |
 | `--dry-run` | 只顯示將執行的動作 (要呼叫的 API、要寫入的檔案), 不發出網路請求、不寫檔 |
@@ -60,12 +60,21 @@ M0 命令提供下列選項。M1 的 `collect` 另提供 `--config`、`--dry-run
 worklens collect --period 2026-10 --source gh-auth --config worklens.json --workspace .worklens/reports/2026-10 --json
 ```
 
-- `--period` 必填, 格式為 `yyyy-MM`。缺少或格式錯誤回 exit 1 `command.usage_error`。
+- 指定 `--period` 或同時指定 `--from` 與 `--to`, 格式為 `yyyy-MM`。
+- 區間包含兩端, 必須由早到晚, 最多 24 個月。
+- 不可混用 `--period` 與區間選項, 區間也不可使用 `--output`。
+- 缺少選項、格式錯誤或區間無效回 exit 1 `command.usage_error`。
 - 月份與下一個月的 UTC 邊界必須可表示。年份 `0000`、`9999-12` 或時區換算溢位也回 exit 1。
+- 所有月份都在第一個請求或輸出目錄建立前檢查。
 - `--source <id>` 可重複。未指定時選取全部 sources, 選取結果維持設定順序。
 - 選取的 sources 依設定順序逐一蒐集。GitHub 與 GitLab sources 可混用。
 - `--workspace` 預設為目前目錄。`--output` 預設為 workspace 中的 `evidence.json`; 明確指定的相對路徑以目前目錄解析。
-- `collect` 在 HTTP 請求前建立缺少的輸出目錄。任一 source 失敗即停止, 回 exit 4, 並保留既有輸出。
+- 單月模式在 HTTP 請求前建立缺少的輸出目錄。任一 source 失敗即停止, 回 exit 4, 並保留既有輸出。
+- 區間模式每月寫到 `<workspace>/<yyyy-MM>/evidence.json`, 每個月仍是獨立的報告工作目錄。
+- 設定與 token 只檢查一次, 之後依月份順序蒐集。
+- 每月子目錄在該月開始蒐集時建立。停止的月份不留下新建的空子目錄。
+- 第一個 source 失敗、寫入失敗、取消或內部錯誤會停止區間, 分別回 exit 4、3、130 或 70。
+- 已完成月份保留, 後續月份略過。
 - `collect` 只標記 bot、merge 與 revert。`exclude` 由 M2 的 digest 套用。
 
 GitHub 蒐集範圍與限制:
@@ -171,7 +180,8 @@ Source 指定 `token_env` 時只讀該變數, 不 fallback。空字串或只有�
 └── manifest.json        # provenance (M3)
 ```
 
-此布局由使用者以 `--workspace` 選取。HTTP 回應快取已延後, M1a 不建立 `cache/`。
+此布局由使用者以 `--workspace` 選取。區間蒐集時, workspace 下每個 `<yyyy-MM>/` 子目錄使用同一布局。
+HTTP 回應快取已延後, M1a 不建立 `cache/`。
 
 ## 5. 輸出契約
 
@@ -306,11 +316,25 @@ stdout 恰好一個 JSON 物件, 結尾換行:
 
 `requests` 為所有 sources 的 HTTP 嘗試總數, 包含重試。`warnings` 為 warning issue 數量, 詳細內容在 envelope 的 `issues`。
 
-Dry-run 的 `result` 包含 `dry_run: true`、`files.evidence`、`period` 與 `sources`。
+區間模式的 `result` 包含 `files.config`、`months`、`requests` 與 `warnings`。
+每個 `months` 項目包含 `period`、`status` 與 `files.evidence`。
+`period` 包含 `label`、`start`、`end` 與 `timezone`。
+`status` 為 `written`、`failed`、`cancelled` 或 `skipped`。
+只有 `written` 項目另含 `item_count` 與 `document_id`。
+`requests` 計算所有月份的 HTTP 嘗試, 包含重試與失敗的嘗試。
+Warning 訊息以 `[yyyy-MM] ` 開頭。人類可讀輸出每月一行結果。
+停止時保留 `result.months` 與原本的錯誤 code、details。
+錯誤訊息包含原因與已完成月份。區間取消訊息以 `The command was cancelled.` 開頭。
+單月取消維持既有訊息與 `result: null`。
+
+單月 dry-run 的 `result` 包含 `dry_run: true`、`files.evidence`、`period` 與 `sources`。
 每個 source 包含 `id`、`platform`、`base_url`、`repository`、`endpoints`、`token` 與 `scopes`。
 `token` 只含 `variable` 與 `set`。GitHub Enterprise 或自架 GitLab 未指定變數時, `variable` 為 `null`。
 GitHub 的 `scopes` 列出 fine-grained PAT 權限。GitLab 的 `scopes` 為 `read_api`。
 GitLab 端點以 `projects/<id>` 表示解析後的 project ID。
+
+區間 dry-run 的 `result` 包含 `dry_run: true`、`files.config` 與 `months`。
+每個月份包含 `period`、`sources` 與 `files.evidence`, source 格式同單月。
 
 ## 6. Exit codes
 
@@ -335,6 +359,7 @@ GitLab 端點以 `projects/<id>` 表示解析後的 project ID。
 - 錯誤訊息包含: 發生什麼、哪個檔案 / 欄位、建議動作。範例: `config.missing_token: Source 'gl-billing' requires environment variable WORKLENS_GITLAB_TOKEN_CORP.`
 - 所有日誌與錯誤訊息都經過脫敏 (token、Authorization header、URL 中的 `private_token=` 等), 見 [security-privacy.md](../security/security-privacy.md)。
 - 中斷 (Ctrl+C) 時取消進行中的 HTTP 請求, 不留下半寫的檔案 (原子寫入)。
+- 區間模式的 dry-run 列出每個月份。Ctrl+C 保留已完成月份, 並略過後續月份。
 - 一般取消回 exit 130 `command.cancelled`。超過 System.CommandLine 的 `ProcessTerminationTimeout` 時, 強制結束可只回 130, 沒有 JSON envelope。
 
 ## 8. Agent Skill 草案

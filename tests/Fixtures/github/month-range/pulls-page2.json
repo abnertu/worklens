@@ -1,0 +1,6 @@
+{
+  "method": "GET",
+  "path": "/repositories/42/pulls",
+  "query": { "state": "all", "sort": "updated", "direction": "desc", "per_page": "100", "page": "2" },
+  "responses": [{ "status": 200, "body": [] }]
+}

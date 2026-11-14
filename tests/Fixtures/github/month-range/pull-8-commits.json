@@ -1,0 +1,5 @@
+{
+  "method": "GET", "path": "/repos/octo/hello/pulls/8/commits",
+  "query": { "per_page": "100" },
+  "responses": [{ "status": 200, "body": [] }]
+}

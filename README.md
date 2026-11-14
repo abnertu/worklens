@@ -46,6 +46,15 @@ Wrote /path/to/worklens/demo/report.pptx (15 slides).
 
 在命令加上 `--json`, stdout 會輸出單一 JSON 物件, 供 agent 解析。Exit code 表示結果的類別。
 
+補齊過去月份的證據時, 使用區間蒐集:
+
+```bash
+dotnet run --project src/WorkLens.Cli -c Release -- collect --from 2026-08 --to 2026-10 --config worklens.json --workspace .worklens/reports --json
+```
+
+每月分別寫入 `.worklens/reports/<yyyy-MM>/evidence.json`。某個月停止時, 已完成月份會保留。
+每個月的 `present` 與 `render` 請在該月子目錄分別執行。
+
 ## 文件
 
 - 命令、選項、輸出與 exit code: [docs/design/cli-ux.md](docs/design/cli-ux.md)
