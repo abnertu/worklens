@@ -1,0 +1,55 @@
+{
+  "method": "GET",
+  "path": "/api/v4/projects/7/issues",
+  "responses": [
+    {
+      "status": 200,
+      "body": [
+        {
+          "iid": 4,
+          "web_url": "https://gitlab.example.com/group/sub/app/-/issues/4",
+          "state": "opened",
+          "title": "Issue 4",
+          "description": "Issue description",
+          "created_at": "2026-09-01T00:00:00Z",
+          "assignees": []
+        },
+        {
+          "iid": 5,
+          "web_url": "https://gitlab.example.com/group/sub/app/-/issues/5",
+          "state": "opened",
+          "title": "Issue 5",
+          "description": "Issue description",
+          "created_at": "2026-09-01T00:00:00Z",
+          "assignees": [
+            {
+              "username": "alice",
+              "name": "Alice Assignee"
+            }
+          ]
+        },
+        {
+          "iid": 6,
+          "web_url": "https://gitlab.example.com/group/sub/app/-/issues/6",
+          "state": "opened",
+          "title": "Issue 6",
+          "description": "Issue description",
+          "created_at": "2026-09-01T00:00:00Z",
+          "assignees": []
+        }
+      ],
+      "headers": {
+        "X-Next-Page": ""
+      }
+    }
+  ],
+  "query": {
+    "state": "all",
+    "scope": "all",
+    "order_by": "updated_at",
+    "sort": "desc",
+    "updated_after": "2026-09-30T16:00:00Z",
+    "per_page": "100",
+    "page": "2"
+  }
+}

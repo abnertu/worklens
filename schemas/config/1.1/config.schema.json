@@ -5,15 +5,26 @@
   "description": "worklens.json: identities, sources and options. Must not contain secrets; tokens are read from the environment variables named by token_env.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["config_version", "identities", "sources"],
+  "required": [
+    "config_version",
+    "identities",
+    "sources"
+  ],
   "properties": {
-    "config_version": { "const": "1.1" },
+    "config_version": {
+      "const": "1.1"
+    },
     "subject": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["display_name"],
+      "required": [
+        "display_name"
+      ],
       "properties": {
-        "display_name": { "type": "string", "minLength": 1 }
+        "display_name": {
+          "type": "string",
+          "minLength": 1
+        }
       }
     },
     "timezone": {
@@ -30,9 +41,17 @@
         "additionalProperties": false,
         "minProperties": 1,
         "properties": {
-          "platform": { "$ref": "#/$defs/platform" },
-          "username": { "type": "string", "minLength": 1 },
-          "email": { "type": "string", "format": "email" }
+          "platform": {
+            "$ref": "#/$defs/platform"
+          },
+          "username": {
+            "type": "string",
+            "minLength": 1
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          }
         }
       }
     },
@@ -42,20 +61,41 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["id", "platform", "base_url", "repository"],
+        "required": [
+          "id",
+          "platform",
+          "base_url",
+          "repository"
+        ],
         "properties": {
-          "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_-]*$" },
-          "platform": { "$ref": "#/$defs/platform" },
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9_-]*$"
+          },
+          "platform": {
+            "$ref": "#/$defs/platform"
+          },
           "base_url": {
             "description": "REST API root over https, for example https://api.github.com or https://ghe.example/api/v3.",
             "type": "string",
             "format": "uri"
           },
-          "repository": { "type": "string", "minLength": 1 },
+          "repository": {
+            "type": "string",
+            "minLength": 1
+          },
           "token_env": {
             "description": "Name of the environment variable that holds the token for this source.",
             "type": "string",
             "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+          },
+          "issue_status_labels": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
           }
         }
       }
@@ -65,32 +105,63 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "bots": { "type": "boolean" },
-        "merge_commits": { "type": "boolean" },
-        "paths": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+        "bots": {
+          "type": "boolean"
+        },
+        "merge_commits": {
+          "type": "boolean"
+        },
+        "paths": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
       }
     },
     "digest": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "include_diff": { "type": "boolean" },
-        "max_body_chars": { "type": "integer", "minimum": 1 },
-        "path_depth": { "type": "integer", "minimum": 1 },
+        "include_diff": {
+          "type": "boolean"
+        },
+        "max_body_chars": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "path_depth": {
+          "type": "integer",
+          "minimum": 1
+        },
         "redaction": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "mode": { "enum": ["default"] },
+            "mode": {
+              "enum": [
+                "default"
+              ]
+            },
             "patterns": {
               "type": "array",
               "items": {
                 "type": "object",
                 "additionalProperties": false,
-                "required": ["match", "replace"],
+                "required": [
+                  "match",
+                  "replace"
+                ],
                 "properties": {
-                  "match": { "type": "string", "minLength": 1, "format": "regex" },
-                  "replace": { "type": "string" }
+                  "match": {
+                    "type": "string",
+                    "minLength": 1,
+                    "format": "regex"
+                  },
+                  "replace": {
+                    "type": "string"
+                  }
                 }
               }
             }
@@ -102,7 +173,10 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "template_manifest": { "type": "string", "minLength": 1 },
+        "template_manifest": {
+          "type": "string",
+          "minLength": 1
+        },
         "organization": {
           "description": "Unit name that render writes into the brand positions of the template.",
           "type": "string",
@@ -117,6 +191,11 @@
     }
   },
   "$defs": {
-    "platform": { "enum": ["github", "gitlab"] }
+    "platform": {
+      "enum": [
+        "github",
+        "gitlab"
+      ]
+    }
   }
 }

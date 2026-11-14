@@ -148,7 +148,7 @@ internal sealed partial class LayoutFacts
     {
         var prefix = item.Kind == EvidenceKind.ChangeRequest && item.Source.Platform == SourcePlatform.Gitlab ? "!" : "#";
         var id = prefix + item.Source.ExternalId;
-        return item.Kind == EvidenceKind.Issue
+        return item.Kind is EvidenceKind.Issue or EvidenceKind.IssueActivity
             ? LayoutLabels.Format(_labels.EvidenceIssue, new Dictionary<string, string> { ["id"] = id })
             : id;
     }

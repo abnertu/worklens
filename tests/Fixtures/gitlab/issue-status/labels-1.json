@@ -1,0 +1,99 @@
+{
+  "method": "GET",
+  "path": "/api/v4/projects/7/issues/1/resource_label_events",
+  "responses": [
+    {
+      "status": 200,
+      "body": [
+        {
+          "id": 9,
+          "created_at": "2026-10-05T00:00:00Z",
+          "user": {
+            "username": "alice",
+            "name": "Alice Event"
+          },
+          "label": {
+            "name": "Doing"
+          },
+          "action": "remove"
+        },
+        {
+          "id": 1,
+          "created_at": "2026-09-30T16:00:00Z",
+          "user": {
+            "username": "alice",
+            "name": "Alice Event"
+          },
+          "label": {
+            "name": "Doing"
+          },
+          "action": "add"
+        },
+        {
+          "id": 4,
+          "created_at": "2026-10-05T00:00:00Z",
+          "user": {
+            "username": "bob",
+            "name": "Bob"
+          },
+          "label": {
+            "name": "Doing"
+          },
+          "action": "add"
+        },
+        {
+          "id": 5,
+          "created_at": "2026-10-05T00:00:00Z",
+          "user": {
+            "username": "alice",
+            "name": "Alice Event"
+          },
+          "label": null,
+          "action": "add"
+        },
+        {
+          "id": 6,
+          "created_at": "2026-10-05T00:00:00Z",
+          "user": {
+            "username": "alice",
+            "name": "Alice Event"
+          },
+          "label": {
+            "name": "frontend"
+          },
+          "action": "add"
+        },
+        {
+          "id": 7,
+          "created_at": "2026-09-30T15:59:59Z",
+          "user": {
+            "username": "alice",
+            "name": "Alice Event"
+          },
+          "label": {
+            "name": "Doing"
+          },
+          "action": "add"
+        },
+        {
+          "id": 8,
+          "created_at": "2026-10-31T16:00:00Z",
+          "user": {
+            "username": "alice",
+            "name": "Alice Event"
+          },
+          "label": {
+            "name": "Doing"
+          },
+          "action": "add"
+        }
+      ],
+      "headers": {
+        "X-Next-Page": "2"
+      }
+    }
+  ],
+  "query": {
+    "per_page": "100"
+  }
+}

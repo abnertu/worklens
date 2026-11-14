@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using WorkLens.Core.Common;
 using WorkLens.Core.Errors;
 using WorkLens.Core.Evidence;
 using WorkLens.Core.Json;
@@ -167,6 +168,18 @@ public static class ConfigParser
         {
             var source = config.Sources[i];
             var path = $"/sources/{i}";
+            if (source.IssueStatusLabels is not null)
+            {
+                if (source.Platform != SourcePlatform.Gitlab)
+                {
+                    issues.Add(Issue(ConfigParseResult.Invalid, path + "/issue_status_labels", "Issue status labels require a GitLab source."));
+                }
+                else if (!config.Identities.Any(identity => identity.Platform is null or SourcePlatform.Gitlab
+                    && !string.IsNullOrWhiteSpace(identity.Username)))
+                {
+                    issues.Add(Issue(ConfigParseResult.Invalid, path + "/issue_status_labels", "Issue status collection requires a GitLab username in identities."));
+                }
+            }
             if (!ids.Add(source.Id))
             {
                 issues.Add(Issue(ConfigParseResult.Invalid, path + "/id", $"Source id '{source.Id}' is used more than once."));

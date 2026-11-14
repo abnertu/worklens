@@ -14,9 +14,9 @@ namespace WorkLens.Connectors.Git.GitLab;
 /// (<c>merged_at ?? created_at</c>) is in the period, and the subject's commits of those merge requests (with
 /// <c>contains</c> relations). Each included commit is read once in detail for its stats and once through its
 /// diff for its paths. GitLab commits carry no platform account, so commits match by email only. Flags are set,
-/// nothing is excluded.
+/// nothing is excluded. Configured issue collection also reads label and state events.
 /// </summary>
-public sealed class GitLabConnector : ISourceConnector
+public sealed partial class GitLabConnector : ISourceConnector
 {
     /// <summary>The most diff files read for one commit; more files give a <c>source.truncated</c> warning.</summary>
     public const int MaxCommitFiles = 3000;
@@ -61,7 +61,7 @@ public sealed class GitLabConnector : ISourceConnector
     }
 
     /// <summary>State of one collection: the commit cache, the collected items and warnings.</summary>
-    private sealed class Run
+    private sealed partial class Run
     {
         private readonly GitLabApiClient _api;
         private readonly TimeProvider _time;
@@ -85,7 +85,7 @@ public sealed class GitLabConnector : ISourceConnector
             _matcher = new IdentityMatcher(query.Identities, SourcePlatform.Gitlab);
         }
 
-        public IReadOnlyList<EvidenceItem> Items => [.. _commits.Values, .. _mergeRequests];
+        public IReadOnlyList<EvidenceItem> Items => [.. _commits.Values, .. _mergeRequests, .. _issues];
 
         public IReadOnlyList<WorkLensError> Warnings => _warnings;
 
@@ -105,14 +105,24 @@ public sealed class GitLabConnector : ISourceConnector
                 await CollectBranchCommitsAsync(branch, cancellationToken).ConfigureAwait(false);
             }
 
-            if (!project.HasMergeRequests)
+            if (project.HasMergeRequests)
             {
-                return;
+                foreach (var mergeRequest in await ListMergeRequestsAsync(cancellationToken).ConfigureAwait(false))
+                {
+                    await CollectMergeRequestAsync(mergeRequest, cancellationToken).ConfigureAwait(false);
+                }
             }
 
-            foreach (var mergeRequest in await ListMergeRequestsAsync(cancellationToken).ConfigureAwait(false))
+            if (_source.IssueStatusLabels is not null)
             {
-                await CollectMergeRequestAsync(mergeRequest, cancellationToken).ConfigureAwait(false);
+                if (project.HasIssues)
+                {
+                    await CollectIssuesAsync(cancellationToken).ConfigureAwait(false);
+                }
+                else
+                {
+                    _warnings.Add(new WorkLensError("source.issues_disabled", "Issue collection was requested, but the project disables issues."));
+                }
             }
         }
 

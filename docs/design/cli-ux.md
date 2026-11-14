@@ -100,6 +100,14 @@ GitLab 蒐集範圍與限制 (驗證目標為 GitLab 16.9.1):
 - GitLab 伺服器的 diff 上限可能省略路徑, 且 16.9 不提供可偵測的截斷 metadata。
 - 只有 API 明確標示時才標記 bot。舊版回應沒有 bot 欄位時, 不從顯示名稱推測。
 - Default branch 查詢窗與 GitHub 相同, 結束於期間結束後 30 天。MR 以 `updated_after` 查詢並依更新時間分頁。
+- 設定 `issue_status_labels` 時, 另讀取自期間開始後有更新的 issues, 包含期間結束後仍有更新的 issue。
+- 每個 issue 讀取全部分頁的 label events 與 state events, 只計入期間 `[start, end)` 內的事件。
+- 本人加上指定 label、關閉或重開 issue 時計入。移除 label、已刪除的 label 與其他 label 不計入。
+- Issue 目前指派給本人時, 他人的上述變更也計入。缺少事件使用者時視為他人。
+- 指派人以蒐集當下為準。重新指派會改變過去月份的蒐集結果。
+- 每個 issue 產生一個 `issue_activity`, 保存計入的 `transitions`。沒有計入事件時略過。
+- Project 停用 issue 時回 `source.issues_disabled` warning, 不請求 issue 端點。停用 MR 不影響 issue 蒐集。
+- `collect` 一律寫 Evidence IR 1.1, 沒有設定 issue 蒐集時也相同。Token 權限仍為 `read_api`。
 - 沒有分頁 header 的滿頁回應以 offset 分頁續讀, 每次最多 1000 頁。超過上限或內容重複時回 `source.invalid_response`。
 - `Link` header 沒有任何含 `rel` 的連結時, 視為格式錯誤, 回 `source.invalid_response`。
 
@@ -133,8 +141,12 @@ GitLab 蒐集範圍與限制 (驗證目標為 GitLab 16.9.1):
 ```
 
 M1a 提供 `urn:worklens:schema:config:1.0`。`worklens schema show config` 輸出設定 schema。
-Config 1.1 新增選填的 `report.organization` (單位名稱) 與 `report.logo` (PNG 或 JPEG, 相對於設定檔)。只有 `render --config` 讀取它們; 沒有 `--config` 時, `render` 不加品牌元素。
+Config 1.1 新增 GitLab source 的選填欄位 `issue_status_labels`, 以及選填的 `report.organization` (單位名稱) 與 `report.logo` (PNG 或 JPEG, 相對於設定檔)。只有 `render --config` 讀取這兩個品牌欄位; 沒有 `--config` 時, `render` 不加品牌元素。
 `config` 不屬於 IR 三層, 但同樣以 schema 驗證。
+
+GitLab source 可設定 `"issue_status_labels": ["Todo", "Doing", "Pending", "Done"]`。
+陣列至少包含一個非空字串值, label 名稱比對區分大小寫。
+GitHub source 不可使用此欄位。Issue 蒐集需要適用於 GitLab 的 username identity。
 
 設定搜尋依下列順序進行。明確指定的檔案不存在時不嘗試下一項。
 
@@ -286,6 +298,7 @@ stdout 恰好一個 JSON 物件, 結尾換行:
 | `config.unknown_source` | `--source` 指定未知 id | 3 |
 | `config.unsupported_platform` | 選取的 source 尚無 connector (保留給未來的平台) | 3 |
 | `config.missing_token` | 所需 token 變數未設定 | 3 |
+| `source.issues_disabled` | 設定了 issue 蒐集, 但 project 停用 issue | 0 (warning) |
 | `source.unauthorized` | HTTP 401 | 4 |
 | `source.forbidden` | HTTP 403, 且不是 GitHub 可重試的 rate limit; GitLab 的 403 一律使用此 code | 4 |
 | `source.not_found` | HTTP 404 | 4 |
@@ -308,12 +321,13 @@ stdout 恰好一個 JSON 物件, 結尾換行:
   "files": { "evidence": "/work/evidence.json", "config": "/work/worklens.json" },
   "document_id": "evd-2026-10-12345678",
   "period": { "label": "2026-10", "start": "2026-09-30T16:00:00Z", "end": "2026-10-31T16:00:00Z", "timezone": "Asia/Taipei" },
-  "items_by_kind": { "commit": 12, "change_request": 3 },
+  "items_by_kind": { "issue_activity": 0, "commit": 12, "change_request": 3 },
   "requests": 20,
   "warnings": 0
 }
 ```
 
+`items_by_kind` 一律包含 `issue_activity`, 數量可為 0。
 `requests` 為所有 sources 的 HTTP 嘗試總數, 包含重試。`warnings` 為 warning issue 數量, 詳細內容在 envelope 的 `issues`。
 
 區間模式的 `result` 包含 `files.config`、`months`、`requests` 與 `warnings`。
@@ -332,6 +346,7 @@ Warning 訊息以 `[yyyy-MM] ` 開頭。人類可讀輸出每月一行結果。
 `token` 只含 `variable` 與 `set`。GitHub Enterprise 或自架 GitLab 未指定變數時, `variable` 為 `null`。
 GitHub 的 `scopes` 列出 fine-grained PAT 權限。GitLab 的 `scopes` 為 `read_api`。
 GitLab 端點以 `projects/<id>` 表示解析後的 project ID。
+設定 issue 蒐集時, dry-run 另列出 issue list、`resource_label_events` 與 `resource_state_events` 端點。
 
 區間 dry-run 的 `result` 包含 `dry_run: true`、`files.config` 與 `months`。
 每個月份包含 `period`、`sources` 與 `files.evidence`, source 格式同單月。

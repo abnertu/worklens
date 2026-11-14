@@ -1,0 +1,15 @@
+{
+  "method": "GET",
+  "path": "/api/v4/projects/group%2Fsub%2Fapp",
+  "responses": [
+    {
+      "status": 200,
+      "body": {
+        "id": 7,
+        "empty_repo": true,
+        "merge_requests_access_level": "disabled",
+        "issues_access_level": "enabled"
+      }
+    }
+  ]
+}

@@ -2,7 +2,7 @@ using WorkLens.Core.Common;
 
 namespace WorkLens.Core.Evidence;
 
-/// <summary>Evidence IR root (<c>urn:worklens:schema:evidence-ir:1.0</c>).</summary>
+/// <summary>Evidence IR root. Reads 1.0 and 1.1 and writes 1.1.</summary>
 public sealed record EvidenceDocument(
     string SchemaVersion,
     string DocumentId,
@@ -11,8 +11,8 @@ public sealed record EvidenceDocument(
     EvidenceQuery Query,
     IReadOnlyList<EvidenceItem> Items)
 {
-    public const string CurrentSchemaVersion = "1.0";
-    public const string SchemaId = "urn:worklens:schema:evidence-ir:1.0";
+    public const string CurrentSchemaVersion = "1.1";
+    public const string SchemaId = "urn:worklens:schema:evidence-ir:1.1";
 }
 
 public sealed record GeneratorInfo(string Name, string Version);
@@ -25,13 +25,15 @@ public sealed record EvidenceQuery(
 /// <summary>An identity treated as the report subject. At least one field is set.</summary>
 public sealed record Identity(SourcePlatform? Platform = null, string? Username = null, string? Email = null);
 
-public sealed record SourceSpec(SourcePlatform Platform, string BaseUrl, string Repository);
+public sealed record SourceSpec(
+    SourcePlatform Platform, string BaseUrl, string Repository, IReadOnlyList<string>? IssueStatusLabels = null);
 
 public enum EvidenceKind
 {
     Commit,
     ChangeRequest,
     Issue,
+    IssueActivity,
 }
 
 public enum EvidenceState
@@ -46,6 +48,8 @@ public enum AuthorRole
     Author,
     CoAuthor,
     Committer,
+    Actor,
+    Assignee,
 }
 
 public enum RelationType
@@ -76,7 +80,15 @@ public sealed record EvidenceItem(
     ChangeStats? Stats = null,
     IReadOnlyList<string>? Paths = null,
     IReadOnlyList<EvidenceRelation>? Relations = null,
-    IReadOnlyList<EvidenceFlag>? Flags = null);
+    IReadOnlyList<EvidenceFlag>? Flags = null,
+    IReadOnlyList<IssueTransition>? Transitions = null);
+
+/// <summary>A counted issue state change. Actor identifies whether the report subject made it.</summary>
+public sealed record IssueTransition(DateTimeOffset At, IssueChange Change, IssueActor Actor, string? Label = null);
+
+public enum IssueChange { Status, Closed, Reopened }
+
+public enum IssueActor { Subject, Other }
 
 public sealed record EvidenceSource(
     SourcePlatform Platform,

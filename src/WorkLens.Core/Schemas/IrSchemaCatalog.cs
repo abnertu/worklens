@@ -35,6 +35,7 @@ public static class IrSchemaCatalog
     public static IReadOnlyList<IrSchemaInfo> All { get; } =
     [
         new(EvidenceIr, "1.0", typeof(EvidenceDocument)),
+        new(EvidenceIr, "1.1", typeof(EvidenceDocument)),
         new(ReportIr, "1.0", typeof(ReportDocument)),
         new(ReportIr, "1.1", typeof(ReportDocument)),
         new(PresentationIr, "1.0", typeof(PresentationDocument)),

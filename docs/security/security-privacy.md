@@ -8,7 +8,7 @@
 | 資產 | 所在 | 主要威脅 |
 |---|---|---|
 | GitHub / GitLab token | 環境變數 | 寫入日誌、shell history、agent 對話紀錄; 權限過大 |
-| 原始證據 (commit message、PR/MR 描述、email、檔案路徑) | `evidence.json` | 機密 (客戶名、內部系統、secret) 隨 digest 送進雲端模型; 工作目錄被 commit 或分享 |
+| 原始證據 (commit message、PR/MR 與 issue 描述、label 名稱、email、檔案路徑) | `evidence.json` | 機密 (客戶名、內部系統、secret) 隨 digest 送進雲端模型; 工作目錄被 commit 或分享 |
 | Agent 輸入 (`digest.json`) | 工作目錄 → agent 的模型供應商 | 超出必要範圍的資料離開本機 |
 | 報告內容 (`report.json`、`.pptx`) | 工作目錄、分享對象 | 未經審核的推論被當成事實; 夾帶不該公開的內容 |
 | Provenance (`manifest.json`) | 工作目錄 | 被竄改後無法追溯 |
@@ -63,6 +63,9 @@
 - Digest 的 `truncation` / `redaction` metadata 記錄被處理的數量 (不記錄原文), 讓使用者知道有內容被移除。
 - Skill 指引要求 agent 只使用 digest, 不自行讀取 diff 或原始碼 (除非使用者要求)。
 - 公司政策是否允許雲端模型處理 commit message / PR 描述: OQ-13, 使用者自行確認; WorkLens 文件提醒此點。
+
+Issue 蒐集將標題、描述、label 名稱與本人的 username / name 存於本機 evidence。
+`issue_activity` 投影片的標題沿用既有揭露處理, 不顯示 transitions。
 
 ## 5. 資料保留
 

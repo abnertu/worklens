@@ -21,8 +21,10 @@ internal static class GitLabJson
 /// <c>merge_requests_access_level</c> and the deprecated <c>merge_requests_enabled</c>.
 /// </summary>
 internal sealed record ProjectDto(
-    long? Id, string? DefaultBranch, bool? EmptyRepo, string? MergeRequestsAccessLevel, bool? MergeRequestsEnabled)
+    long? Id, string? DefaultBranch, bool? EmptyRepo, string? MergeRequestsAccessLevel, bool? MergeRequestsEnabled,
+    string? IssuesAccessLevel = null)
 {
+    public bool HasIssues => !string.Equals(IssuesAccessLevel, "disabled", StringComparison.OrdinalIgnoreCase);
     /// <summary>False when the project disables merge requests; GitLab then answers the merge request list with 403.</summary>
     public bool HasMergeRequests =>
         MergeRequestsAccessLevel is { } level
@@ -66,3 +68,13 @@ internal sealed record MergeRequestDto(
     DateTimeOffset? CreatedAt,
     DateTimeOffset? MergedAt,
     DateTimeOffset? ClosedAt);
+
+internal sealed record IssueDto(
+    long? Iid, string? WebUrl, string? State, string? Title, string? Description,
+    DateTimeOffset? CreatedAt, DateTimeOffset? ClosedAt, IReadOnlyList<UserDto>? Assignees);
+
+internal sealed record LabelDto(string? Name);
+
+internal sealed record LabelEventDto(long? Id, DateTimeOffset? CreatedAt, string? Action, LabelDto? Label, UserDto? User);
+
+internal sealed record StateEventDto(long? Id, DateTimeOffset? CreatedAt, string? State, UserDto? User);

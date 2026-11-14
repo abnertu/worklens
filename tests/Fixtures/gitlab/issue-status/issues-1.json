@@ -1,0 +1,59 @@
+{
+  "method": "GET",
+  "path": "/api/v4/projects/7/issues",
+  "responses": [
+    {
+      "status": 200,
+      "body": [
+        {
+          "iid": 1,
+          "web_url": "https://gitlab.example.com/group/sub/app/-/issues/1",
+          "state": "opened",
+          "title": "Issue 1",
+          "description": "Issue description",
+          "created_at": "2026-09-01T00:00:00Z",
+          "assignees": []
+        },
+        {
+          "iid": 2,
+          "web_url": "https://gitlab.example.com/group/sub/app/-/issues/2",
+          "state": "closed",
+          "title": "Issue 2",
+          "description": "Issue description",
+          "created_at": "2026-09-01T00:00:00Z",
+          "assignees": [
+            {
+              "username": "zeta",
+              "name": "Zeta"
+            },
+            {
+              "username": "ALICE",
+              "name": "Alice Assignee"
+            }
+          ],
+          "closed_at": "2026-10-10T00:00:00Z"
+        },
+        {
+          "iid": 3,
+          "web_url": "https://gitlab.example.com/group/sub/app/-/issues/3",
+          "state": "opened",
+          "title": "Issue 3",
+          "description": "Issue description",
+          "created_at": "2026-09-01T00:00:00Z",
+          "assignees": []
+        }
+      ],
+      "headers": {
+        "X-Next-Page": "2"
+      }
+    }
+  ],
+  "query": {
+    "state": "all",
+    "scope": "all",
+    "order_by": "updated_at",
+    "sort": "desc",
+    "updated_after": "2026-09-30T16:00:00Z",
+    "per_page": "100"
+  }
+}

@@ -16,35 +16,39 @@
 | ID | 每層有自己的 ID 前綴與 pattern, 文件內唯一 (見各節) |
 | 擴充 | 物件 `additionalProperties: false`; 不允許自訂欄位 |
 
-## 2. Evidence IR (`urn:worklens:schema:evidence-ir:1.0`)
+## 2. Evidence IR (`urn:worklens:schema:evidence-ir:1.0`、`1.1`)
 
 跨來源的標準證據。由 `worklens collect` 產生, agent 與人不應修改。
 
 ```text
 EvidenceDocument
-├── schema_version: "1.0"
+├── schema_version: "1.0" | "1.1"
 ├── document_id            "evd-<period>-<hash8>" — 見 §2.1
 ├── generated_at
 ├── generator { name, version }
 ├── query
 │   ├── period
 │   ├── identities[]       { platform?, username?, email? } — 查詢時視為本人的身分
-│   └── sources[]          { platform, base_url, repository }
+│   └── sources[]          { platform, base_url, repository, issue_status_labels? (1.1) }
 └── items[]  EvidenceItem
     ├── id                 "ev-<16 hex>" — 穩定 ID, 見 §2.1
-    ├── kind               commit | change_request | issue
+    ├── kind               commit | change_request | issue | issue_activity (1.1)
     ├── source             { platform: github|gitlab, base_url, repository, external_id, url }
     ├── title              commit 第一行 / PR/MR / issue 標題
     ├── body?              commit 其餘訊息 / 描述 (未 redaction 的原文, 只存在本機)
     ├── state?             open | closed | merged  (change_request / issue)
-    ├── author             { name?, username?, email?, role: author|co_author|committer }
+    ├── author             { name?, username?, email?, role: author|co_author|committer|actor|assignee (後兩者為 1.1) }
     ├── timestamps         { occurred_at, authored_at?, committed_at?, created_at?, merged_at?, closed_at? }
     ├── stats?             { files_changed, additions, deletions }
     ├── paths?[]           變更的檔案路徑 (相對 repo root)
     ├── relations?[]       { type: contains|references|closes, target_id: ev-... }
     ├── flags?[]           merge_commit | revert | bot | duplicate
+    ├── transitions?[] (1.1) { at, change: status|closed|reopened, label?, actor: subject|other }
     └── fetched_at
 ```
+
+Evidence IR 1.1 新增 `issue_activity`、`transitions`、`actor` / `assignee` role 與 `query.sources[].issue_status_labels`。
+Reader 依文件版本驗證。`collect` 一律寫出 1.1, 包含未啟用 issue 蒐集的來源。
 
 ### 2.1 規則
 
@@ -61,6 +65,21 @@ EvidenceDocument
 - Co-author 只解析訊息結尾、以空白行隔開的 key-value trailer 區塊。本文中的範例不構成共同作者身分。
 - **Flags** (M1): `merge_commit` = parents > 1; `revert` = 標題以 `Revert "` 開頭; `bot` = GitHub 作者帳號 `type: Bot` 或 login 以 `[bot]` 結尾; GitLab 只在 MR 作者的 API 回應明確含 `bot: true` 時標記, GitLab commit 不標記 bot。collect 只標記, 不排除; `exclude` 由 digest (M2) 套用。
 - **去重**: 同一 commit 出現在多個分支 (或同時在 default branch 與 PR 中) 時只保留一筆 (以 ID): relations 取聯集、role 取優先序最高者、其餘欄位以 commit detail 為準; cherry-pick / squash 產生的不同 SHA 不自動合併, 而以 `relations` (`contains`: PR → commits) 關聯, 由分析者判斷 (交接文件 §6)。`duplicate` flag 只在可確定時標記 (例如同 patch-id, M1 評估)。
+- **Issue 狀態變更 (1.1)**: 設定 `issue_status_labels` 的 GitLab source 會蒐集 `issue_activity`。Label 名稱比對區分大小寫。
+- 本人加上指定 label、關閉或重開 issue 時計入。Issue 目前指派給本人時, 他人的上述變更也計入。
+- 事件時間必須在 `[start, end)`。移除 label、已刪除的 label 與其他 label 不計入。沒有計入事件的 issue 略過。
+- 每個 issue 一個項目。`source.external_id` 是 project 內的 `iid`, `source.url` 是 issue URL。
+- 保留標題、描述、目前的 open / closed 狀態、`created_at` 與可用的 `closed_at`。
+- `issue_activity.occurred_at` 為最後一個計入事件的時間。既有 `issue` 的 `occurred_at` 意義不變。
+- `transitions` 包含 `at`、`change`、`actor` 與選填的 `label`。`change: status` 必須有 `label`。
+- GitLab state event 的 `opened` 寫為 `reopened`, `closed` 不變。Issue 目前的 `opened` 狀態寫為 `open`。
+- 初次建立 issue 不產生 state event。缺少事件使用者時, `actor` 為 `other`。
+- 事件依時間、端點種類與 API event id 數值排序。同時刻先排 label, 再排 state。
+- `author` 記錄本人, 不是 issue 的原始作者。存在計入的本人事件時, role 為 `actor`, 身分取最後一個本人事件的 user。
+- 否則 role 為 `assignee`, 身分取目前符合的 assignee。多個符合者以 username 的 OrdinalIgnoreCase、再 Ordinal 順序取第一個。
+- 身分包含 name 與 username。沒有 name 時省略, 不蒐集 issue author email。
+- 指派人以蒐集當下為準, 因為事件 API 沒有指派歷史。重新指派會改變過去月份的結果 ([ADR-0013](../adr/0013-issue-activity-evidence.md))。
+- `query.sources[].issue_status_labels` 記錄指定 labels, 因此不同 label 集合會產生不同的 `document_id`。
 - **工作完成判準不在 Evidence IR**: `state: merged` 只是事實, 是否「完成」由 Report IR 判定。
 
 ## 3. Report IR (`urn:worklens:schema:report-ir:1.0`、`1.1`)
@@ -256,10 +275,11 @@ Layout Resolver 規則 (M0, `WorkLens.Core.Layout.LayoutResolver`, 純函式; �
 - 欄來自 `items` slot 的 `columns`, 欄名來自 `column_<key>`。沒有 `columns` 時, 開發成果表為 `title` 與 `status`, 欄名來自 `achievements_columns`; 維運表為 `title`、`status` 與 `evidence`, 欄名來自 `column_<key>`。
 - 狀態儲存格為 `cell_status_*`, 樣式為 `tag_completed`、`tag_in_progress` 或 `tag_unknown`。證據儲存格的樣式為 `meta`。`status` slot 為表中項目的 `summary_status`。`source_refs` 列出表中項目。
 - 專案文字: 引用證據 (`evidence_refs`, 再 facts 的 `evidence_refs`) 中第一個 repository 路徑的最後一段。有更多 repository 時用 `project_more`。找不到證據時為 `—`。Repository 以平台、base URL 與路徑區分。
-- 證據文字: 最多 3 個 change request 與 issue 的 ID, 其餘以 `+N` 表示, 再接項目引用且計入的 commit 數 (`evidence_commits`)。各部分以 ` · ` 連接。GitLab change request 為 `!<id>`; GitHub change request 與 issue 為 `#<id>`, issue 再經 `evidence_issue`。沒有引用時為 `human_origin`。有引用但沒有可顯示的內容時為 `—`。
+- 證據文字: 最多 3 個 change request 與 issue 的 ID, 其餘以 `+N` 表示, 再接項目引用且計入的 commit 數 (`evidence_commits`)。各部分以 ` · ` 連接。GitLab change request 為 `!<id>`; GitHub change request 與 issue 為 `#<id>`, issue 與 `issue_activity` 再經 `evidence_issue`。沒有引用時為 `human_origin`。有引用但沒有可顯示的內容時為 `—`。
 - 重複的 evidence ID 取第一個項目。指向不存在 ID 的引用被略過。
 - 細節投影片: sequence 有 `operation_details` 時, `work_item_details` 不列 ops 項目, `operation_details` 只列 ops 項目。`kicker` 為 `detail_kicker`: `{section}` 為 `achievements_title` 或 `operations_title`, `{project}` 為專案文字。`status` 為 `cell_status_*` 加 `tag_*` 樣式。`facts` 沒有狀態列。
 - 細節投影片的 `evidence`: 每個 change request 或 issue 為 ID (L0, `evidence_id`)、標題 (L1) 與一行 meta (L1, `meta`): 狀態、日期與包含且計入的 commit 數。之後, work item 引用、計入、且不被任何引用的 change request 包含的 commit 為一行 `evidence_commits` (L0, `meta`)。都沒有時為 `—`, 沒有引用時為 `human_origin`。`max_items` 整個 change request 保留或捨去。
+- `issue_activity` 的 ID、標題、狀態與日期以 issue 格式顯示, 不顯示 transitions。它不計入 commit 數與合併的變更數。
 - Evidence IR 的標題經過投影片揭露處理 (ADR-0012)。Agent 或使用者撰寫的 work item 文字照原樣顯示。
 - 問題表: 每個 challenge 一列, 依 report 的順序。處理方式儲存格列出每個 `resolves` 指向該 challenge 的 improvement 的文字, 一項一行, 沒有時為 `—`。有 improvement 指向該 challenge 時, 狀態儲存格為 `challenge_resolved` 加 `tag_resolved`, 否則為 `challenge_open` 加 `tag_open`。
 - 欄來自 `items` slot 的 `columns`, 沒有時為 `problem`、`resolution` 與 `status`。欄名來自 `column_<key>`。`status` slot 為 `challenges_status` (`{resolved}`、`{open}`)。沒有 challenge 時不產生投影片。
@@ -349,6 +369,8 @@ public sealed record WorkLensError(string Code, string Message, IReadOnlyDiction
 ```
 
 `SourceCollectResult`、`AnalysisResult`、`LayoutResult`、`RenderResult` 皆為「成功值 或 `WorkLensError` 清單」的形式。M1: `SourceCollectResult(Items, Errors, Warnings)` — `Warnings` (`IReadOnlyList<WorkLensError>`) 為非致命問題 (例 `source.truncated`: GitHub PR commits 超過 250、GitHub 或 GitLab commit files 達 3000), 不中止蒐集, CLI 以 warning issue 輸出。`LayoutResult(PresentationDocument? Presentation, Errors, Warnings)`、`RenderResult(string? OutputPath, Errors, Warnings)`; error 的 `Details["path"]` 為 manifest 的 JSON Pointer (CLI 轉成 `issues`)。`LayoutResult` 的 `Warnings` 為不中止 Layout 的問題 (`layout.unplaced_narrative`)。它們的 `Details["path"]` 為 report 的 JSON Pointer。`RenderResult` 的 `Warnings` 為沒有任何位置接收的品牌值 (`render.brand_not_written`)。
+
+`SourceSpec` 新增選填的 `IReadOnlyList<string>? IssueStatusLabels`。`SourceQuery` 將它從 CLI 傳到 connector。
 
 ### 7.1 版本契約
 

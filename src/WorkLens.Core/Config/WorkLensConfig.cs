@@ -32,7 +32,8 @@ public sealed record ConfigSource(
     SourcePlatform Platform,
     string BaseUrl,
     string Repository,
-    string? TokenEnv = null);
+    string? TokenEnv = null,
+    IReadOnlyList<string>? IssueStatusLabels = null);
 
 /// <summary>What the digest leaves out (M2); collect only flags items.</summary>
 public sealed record ExcludeConfig(bool? Bots = null, bool? MergeCommits = null, IReadOnlyList<string>? Paths = null);

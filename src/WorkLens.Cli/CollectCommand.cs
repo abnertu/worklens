@@ -343,7 +343,7 @@ internal static class CollectCommand
         cancellationToken.ThrowIfCancellationRequested();
         AtomicFile.WriteAllBytes(options.OutputPath, bytes);
 
-        var byKind = new JsonObject { ["commit"] = 0, ["change_request"] = 0 };
+        var byKind = new JsonObject { ["commit"] = 0, ["change_request"] = 0, ["issue_activity"] = 0 };
         foreach (var group in document.Items.GroupBy(i => KindName(i.Kind)).OrderBy(g => g.Key, StringComparer.Ordinal))
         {
             byKind[group.Key] = group.Count();
@@ -487,7 +487,7 @@ internal static class CollectCommand
         {
             var baseUrl = EvidenceIds.NormalizeBaseUrl(s.BaseUrl);
             var (endpoints, scopes) = s.Platform == SourcePlatform.Gitlab
-                ? (GitLabEndpoints(baseUrl, s.Repository, period), GitLabScopes)
+                ? (GitLabEndpoints(baseUrl, s.Repository, period, s.IssueStatusLabels is not null), GitLabScopes)
                 : (GitHubEndpoints(baseUrl, s.Repository, period), GitHubScopes);
 
             var variables = TokenVariables(s);
@@ -534,7 +534,7 @@ internal static class CollectCommand
     }
 
     /// <summary>The project path is resolved once; later requests address the project by its numeric ID.</summary>
-    private static string[] GitLabEndpoints(string baseUrl, string repository, Period period)
+    private static string[] GitLabEndpoints(string baseUrl, string repository, Period period, bool issues)
     {
         var project = $"{baseUrl}/projects/<id>";
         var until = period.End + GitLabConnector.CommitWindowSlack;
@@ -547,6 +547,12 @@ internal static class CollectCommand
             $"GET {project}/merge_requests?state=all&scope=all&order_by=updated_at&sort=desc&updated_after={GitLabApiClient.FormatTime(period.Start)}&per_page=100",
             $"GET {project}/merge_requests/<iid>",
             $"GET {project}/merge_requests/<iid>/commits?per_page=100",
+            .. issues ? new[]
+            {
+                $"GET {project}/issues?state=all&scope=all&order_by=updated_at&sort=desc&updated_after={GitLabApiClient.FormatTime(period.Start)}&per_page=100",
+                $"GET {project}/issues/<iid>/resource_label_events?per_page=100",
+                $"GET {project}/issues/<iid>/resource_state_events?per_page=100",
+            } : Array.Empty<string>(),
         ];
     }
 
@@ -564,7 +570,7 @@ internal static class CollectCommand
     private static ValidationIssue WarningIssue(WorkLensError warning) =>
         new(warning.Code, IssueSeverity.Warning, string.Empty, null, warning.Message);
 
-    private static SourceSpec Spec(ConfigSource source) => new(source.Platform, source.BaseUrl, source.Repository);
+    private static SourceSpec Spec(ConfigSource source) => new(source.Platform, source.BaseUrl, source.Repository, source.IssueStatusLabels);
 
     private static JsonObject PeriodNode(Period period) => new()
     {
@@ -581,6 +587,7 @@ internal static class CollectCommand
     private static string KindName(EvidenceKind kind) => kind switch
     {
         EvidenceKind.ChangeRequest => "change_request",
+        EvidenceKind.IssueActivity => "issue_activity",
         _ => kind.ToString().ToLowerInvariant(),
     };
 

@@ -81,6 +81,7 @@ public static class EvidenceAssembler
             Utc(item.Timestamps.MergedAt),
             Utc(item.Timestamps.ClosedAt)),
         FetchedAt = Utc(item.FetchedAt),
+        Transitions = item.Transitions is null ? null : [.. item.Transitions.Select(t => t with { At = Utc(t.At) })],
         Paths = item.Paths is null ? null : [.. item.Paths.Distinct().Order(StringComparer.Ordinal)],
         Relations = item.Relations is null or { Count: 0 }
             ? null

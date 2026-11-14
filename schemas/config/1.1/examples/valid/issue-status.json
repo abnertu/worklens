@@ -1,0 +1,23 @@
+{
+  "config_version": "1.1",
+  "identities": [
+    {
+      "platform": "gitlab",
+      "username": "alice"
+    }
+  ],
+  "sources": [
+    {
+      "id": "issues",
+      "platform": "gitlab",
+      "base_url": "https://gitlab.example.com/api/v4",
+      "repository": "team/app",
+      "issue_status_labels": [
+        "Todo",
+        "Doing",
+        "Pending",
+        "Done"
+      ]
+    }
+  ]
+}
