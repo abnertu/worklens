@@ -185,7 +185,7 @@ internal static class SchemaCommands
 {
     public static Command List(CliHost host)
     {
-        var command = new Command("list", "List built-in schema ids.");
+        var command = new Command("list", "List built-in schema ids, one for each version.");
         var json = Program.JsonOption();
         command.Options.Add(json);
         command.SetAction(parse => new CliOutput(host).Run("schema list", parse.GetValue(json), output =>
@@ -203,7 +203,10 @@ internal static class SchemaCommands
         return command;
     }
 
-    /// <summary><c>schema show &lt;name&gt;[:&lt;version&gt;]</c>: writes the built-in schema bytes unchanged to stdout.</summary>
+    /// <summary>
+    /// <c>schema show &lt;name&gt;[:&lt;version&gt;]</c>: writes the built-in schema bytes unchanged to stdout.
+    /// Without a version it shows the latest built-in minor of the name.
+    /// </summary>
     public static Command Show(CliHost host)
     {
         var command = new Command("show", "Print a built-in schema, e.g. 'report-ir' or 'report-ir:1.0'.");
@@ -215,8 +218,8 @@ internal static class SchemaCommands
             var separator = value.IndexOf(':', StringComparison.Ordinal);
             var schemaName = separator < 0 ? value : value[..separator];
             var version = separator < 0 ? null : value[(separator + 1)..];
-            var info = IrSchemaCatalog.FindByName(schemaName);
-            if (info is null || (version is not null && version != info.Version))
+            var info = version is null ? IrSchemaCatalog.Latest(schemaName) : IrSchemaCatalog.Find(schemaName, version);
+            if (info is null)
             {
                 var known = string.Join(", ", IrSchemaCatalog.All.Select(i => $"{i.Name}:{i.Version}"));
                 await new CliOutput(host).WriteErrorAsync("schema.not_found", $"No built-in schema '{value}'. Built-in schemas: {known}.").ConfigureAwait(false);

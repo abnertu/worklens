@@ -44,7 +44,7 @@
 
 ## 4. 自動化測試策略
 
-- **結構斷言 (CI 可跑)**: 以 Open XML SDK 讀回輸出檔, 斷言 slide 數、每頁 layout 名稱、每個 placeholder 的文字、`a:rPr` 無覆寫、`OpenXmlValidator` 無錯誤。這是 Renderer 的主要回歸測試。
+- **結構斷言 (CI 可跑)**: 以 Open XML SDK 讀回輸出檔, 斷言 slide 數、每頁 layout 名稱、每個 placeholder 的文字、`a:rPr` 無覆寫 (只適用 1.0 manifest; 見 [ADR-0010](../adr/0010-manifest-style-roles.md))、`OpenXmlValidator` 無錯誤。這是 Renderer 的主要回歸測試。
 - **Snapshot**: 把輸出抽取成正規化 JSON (`slides[].layout`, `slides[].placeholders[].paragraphs[]`) 與 snapshot 比較 (P10)。
 - **PowerPoint 檢查 (本機, 需 Office)**: `tools/poc/run-poc-checks.ps1` 以 COM 開檔、匯出每頁 PNG、修改文字 / 表格儲存格 / layout 後另存並重開 (P8)。
 - **視覺檢查 (人工)**: 逐頁檢視 PowerPoint 匯出的 PNG; 像素級回歸延後 (OQ-10)。

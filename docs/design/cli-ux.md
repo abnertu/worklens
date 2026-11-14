@@ -8,8 +8,8 @@
 | 命令 | 輸入 | 輸出 | Milestone |
 |---|---|---|---|
 | `worklens --version` | — | 版本字串 (例 `0.1.0`) | v0.1 骨架 |
-| `worklens schema list [--json]` | — | 內建 schema 的 `$id` 清單 | v0.1 骨架 |
-| `worklens schema show <name>[:<version>]` | — | schema 內容 (stdout) | M0 |
+| `worklens schema list [--json]` | — | 內建 schema 的 `$id` 清單, 每個版本一筆 | v0.1 骨架 |
+| `worklens schema show <name>[:<version>]` | — | schema 內容 (stdout); 未指定版本時為內建的最新 minor | M0 |
 | `worklens init [--workspace <dir>]` | — | `worklens.json` 範本 | M3 |
 | `worklens collect --period <yyyy-MM> [--source <id>...]` | `worklens.json`、token 環境變數 | `evidence.json` | M1 |
 | `worklens evidence digest` | `evidence.json` | `digest.json` | M2 |
@@ -46,7 +46,7 @@ M0 命令提供下列選項。M1 的 `collect` 另提供 `--config`、`--dry-run
 | `report validate` | `--workspace`、`--report`、`--evidence`、`--strict`、`--json` |
 | `present` | `--workspace`、`--report`、`--evidence`、`--manifest`、`--output`、`--strict`、`--json` |
 | `render` | `--workspace`、`--presentation`、`--manifest`、`--template`、`--output`、`--json` |
-| `schema show <name>[:<version>]` | 無 (stdout 為 schema 原文位元組; 不認得的名稱或版本 → stderr `schema.not_found`, exit 1) |
+| `schema show <name>[:<version>]` | 無 (stdout 為 schema 原文位元組; 未指定 `:<version>` 時輸出該名稱內建的最新 minor; 不認得的名稱或版本 → stderr `schema.not_found`, exit 1) |
 
 - `--workspace <dir>` 預設為目前目錄; 檔名 `report.json`、`evidence.json`、`presentation.json`、`report.pptx`, 各由 `--report` / `--evidence` / `--presentation` / `--output` 覆寫。其他相對路徑以目前目錄解析。
 - `--manifest` 在 M0 必須提供, 未提供 → exit 3 `config.missing_manifest` (M3 從 `worklens.json` 取預設)。`--template` 預設為 manifest 的 `template.file` (相對於 manifest 所在目錄)。
@@ -228,14 +228,15 @@ stdout 恰好一個 JSON 物件, 結尾換行:
 |---|---|---|
 | `json.invalid` | 輸入不是有效 JSON, 或含無法讀取的字串 (例如單獨的 UTF-16 surrogate escape `\ud800`) (report / presentation 為 issue; evidence / manifest 包在 `input.invalid` 內) | 2 (report、presentation) / 3 |
 | `json.deserialize_failed` | schema 通過但無法轉成 C# 模型 (例 `rank` 超出 int) | 同上 |
-| `schema.*` | JSON Schema 違規 (`schema.required`、`schema.additionalProperties`、`schema.type`、`schema.unsupported_version` 等) | 同上 |
-| `ref.*`、`rule.*` | Report IR 參照完整性 (error) 與 domain 規則 (warning), 見 domain-model §3.2 | 2 (`rule.*` 只在 `--strict` 時) |
+| `schema.*` | JSON Schema 違規 (`schema.required`、`schema.additionalProperties`、`schema.type` 等) | 同上 |
+| `schema.unsupported_version` | 版本欄位缺少、不是字串, 或不是內建的版本。`instance_path` 為版本欄位: `/schema_version`, 設定檔為 `/config_version`。訊息列出內建的版本 | 同上 |
+| `ref.*`、`rule.*` | Report IR 參照完整性 (error, 含 `resolves`) 與 domain 規則 (warning), 見 domain-model §3.2 | 2 (`rule.*` 只在 `--strict` 時) |
 | `presentation.*` | presentation 與 manifest 不一致: `template_mismatch`、`unknown_layout`、`unknown_slot`、`slot_kind_mismatch`、`missing_required_slot`、`table_row_width`、`invalid_character` | 2 |
 | `input.not_found` | 輸入檔 (含模板) 不存在 | 3 |
 | `input.unreadable` | 輸入檔存在但讀取失敗 (IO 錯誤、權限) | 3 |
 | `input.invalid` | evidence / manifest 不是有效 JSON 或不符合 schema (`issues` 附上原因) | 3 |
 | `config.missing_manifest` | `present` / `render` 未給 `--manifest` | 3 |
-| `manifest.invalid` | manifest 內容有問題 (`present`; `render` 只檢查 id 重複); `issues` 含 `manifest.duplicate_id` (layout id 或同一 layout 內的 slot id 重複)、`manifest.unknown_layout`、`manifest.purpose_mismatch`、`manifest.slot_mismatch` | 3 |
+| `manifest.invalid` | manifest 內容有問題。`issues` 含 `manifest.duplicate_id` (layout id 或同一 layout 內的 slot id 重複)、`manifest.column_mismatch`、`manifest.unknown_style` 與 `manifest.unsupported_version` (`present` 與 `render`), 以及 `manifest.unknown_layout`、`manifest.purpose_mismatch` 與 `manifest.slot_mismatch` (只有 `present`) | 3 |
 | `template.invalid` | Renderer 回報模板問題; `issues` 含 `template.sha256_mismatch`、`template.unreadable`、`template.layout_missing`、`template.placeholder_missing`、`template.placeholder_position_missing` | 3 |
 | `output.write_failed` | 輸出目錄不存在或目標檔被鎖定 (例如在 PowerPoint 中開啟) | 3 |
 | `schema.not_found` | `schema show` 不認得的名稱或版本 (stderr) | 1 |
@@ -243,7 +244,14 @@ stdout 恰好一個 JSON 物件, 結尾換行:
 | `command.not_implemented` | stub 命令 | 10 |
 | `command.internal_error` | 未預期的例外 (`--json` 時仍輸出 envelope) | 70 |
 
-`schema list --json` 的 `result`:
+`manifest.invalid` 的 1.1 issue:
+
+- `manifest.column_mismatch`: 欄 key 不屬於該 purpose 的集合、purpose 沒有集合卻有 `columns`、key 重複, 或寬度總和不是 100。
+- `manifest.unknown_style`: `header_style` 或 `row_styles` 的項目不是 `styles` 定義的角色。
+- `manifest.unsupported_version`: manifest 的版本不是 1.0。Layout 與 Renderer 尚未實作 1.1 的規則。`instance_path` 為 `/schema_version`。
+- 契約檢查在版本檢查之前執行。
+
+`schema list --json` 的 `result` 每個 (name, version) 一筆:
 
 ```json
 { "schemas": [ { "id": "urn:worklens:schema:evidence-ir:1.0", "name": "evidence-ir", "version": "1.0" } ] }
@@ -336,10 +344,14 @@ description: 使用 WorkLens 產生具證據的工作月報 (GitHub/GitLab → P
    - Report IR 的 evidence_document 直接複製 digest 中的 evidence_document (document_id 與 sha256)。
 3. `worklens schema show report-ir` 取得 Report IR schema。
 4. 依 digest 撰寫 report.json:
+   - 寫 `schema_version: "1.1"`。
    - 依主題把證據分組成 work_items; 每個 agent 產生的 work item 至少引用一個 evidence ID。
    - observed_facts 只寫證據中可直接看到的事實, 並引用 evidence ID。
    - 推論寫在 agent_inference, 並給 confidence。
    - 證據不足以判斷是否完成時, status 用 unknown。
+   - 伺服器維運工作用 `category: ops`。這類項目多半來自人工輸入。
+   - subject 需要的支援寫成 `kind: support` 的 narrative。
+   - improvement 解決某個 challenge 時, 把 challenge narrative 的 ID 寫在該 improvement 的 `resolves`。
    - 不寫統計數字 (WorkLens 會計算); 不寫證據中沒有的百分比、時間或成本節省。
    - 保留檔案中既有的 origin: human 項目與 human_notes, 不修改。
 5. `worklens report validate --json`。exit 2 → 依 issues 的 code 與 instance_path 修正, 重跑; 最多 3 次後把剩餘問題交給使用者。

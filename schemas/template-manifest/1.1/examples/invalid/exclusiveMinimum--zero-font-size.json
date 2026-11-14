@@ -1,0 +1,525 @@
+{
+  "schema_version": "1.1",
+  "template": {
+    "id": "rd-monthly",
+    "version": "1.0.0",
+    "file": "rd-monthly.pptx"
+  },
+  "layouts": [
+    {
+      "id": "cover_v1",
+      "slide_layout_name": "Cover",
+      "purpose": "cover",
+      "slots": [
+        {
+          "id": "title",
+          "placeholder": {
+            "idx": 0
+          },
+          "kind": "text",
+          "required": true,
+          "max_chars": 24
+        },
+        {
+          "id": "subtitle",
+          "placeholder": {
+            "idx": 1
+          },
+          "kind": "text",
+          "max_chars": 80
+        }
+      ],
+      "brand": {
+        "logo": {
+          "placeholder": {
+            "name": "Cover Logo"
+          }
+        },
+        "unit_name": {
+          "placeholder": {
+            "name": "Cover Unit"
+          },
+          "max_chars": 30
+        }
+      }
+    },
+    {
+      "id": "summary_v1",
+      "slide_layout_name": "Summary",
+      "purpose": "summary",
+      "slots": [
+        {
+          "id": "title",
+          "placeholder": {
+            "idx": 0
+          },
+          "kind": "text",
+          "required": true,
+          "max_chars": 32
+        },
+        {
+          "id": "metric_completed",
+          "placeholder": {
+            "name": "Metric 1"
+          },
+          "kind": "metric"
+        },
+        {
+          "id": "metric_in_progress",
+          "placeholder": {
+            "name": "Metric 2"
+          },
+          "kind": "metric"
+        },
+        {
+          "id": "highlights",
+          "placeholder": {
+            "name": "Highlights"
+          },
+          "kind": "bullets",
+          "max_items": 4,
+          "max_chars": 40,
+          "overflow": "truncate"
+        },
+        {
+          "id": "support",
+          "placeholder": {
+            "name": "Support"
+          },
+          "kind": "bullets",
+          "max_items": 3,
+          "max_chars": 40,
+          "overflow": "truncate"
+        }
+      ],
+      "brand": {
+        "logo": {
+          "placeholder": {
+            "name": "Logo"
+          }
+        },
+        "unit_name": {
+          "placeholder": {
+            "name": "Unit Name"
+          },
+          "max_chars": 20
+        }
+      }
+    },
+    {
+      "id": "achievements_v1",
+      "slide_layout_name": "Table",
+      "purpose": "achievements",
+      "slots": [
+        {
+          "id": "title",
+          "placeholder": {
+            "idx": 0
+          },
+          "kind": "text",
+          "required": true,
+          "max_chars": 32
+        },
+        {
+          "id": "items",
+          "placeholder": {
+            "idx": 13
+          },
+          "kind": "table",
+          "max_items": 6,
+          "max_chars": 40,
+          "overflow": "split",
+          "columns": [
+            {
+              "key": "title",
+              "width": 40,
+              "max_chars": 36
+            },
+            {
+              "key": "project",
+              "width": 20
+            },
+            {
+              "key": "status",
+              "width": 15
+            },
+            {
+              "key": "evidence",
+              "width": 25
+            }
+          ],
+          "header_style": "table_header",
+          "row_styles": [
+            "table_row",
+            "table_row_alt"
+          ],
+          "table_style": "{2D5ABB26-0587-4C30-8999-92F81FD0307C}"
+        }
+      ],
+      "brand": {
+        "logo": {
+          "placeholder": {
+            "name": "Logo"
+          }
+        },
+        "unit_name": {
+          "placeholder": {
+            "name": "Unit Name"
+          },
+          "max_chars": 20
+        }
+      }
+    },
+    {
+      "id": "detail_v1",
+      "slide_layout_name": "Detail",
+      "purpose": "work_item_detail",
+      "slots": [
+        {
+          "id": "title",
+          "placeholder": {
+            "idx": 0
+          },
+          "kind": "text",
+          "required": true,
+          "max_chars": 32
+        },
+        {
+          "id": "facts",
+          "placeholder": {
+            "name": "Facts"
+          },
+          "kind": "bullets",
+          "max_items": 5,
+          "max_chars": 54,
+          "overflow": "split"
+        }
+      ],
+      "brand": {
+        "logo": {
+          "placeholder": {
+            "name": "Logo"
+          }
+        },
+        "unit_name": {
+          "placeholder": {
+            "name": "Unit Name"
+          },
+          "max_chars": 20
+        }
+      }
+    },
+    {
+      "id": "operations_v1",
+      "slide_layout_name": "Table",
+      "purpose": "operations",
+      "slots": [
+        {
+          "id": "title",
+          "placeholder": {
+            "idx": 0
+          },
+          "kind": "text",
+          "required": true,
+          "max_chars": 32
+        },
+        {
+          "id": "items",
+          "placeholder": {
+            "idx": 13
+          },
+          "kind": "table",
+          "max_items": 6,
+          "max_chars": 40,
+          "overflow": "split",
+          "columns": [
+            {
+              "key": "title",
+              "width": 50
+            },
+            {
+              "key": "status",
+              "width": 20
+            },
+            {
+              "key": "evidence",
+              "width": 30
+            }
+          ],
+          "header_style": "table_header",
+          "row_styles": [
+            "table_row"
+          ]
+        }
+      ],
+      "brand": {
+        "logo": {
+          "placeholder": {
+            "name": "Logo"
+          }
+        },
+        "unit_name": {
+          "placeholder": {
+            "name": "Unit Name"
+          },
+          "max_chars": 20
+        }
+      }
+    },
+    {
+      "id": "narrative_v1",
+      "slide_layout_name": "Narrative",
+      "purpose": "narrative",
+      "slots": [
+        {
+          "id": "title",
+          "placeholder": {
+            "idx": 0
+          },
+          "kind": "text",
+          "required": true,
+          "max_chars": 32
+        },
+        {
+          "id": "body",
+          "placeholder": {
+            "idx": 1
+          },
+          "kind": "bullets",
+          "max_items": 5,
+          "max_chars": 54,
+          "overflow": "split"
+        }
+      ],
+      "brand": {
+        "logo": {
+          "placeholder": {
+            "name": "Logo"
+          }
+        },
+        "unit_name": {
+          "placeholder": {
+            "name": "Unit Name"
+          },
+          "max_chars": 20
+        }
+      }
+    },
+    {
+      "id": "challenges_v1",
+      "slide_layout_name": "Table",
+      "purpose": "challenge_table",
+      "slots": [
+        {
+          "id": "title",
+          "placeholder": {
+            "idx": 0
+          },
+          "kind": "text",
+          "required": true,
+          "max_chars": 32
+        },
+        {
+          "id": "items",
+          "placeholder": {
+            "idx": 13
+          },
+          "kind": "table",
+          "max_items": 5,
+          "max_chars": 48,
+          "overflow": "split",
+          "columns": [
+            {
+              "key": "problem",
+              "width": 45
+            },
+            {
+              "key": "resolution",
+              "width": 40
+            },
+            {
+              "key": "status",
+              "width": 15
+            }
+          ],
+          "header_style": "table_header",
+          "row_styles": [
+            "table_row",
+            "table_row_alt"
+          ],
+          "table_style": "{2D5ABB26-0587-4C30-8999-92F81FD0307C}"
+        }
+      ],
+      "brand": {
+        "logo": {
+          "placeholder": {
+            "name": "Logo"
+          }
+        },
+        "unit_name": {
+          "placeholder": {
+            "name": "Unit Name"
+          },
+          "max_chars": 20
+        }
+      }
+    },
+    {
+      "id": "closing_v1",
+      "slide_layout_name": "Closing",
+      "purpose": "closing",
+      "slots": [
+        {
+          "id": "title",
+          "placeholder": {
+            "idx": 0
+          },
+          "kind": "text",
+          "required": true,
+          "max_chars": 32
+        }
+      ]
+    }
+  ],
+  "sequence": [
+    {
+      "section": "cover",
+      "layout_id": "cover_v1"
+    },
+    {
+      "section": "summary",
+      "layout_id": "summary_v1"
+    },
+    {
+      "section": "achievements",
+      "layout_id": "achievements_v1"
+    },
+    {
+      "section": "work_item_details",
+      "layout_id": "detail_v1"
+    },
+    {
+      "section": "operations",
+      "layout_id": "operations_v1"
+    },
+    {
+      "section": "operation_details",
+      "layout_id": "detail_v1"
+    },
+    {
+      "section": "challenges",
+      "layout_id": "challenges_v1"
+    },
+    {
+      "section": "improvements",
+      "layout_id": "narrative_v1"
+    },
+    {
+      "section": "next_plan",
+      "layout_id": "narrative_v1"
+    },
+    {
+      "section": "support",
+      "layout_id": "narrative_v1"
+    },
+    {
+      "section": "other_work",
+      "layout_id": "narrative_v1"
+    },
+    {
+      "section": "closing",
+      "layout_id": "closing_v1"
+    }
+  ],
+  "styles": {
+    "title": {
+      "font_size": 24,
+      "bold": true,
+      "color": "#1F2937"
+    },
+    "body": {
+      "font_size": 0
+    },
+    "table_header": {
+      "font_size": 12,
+      "bold": true,
+      "color": "#6B7280",
+      "border_bottom": {
+        "color": "#2563EB",
+        "width": 1.5
+      }
+    },
+    "table_row": {
+      "font_size": 12,
+      "border_bottom": {
+        "color": "#E5E7EB",
+        "width": 0.75
+      }
+    },
+    "table_row_alt": {
+      "font_size": 12,
+      "fill": "#F9FAFB",
+      "border_bottom": {
+        "color": "#E5E7EB",
+        "width": 0.75
+      }
+    },
+    "tag_completed": {
+      "font_size": 10.5,
+      "bold": false,
+      "color": "#166534",
+      "fill": "#DCFCE7"
+    }
+  },
+  "footer": {
+    "max_chars": 60
+  },
+  "labels": {
+    "cover_title": "{period} 研發工作月報",
+    "summary_title": "本月總覽",
+    "achievements_title": "開發成果",
+    "challenges_title": "問題與解決",
+    "improvements_title": "改善事項",
+    "next_plan_title": "下月規劃",
+    "other_work_title": "其他工作",
+    "closing_title": "謝謝",
+    "cover_kicker": "月報",
+    "period_title": "{period}",
+    "cover_subtitle": "{name}",
+    "cover_sources": "資料來源: {sources}",
+    "metric_completed": "完成",
+    "metric_completed_caption": "項工作完成",
+    "metric_in_progress": "進行中",
+    "metric_in_progress_caption": "項工作進行中",
+    "metric_operations": "維運",
+    "metric_operations_caption": "項維運工作",
+    "metric_projects": "專案",
+    "metric_projects_caption": "個專案",
+    "highlights_title": "本月亮點",
+    "highlights_empty": "本月沒有亮點",
+    "support_title": "需要支援",
+    "support_more": "另有 {count} 項",
+    "support_empty": "目前不需要支援",
+    "continuation": "(續)",
+    "facts_title": "重點",
+    "evidence_title": "證據",
+    "evidence_state_open": "開啟",
+    "evidence_state_closed": "關閉",
+    "evidence_state_merged": "已合併",
+    "evidence_date": "{date}",
+    "operations_title": "維運工作",
+    "challenges_status": "狀態",
+    "challenge_resolved": "已解決",
+    "challenge_open": "處理中",
+    "column_title": "工作項目",
+    "column_project": "專案",
+    "column_status": "狀態",
+    "column_evidence": "證據",
+    "column_problem": "問題",
+    "column_resolution": "解決方式",
+    "evidence_commits": "{count} 個 commit",
+    "evidence_issue": "Issue",
+    "human_origin": "人工補充",
+    "footer": "{unit} · {period}"
+  }
+}

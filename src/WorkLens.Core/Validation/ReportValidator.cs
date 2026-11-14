@@ -54,15 +54,7 @@ public sealed partial class ReportValidator : IReportValidator
             ReportDocument report;
             try
             {
-                if (!IsSupportedVersion(root))
-                {
-                    return Single(
-                        "schema.unsupported_version",
-                        "/schema_version",
-                        $"schema_version must be \"{ReportDocument.CurrentSchemaVersion}\" (the version built into this WorkLens).");
-                }
-
-                var schemaResult = _schemaValidator.Validate(ReportDocument.SchemaId, root);
+                var schemaResult = _schemaValidator.ValidateDocument(IrSchemaCatalog.ReportIr, root);
                 if (!schemaResult.IsValid)
                 {
                     return schemaResult;
@@ -102,12 +94,6 @@ public sealed partial class ReportValidator : IReportValidator
         }
     }
 
-    private static bool IsSupportedVersion(JsonElement root) =>
-        root.TryGetProperty("schema_version", out var version)
-        && version.ValueKind == JsonValueKind.String
-        && IrSchemaCatalog.FindById(ReportDocument.SchemaId) is { } info
-        && string.Equals(version.GetString(), info.Version, StringComparison.Ordinal);
-
     private static void CheckReferences(
         ReportDocument report,
         EvidenceDocument evidence,
@@ -140,8 +126,33 @@ public sealed partial class ReportValidator : IReportValidator
             }
         }
 
+        CheckResolves(report, issues);
         AddDuplicates(report.WorkItems.Select(w => w.Id), "/work_items", issues);
         AddDuplicates(report.Narratives.Select(n => n.Id), "/narratives", issues);
+    }
+
+    /// <summary>Each ID in <c>resolves</c> (Report IR 1.1) names a challenge narrative.</summary>
+    private static void CheckResolves(ReportDocument report, List<ValidationIssue> issues)
+    {
+        var kinds = report.Narratives
+            .GroupBy(n => n.Id, StringComparer.Ordinal)
+            .ToDictionary(g => g.Key, g => g.First().Kind, StringComparer.Ordinal);
+        for (var n = 0; n < report.Narratives.Count; n++)
+        {
+            var resolves = report.Narratives[n].Resolves ?? [];
+            for (var r = 0; r < resolves.Count; r++)
+            {
+                var pointer = $"/narratives/{n}/resolves/{r}";
+                if (!kinds.TryGetValue(resolves[r], out var kind))
+                {
+                    issues.Add(Error("ref.resolves_missing", pointer, $"Narrative '{resolves[r]}' does not exist in the report."));
+                }
+                else if (kind != NarrativeKind.Challenge)
+                {
+                    issues.Add(Error("ref.resolves_not_challenge", pointer, $"Narrative '{resolves[r]}' is not a challenge."));
+                }
+            }
+        }
     }
 
     private static void AddDuplicates(IEnumerable<string> ids, string arrayPointer, List<ValidationIssue> issues)

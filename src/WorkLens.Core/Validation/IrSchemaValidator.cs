@@ -59,6 +59,42 @@ public sealed class IrSchemaValidator
         return Validate(schemaId, document.RootElement);
     }
 
+    /// <summary>
+    /// Validates a document against the built-in version of <paramref name="schemaName"/> that its version property
+    /// names. A missing, non-string or unknown version is <c>schema.unsupported_version</c> at the version property.
+    /// A root that is not an object is validated against the latest version, which reports <c>schema.type</c>.
+    /// </summary>
+    public ValidationResult ValidateDocument(string schemaName, JsonElement instance)
+    {
+        var versions = IrSchemaCatalog.Versions(schemaName);
+        if (versions.Count == 0)
+        {
+            throw new ArgumentException($"Unknown schema name '{schemaName}'.", nameof(schemaName));
+        }
+
+        if (instance.ValueKind != JsonValueKind.Object)
+        {
+            return Validate(versions[^1].Id, instance);
+        }
+
+        var property = versions[0].VersionProperty;
+        var info = instance.TryGetProperty(property, out var version) && version.ValueKind == JsonValueKind.String
+            ? IrSchemaCatalog.Find(schemaName, version.GetString()!)
+            : null;
+        if (info is null)
+        {
+            var known = string.Join(", ", versions.Select(v => $"\"{v.Version}\""));
+            return new ValidationResult([new ValidationIssue(
+                "schema.unsupported_version",
+                IssueSeverity.Error,
+                "/" + property,
+                null,
+                $"{property} must be one of {known} (the {schemaName} versions built into this WorkLens).")]);
+        }
+
+        return Validate(info.Id, instance);
+    }
+
     private static void Collect(EvaluationResults node, List<ValidationIssue> issues)
     {
         if (node.IsValid)
@@ -81,6 +117,13 @@ public sealed class IrSchemaValidator
                 // additionalProperties:false reports its error under an empty key; the keyword is then
                 // the last segment of the evaluation path.
                 var keyword = key.Length > 0 ? key : lastSegment;
+                if (keyword == "dependentSchemas")
+                {
+                    // An applicator: IncludeApplicatorErrors = false does not suppress it, and its failing
+                    // subschema reports the leaf keyword below.
+                    continue;
+                }
+
                 issues.Add(new ValidationIssue(
                     Code: "schema." + keyword,
                     Severity: IssueSeverity.Error,

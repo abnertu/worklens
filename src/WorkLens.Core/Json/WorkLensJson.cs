@@ -30,7 +30,6 @@ public static class WorkLensJson
             PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
             UnmappedMemberHandling = JsonUnmappedMemberHandling.Disallow,
-            AllowOutOfOrderMetadataProperties = true,
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
             WriteIndented = true,
             NewLine = "\n",

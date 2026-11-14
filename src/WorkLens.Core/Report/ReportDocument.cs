@@ -3,7 +3,8 @@ using WorkLens.Core.Common;
 namespace WorkLens.Core.Report;
 
 /// <summary>
-/// Report IR root (<c>urn:worklens:schema:report-ir:1.0</c>). Written by an agent, reviewed by a human.
+/// Report IR root. Reads every built-in minor (1.0 and 1.1) and names the latest one, which WorkLens writes.
+/// Written by an agent, reviewed by a human.
 /// Contains no layout information and no activity statistics.
 /// </summary>
 public sealed record ReportDocument(
@@ -16,8 +17,8 @@ public sealed record ReportDocument(
     IReadOnlyList<Narrative> Narratives,
     AnalysisInfo? Analysis = null)
 {
-    public const string CurrentSchemaVersion = "1.0";
-    public const string SchemaId = "urn:worklens:schema:report-ir:1.0";
+    public const string CurrentSchemaVersion = "1.1";
+    public const string SchemaId = "urn:worklens:schema:report-ir:1.1";
 }
 
 public sealed record ReportSubject(string DisplayName);
@@ -67,6 +68,9 @@ public enum NarrativeKind
     Improvement,
     NextPlan,
     OtherWork,
+
+    /// <summary>Support that the subject needs from others (Report IR 1.1).</summary>
+    Support,
 }
 
 public sealed record WorkItem(
@@ -94,4 +98,5 @@ public sealed record Narrative(
     NarrativeKind Kind,
     ContentOrigin Origin,
     string Text,
-    IReadOnlyList<string>? EvidenceRefs = null);
+    IReadOnlyList<string>? EvidenceRefs = null,
+    IReadOnlyList<string>? Resolves = null);

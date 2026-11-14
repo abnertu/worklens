@@ -6,7 +6,7 @@ using WorkLens.Core.Evidence;
 using WorkLens.Core.Json;
 using WorkLens.Core.Layout;
 using WorkLens.Core.Report;
-using WorkLens.Core.Templates;
+using WorkLens.Core.Schemas;
 using WorkLens.Core.Validation;
 
 namespace WorkLens.Cli;
@@ -48,7 +48,7 @@ internal static class ReportCommands
     {
         var reportFile = InputFiles.Read(reportPath);
         var evidenceFile = InputFiles.Read(evidencePath);
-        var evidenceDocument = InputFiles.LoadUpstream<EvidenceDocument>(evidenceFile, EvidenceDocument.SchemaId);
+        var evidenceDocument = InputFiles.LoadUpstream<EvidenceDocument>(evidenceFile, IrSchemaCatalog.EvidenceIr);
 
         var reportText = reportFile.TryGetText();
         var result = reportText is null
@@ -129,7 +129,7 @@ internal static class PresentCommand
                 return checkedReport.ExitCode;
             }
 
-            var manifestDocument = InputFiles.LoadUpstream<TemplateManifest>(InputFiles.Read(manifestPath), TemplateManifest.SchemaId);
+            var manifestDocument = InputFiles.LoadManifest(manifestPath);
             var reportDocument = JsonSerializer.Deserialize<ReportDocument>(checkedReport.Report.Content.Span, WorkLensJson.Options)!;
 
             var layout = new LayoutResolver().Resolve(reportDocument, checkedReport.Report.Sha256, checkedReport.Evidence, manifestDocument);

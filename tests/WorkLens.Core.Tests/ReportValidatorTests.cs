@@ -46,7 +46,7 @@ public sealed class ReportValidatorTests
                 items[0]!["rank"] = 99999999999;
                 break;
             case "unsupported_version":
-                report["schema_version"] = "1.1";
+                report["schema_version"] = "1.9";
                 break;
             case "missing_title":
                 items[0]!.AsObject().Remove("title");
@@ -135,6 +135,33 @@ public sealed class ReportValidatorTests
         {
             Assert.True(result.IsValid, "Warnings alone keep the report valid.");
         }
+    }
+
+    private static string Report11Json =>
+        File.ReadAllText(SchemaExamples.ExamplePath("report-ir", "1.1", "valid", "monthly-report.json"));
+
+    [Fact]
+    public void Report_1_1_valid_example_has_no_issues_with_the_1_0_evidence_example()
+    {
+        var result = Validator.Validate(Report11Json, ToEvidence(EvidenceNode()), EvidenceSha256);
+
+        Assert.Empty(result.Issues);
+    }
+
+    // The 1.1 example: narratives 0 challenge, 1 improvement (resolves the challenge), 2 next_plan, 3 support.
+    [Theory]
+    [InlineData("nr-missing", "ref.resolves_missing")]
+    [InlineData("nr-next-plan-sso", "ref.resolves_not_challenge")]
+    [InlineData("nr-improvement-dual-token", "ref.resolves_not_challenge")]
+    public void Resolves_must_name_a_challenge_narrative(string target, string code)
+    {
+        var report = JsonNode.Parse(Report11Json)!;
+        report["narratives"]![1]!["resolves"] = new JsonArray("nr-challenge-token-migration", target);
+
+        var result = Validator.Validate(report.ToJsonString(), ToEvidence(EvidenceNode()), EvidenceSha256);
+
+        var issue = Assert.Single(result.Issues);
+        Assert.Equal((code, IssueSeverity.Error, "/narratives/1/resolves/1"), (issue.Code, issue.Severity, issue.InstancePath));
     }
 
     [Fact]

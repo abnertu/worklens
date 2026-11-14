@@ -3,6 +3,8 @@ using System.Text;
 using System.Text.Json;
 using WorkLens.Core.Errors;
 using WorkLens.Core.Json;
+using WorkLens.Core.Schemas;
+using WorkLens.Core.Templates;
 using WorkLens.Core.Validation;
 
 namespace WorkLens.Cli;
@@ -72,10 +74,11 @@ internal static class InputFiles
     }
 
     /// <summary>
-    /// The single JSON loading path: parse (<c>json.invalid</c>), schema validation (<c>schema.*</c>) and
+    /// The single JSON loading path: parse (<c>json.invalid</c>), validation against the version of
+    /// <paramref name="schemaName"/> that the document names (<c>schema.*</c>) and
     /// deserialization (<c>json.deserialize_failed</c>). Never throws <see cref="JsonException"/>.
     /// </summary>
-    public static (T? Value, IReadOnlyList<ValidationIssue> Issues) Load<T>(InputFile file, string schemaId, IrSchemaValidator? validator = null)
+    public static (T? Value, IReadOnlyList<ValidationIssue> Issues) Load<T>(InputFile file, string schemaName, IrSchemaValidator? validator = null)
         where T : class
     {
         JsonDocument document;
@@ -92,7 +95,7 @@ internal static class InputFiles
         {
             try
             {
-                var schema = (validator ?? new IrSchemaValidator()).Validate(schemaId, document.RootElement);
+                var schema = (validator ?? new IrSchemaValidator()).ValidateDocument(schemaName, document.RootElement);
                 if (!schema.IsValid)
                 {
                     return (null, schema.Issues);
@@ -118,10 +121,10 @@ internal static class InputFiles
     /// Loads an upstream document (evidence, manifest). Any problem is a configuration error (exit 3,
     /// <c>input.invalid</c>) with the issues attached, because the report author cannot fix it.
     /// </summary>
-    public static T LoadUpstream<T>(InputFile file, string schemaId)
+    public static T LoadUpstream<T>(InputFile file, string schemaName)
         where T : class
     {
-        var (value, issues) = Load<T>(file, schemaId);
+        var (value, issues) = Load<T>(file, schemaName);
         return value ?? throw new CliException(
             ExitCodes.Configuration,
             "input.invalid",
@@ -129,6 +132,35 @@ internal static class InputFiles
             CliException.FileDetails(file.Path),
             issues);
     }
+
+    /// <summary>
+    /// Loads the template manifest of <c>present</c> and <c>render</c> and checks it: duplicate ids and the 1.1
+    /// contracts first, then the supported version. Any problem is <c>manifest.invalid</c> (exit 3).
+    /// </summary>
+    public static TemplateManifest LoadManifest(string manifestPath)
+    {
+        var manifest = LoadUpstream<TemplateManifest>(Read(manifestPath), IrSchemaCatalog.TemplateManifest);
+        IReadOnlyList<WorkLensError> errors =
+            [.. TemplateManifestChecker.CheckIds(manifest), .. TemplateManifestChecker.CheckContracts(manifest)];
+        if (errors.Count == 0 && manifest.SchemaVersion != SupportedManifestVersion)
+        {
+            errors =
+            [
+                new WorkLensError(
+                    "manifest.unsupported_version",
+                    $"Manifest schema_version {manifest.SchemaVersion} is not supported by present and render yet; use a {SupportedManifestVersion} manifest.",
+                    new Dictionary<string, string> { ["path"] = "/schema_version" }),
+            ];
+        }
+
+        return errors.Count == 0 ? manifest : throw CliException.FromErrors(errors, "manifest.invalid", manifestPath);
+    }
+
+    /// <summary>
+    /// The Layout Resolver and the renderer implement only the 1.0 manifest rules. A 1.1 manifest would give wrong
+    /// slides without an error, for example a support section filled with other work.
+    /// </summary>
+    private const string SupportedManifestVersion = "1.0";
 
     public static ValidationIssue Issue(string code, string pointer, string message) =>
         new(code, IssueSeverity.Error, pointer, null, message);

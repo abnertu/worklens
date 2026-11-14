@@ -115,4 +115,136 @@ public sealed class PresentationManifestCheckerTests
 
         Assert.Equal(("presentation.invalid_character", path), Single(presentation));
     }
+
+    // Presentation IR 1.1 -------------------------------------------------------------------------------------------
+
+    private static IReadOnlyList<ValidationIssue> Issues(PresentationDocument presentation, TemplateManifest? manifest = null) =>
+        PresentationManifestChecker.Check(presentation, manifest ?? Manifest()).Issues;
+
+    // The sample manifest has no metric slot: this one makes the subtitle of the cover a metric slot.
+    private static TemplateManifest MetricSubtitleManifest()
+    {
+        var manifest = Manifest();
+        var layouts = manifest.Layouts.ToList();
+        var cover = layouts.FindIndex(l => l.Id == "cover_v1");
+        layouts[cover] = layouts[cover] with
+        {
+            Slots = [.. layouts[cover].Slots.Select(s => s.Id == "subtitle" ? s with { Kind = SlotKind.Metric } : s)],
+        };
+        return manifest with { Layouts = layouts };
+    }
+
+    private static PresentationDocument WithItems(TableSlotValue table) =>
+        WithSlide(Golden(), 2, s => WithBinding(s, "items", table));
+
+    [Fact]
+    public void Metric_in_a_text_slot_is_a_kind_mismatch()
+    {
+        var issue = Assert.Single(Issues(WithSlide(Golden(), 0, s => WithBinding(s, "subtitle", new MetricSlotValue("l", "1")))));
+
+        Assert.Equal(("presentation.slot_kind_mismatch", "/slides/0/bindings/subtitle/kind"), (issue.Code, issue.InstancePath));
+        Assert.Contains("binds metric", issue.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void Metric_in_a_metric_slot_passes() =>
+        Assert.Empty(Issues(
+            WithSlide(Golden(), 0, s => WithBinding(s, "subtitle", new MetricSlotValue("l", "1", "c"))),
+            MetricSubtitleManifest()));
+
+    [Theory]
+    [InlineData("label")]
+    [InlineData("value")]
+    [InlineData("caption")]
+    public void Metric_text_with_an_invalid_character(string field)
+    {
+        var metric = new MetricSlotValue(
+            field == "label" ? "bad \u001B" : "l",
+            field == "value" ? "bad \u001B" : "1",
+            field == "caption" ? "bad \u001B" : "c");
+
+        var issue = Assert.Single(Issues(WithSlide(Golden(), 0, s => WithBinding(s, "subtitle", metric)), MetricSubtitleManifest()));
+
+        Assert.Equal(("presentation.invalid_character", $"/slides/0/bindings/subtitle/{field}"), (issue.Code, issue.InstancePath));
+    }
+
+    [Fact]
+    public void Footer_with_an_invalid_character() =>
+        Assert.Equal(("presentation.invalid_character", "/footer"), Single(Golden() with { Footer = "bad \u001B" }));
+
+    [Fact]
+    public void Styled_cell_with_an_invalid_character_reports_its_text()
+    {
+        var presentation = WithItems(new TableSlotValue(["a", "b"], [["1", "bad \u001B"]]) { CellStyles = [[null, "s"]] });
+
+        Assert.Equal(("presentation.invalid_character", "/slides/2/bindings/items/rows/0/1/text"), Single(presentation));
+    }
+
+    // CellStyles with fewer rows: one issue for each row without styles; no row uses its styles.
+    [Fact]
+    public void Cell_styles_with_fewer_rows()
+    {
+        var presentation = WithItems(new TableSlotValue(["a", "b"], [["1", "2"], ["3", "bad \u001B"], ["5", "6"]])
+        {
+            CellStyles = [[null, "s"]],
+        });
+
+        Assert.Equal(
+            [
+                ("presentation.table_row_width", "/slides/2/bindings/items/rows/1", "The cell styles of row 1 do not match its cells."),
+                ("presentation.table_row_width", "/slides/2/bindings/items/rows/2", "The cell styles of row 2 do not match its cells."),
+                ("presentation.invalid_character", "/slides/2/bindings/items/rows/1/1", null),
+            ],
+            Issues(presentation).Select(i => (i.Code, i.InstancePath, i.Code == "presentation.table_row_width" ? i.Message : null)));
+    }
+
+    // CellStyles with more rows: the extra row paths point past the rows in the JSON, and no row uses its styles.
+    [Fact]
+    public void Cell_styles_with_more_rows()
+    {
+        var presentation = WithItems(new TableSlotValue(["a", "b"], [["1", "bad \u001B"]])
+        {
+            CellStyles = [[null, "s"], [null, null], [null, null]],
+        });
+
+        Assert.Equal(
+            [
+                ("presentation.table_row_width", "/slides/2/bindings/items/rows/1"),
+                ("presentation.table_row_width", "/slides/2/bindings/items/rows/2"),
+                ("presentation.invalid_character", "/slides/2/bindings/items/rows/0/1"),
+            ],
+            Issues(presentation).Select(i => (i.Code, i.InstancePath)));
+    }
+
+    // Same row count: a row whose styles differ in width gets one issue and loses its styles; other rows keep them.
+    [Fact]
+    public void Cell_styles_row_of_another_width()
+    {
+        var presentation = WithItems(new TableSlotValue(["a", "b"], [["1", "bad \u001B"], ["3", "bad \u001B"]])
+        {
+            CellStyles = [[null, "s", "t"], [null, "s"]],
+        });
+
+        Assert.Equal(
+            [
+                ("presentation.table_row_width", "/slides/2/bindings/items/rows/0", "The cell styles of row 0 do not match its cells."),
+                ("presentation.invalid_character", "/slides/2/bindings/items/rows/0/1", null),
+                ("presentation.invalid_character", "/slides/2/bindings/items/rows/1/1/text", null),
+            ],
+            Issues(presentation).Select(i => (i.Code, i.InstancePath, i.Code == "presentation.table_row_width" ? i.Message : null)));
+    }
+
+    // A row whose width differs from the columns and from its styles gets only the columns issue.
+    [Fact]
+    public void Row_of_another_width_than_columns_and_styles_gets_one_issue()
+    {
+        var presentation = WithItems(new TableSlotValue(["a", "b"], [["bad \u001B"]]) { CellStyles = [["s", "t"]] });
+
+        Assert.Equal(
+            [
+                ("presentation.table_row_width", "/slides/2/bindings/items/rows/0", "Row 0 has 1 cells, but the table has 2 columns."),
+                ("presentation.invalid_character", "/slides/2/bindings/items/rows/0/0", null),
+            ],
+            Issues(presentation).Select(i => (i.Code, i.InstancePath, i.Code == "presentation.table_row_width" ? i.Message : null)));
+    }
 }

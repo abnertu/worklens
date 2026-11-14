@@ -21,6 +21,20 @@ public sealed class CanonicalJsonTests
         Assert.Equal(bytes, canonical);
     }
 
+    // The 1.1 example has each 1.1 member, so this test fixes the member order of each slot value kind, of a bullet
+    // item and of a table cell object.
+    [Fact]
+    public void Presentation_1_1_example_round_trips_byte_for_byte()
+    {
+        var path = SchemaExamples.ExamplePath("presentation-ir", "1.1", "valid", "monthly-presentation.json");
+        var bytes = File.ReadAllBytes(path);
+        var model = JsonSerializer.Deserialize<PresentationDocument>(bytes, WorkLensJson.Options);
+
+        var canonical = WorkLensJson.SerializeCanonicalUtf8(model);
+
+        Assert.Equal(bytes, canonical);
+    }
+
     [Fact]
     public void Canonical_form_uses_lf_and_one_trailing_newline_without_bom()
     {

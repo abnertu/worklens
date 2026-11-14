@@ -63,13 +63,13 @@ EvidenceDocument
 - **去重**: 同一 commit 出現在多個分支 (或同時在 default branch 與 PR 中) 時只保留一筆 (以 ID): relations 取聯集、role 取優先序最高者、其餘欄位以 commit detail 為準; cherry-pick / squash 產生的不同 SHA 不自動合併, 而以 `relations` (`contains`: PR → commits) 關聯, 由分析者判斷 (交接文件 §6)。`duplicate` flag 只在可確定時標記 (例如同 patch-id, M1 評估)。
 - **工作完成判準不在 Evidence IR**: `state: merged` 只是事實, 是否「完成」由 Report IR 判定。
 
-## 3. Report IR (`urn:worklens:schema:report-ir:1.0`)
+## 3. Report IR (`urn:worklens:schema:report-ir:1.0`、`1.1`)
 
 描述完成了什麼、證據為何、狀態如何。由 agent 撰寫, 人工審核與修改。**不含任何版面資訊。**
 
 ```text
 ReportDocument
-├── schema_version: "1.0"
+├── schema_version: "1.0" | "1.1"
 ├── report_id              "rpt-<period>-<suffix>"
 ├── period
 ├── subject                { display_name }  — v0.1 只支援個人 (OQ-03)
@@ -90,11 +90,16 @@ ReportDocument
 │   └── review_status?     pending | approved | rejected (預設 pending)
 └── narratives[]  Narrative
     ├── id                 "nr-<slug>"
-    ├── kind               challenge | improvement | next_plan | other_work
+    ├── kind               challenge | improvement | next_plan | other_work | support (1.1)
     ├── origin             agent | human
     ├── text
-    └── evidence_refs?[]
+    ├── evidence_refs?[]
+    └── resolves?[]        此 improvement 解決的 challenge narrative ID; 只能用於 kind: improvement (1.1)
 ```
+
+1.1 新增 narrative kind `support` 與 narrative 的選填欄位 `resolves`。其他欄位與 1.0 相同。
+`support` 列出 subject 需要他人提供的支援。
+`category: ops` 標示伺服器維運工作。
 
 ### 3.1 事實與推論的區分 (交接文件 §3.1、§6)
 
@@ -115,26 +120,29 @@ ReportDocument
 
 | 層級 | code | 嚴重度 | 規則 |
 |---|---|---|---|
-| Schema | `schema.<keyword>` | error | JSON Schema 驗證失敗; `<keyword>` 為失敗節點回報錯誤的 keyword (例 `schema.required`、`schema.enum`); 錯誤 key 為空字串時 (如 `additionalProperties: false`) 取該節點 evaluation path 的最後一段 (`schema.additionalProperties`) |
+| Schema | `schema.<keyword>` | error | JSON Schema 驗證失敗; `<keyword>` 為失敗節點回報錯誤的 keyword (例 `schema.required`、`schema.enum`); 錯誤 key 為空字串時 (如 `additionalProperties: false`) 取該節點 evaluation path 的最後一段 (`schema.additionalProperties`)。不是 improvement 的 narrative 有 `resolves` 時, 回 `schema.const` 於 `/narratives/<n>/kind` |
 | 參照 | `ref.evidence_document_mismatch` | error | `evidence_document.sha256` 與實際 `evidence.json` 不符。重新 `collect` 後, 以 `worklens report rebind` 更新綁定: 只有在所有 `evidence_refs` 仍存在於新的 Evidence IR 時才改寫 `document_id` / `sha256`, 否則列出失效的參照並維持錯誤 |
 | 參照 | `ref.evidence_missing` | error | `evidence_refs` 中的 ID 不存在於 Evidence IR |
 | 參照 | `ref.duplicate_id` | error | `work_items` / `narratives` 的 `id` 重複 |
+| 參照 | `ref.resolves_missing` | error | `resolves` 中的 ID 不是任何 narrative 的 ID。`instance_path` 為 `/narratives/<n>/resolves/<r>` |
+| 參照 | `ref.resolves_not_challenge` | error | `resolves` 中的 ID 指向的 narrative 不是 challenge。`instance_path` 同上 |
 | 規則 | `rule.completed_without_merged_change` | warning | `status: completed`、`origin: agent`, 引用的證據中沒有 `state: merged` 的 change_request, 且 `review_status` 不是 `approved` (只有 commit 不足以判定完成; 需人工確認後設 `approved`) |
 | 規則 | `rule.evidence_outside_period` | warning | 引用的證據 `occurred_at` 不在 `period` 的 `[start, end)` 內 (`instance_path` 指向該 ref) |
 | 規則 | `rule.unreferenced_numeric_claim` | warning | `summary` / `agent_inference.statement` 含百分比或倍數, 但該 work item 無 `observed_facts` 支持 (啟發式; pattern `\d+(?:\.\d+)?\s*(?:%\|％\|倍\|x\b\|×)`) |
 
 Schema 層由 `IrSchemaValidator` 對原始 JSON 驗證; `ReportValidator : IReportValidator` (M0) 組合各層。evidence 為 null 時略過參照與規則層。Schema 驗證必須在反序列化之前, 因為 C# models 拒絕未定義欄位, 反序列化會直接失敗而得不到 `schema.additionalProperties`。warning 不影響 exit code (除非 `--strict`)。
 
-## 4. Presentation IR (`urn:worklens:schema:presentation-ir:1.0`)
+## 4. Presentation IR (`urn:worklens:schema:presentation-ir:1.0`、`1.1`)
 
 最終投影片結構, 由 `worklens present` 從 Report IR + Evidence IR + Template Manifest **確定性**產生。不含座標、字型、顏色。
 
 ```text
 PresentationDocument
-├── schema_version: "1.0"
+├── schema_version: "1.0" | "1.1"
 ├── presentation_id        "prs-..."
 ├── source_report          { report_id, sha256 }
 ├── template               { id, version }
+├── footer?                每張投影片的頁尾文字 (1.1)
 └── slides[]
     ├── id                 "slide-001" (依順序編號)
     ├── layout_id          必須存在於 Template Manifest
@@ -143,33 +151,46 @@ PresentationDocument
     └── continuation?      { index, total } — 同一內容拆成多頁時
 SlotValue (以 kind 區分)
 ├── { kind: text, text }
-├── { kind: bullets, items[]: { text, level: 0..2 } }
-└── { kind: table, columns[], rows[][] }
+├── { kind: bullets, items[]: { text, level: 0..2, style? } }
+├── { kind: table, columns[], rows[][] } — 每個儲存格為字串, 或 { text, style } (1.1)
+└── { kind: metric, label, value, caption? } (1.1) — 三個欄位都是顯示文字
+任一 SlotValue 可帶 style? (1.1): 樣式角色, 即 manifest 中一個 style 的 id
 任一 SlotValue 可帶 truncated?: true (經 overflow policy 截斷)
 ```
 
-## 5. Template Manifest (`urn:worklens:schema:template-manifest:1.0`)
+1.0 沒有 `footer`、`metric` 與 `style`。Layout Resolver 寫出 1.1。沒有樣式的儲存格寫成字串。C# 把每個儲存格的文字放在 `TableSlotValue.Rows`, 樣式角色放在與 `Rows` 同形的 `CellStyles`。
+
+## 5. Template Manifest (`urn:worklens:schema:template-manifest:1.0`、`1.1`)
 
 描述一個 `.pptx` 模板中可用的 layout 與 slot, 以及報告各段落的順序。人工維護, 與模板檔一起版本化。
 
 ```text
 TemplateManifest
-├── schema_version: "1.0"
+├── schema_version: "1.0" | "1.1"
 ├── template               { id, version (semver), file, sha256? }
 │                          file: 相對於 manifest 檔所在目錄; sha256: 模板檔寫出時位元組的 SHA-256 (小寫 hex)
 ├── layouts[]
 │   ├── id                 例 cover_v1, achievement_detail_v1
 │   ├── slide_layout_name  模板中 slide layout 的名稱
 │   ├── purpose            cover | summary | achievements | work_item_detail | narrative | closing
+│   │                      1.1 新增 operations | challenge_table
+│   ├── brand? (1.1)       { logo?: { placeholder }, unit_name?: { placeholder, max_chars? } }
 │   └── slots[]
 │       ├── id             例 title, summary, facts
 │       ├── placeholder    { idx?, name? } (至少一個)
-│       ├── kind           text | bullets | table
+│       ├── kind           text | bullets | table; 1.1 新增 metric
 │       ├── required?      預設 false
 │       ├── max_chars?     | max_items?
-│       └── overflow?      split | truncate (預設 truncate)
+│       ├── overflow?      split | truncate (預設 truncate)
+│       ├── columns? (1.1, 只限 table)        [{ key, width (百分比整數), max_chars? }]
+│       ├── header_style?、row_styles? (1.1, 只限 table)   樣式角色; row_styles 依內容列循環
+│       └── table_style? (1.1, 只限 table)    表格樣式 GUID {XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX}
 ├── sequence[]             { section, layout_id }
 │   section ∈ cover | summary | achievements | work_item_details | challenges | improvements | next_plan | other_work | closing
+│             1.1 新增 operations | operation_details | support
+├── styles? (1.1)          角色 ID → { font_size?, bold?, color?, fill?, border_bottom?: { color, width } }
+│                          字級與線寬以 pt 表示; 顏色為 #RRGGBB
+├── footer? (1.1)          { max_chars? }
 └── labels?                Layout Resolver 的固定文字 (固定 key, 皆選填, 未提供時用英文預設)
     ├── cover_title, summary_title, achievements_title, challenges_title, improvements_title,
     │   next_plan_title, other_work_title, closing_title
@@ -177,8 +198,22 @@ TemplateManifest
     ├── activity_columns (3 個字串), achievements_columns (2 個字串)
     ├── confidence_low | confidence_medium | confidence_high
     ├── cell_status_completed | cell_status_in_progress | cell_status_unknown
-    └── status_in_progress | status_unknown
+    ├── status_in_progress | status_unknown
+    └── 1.1 新增封面、數字卡、總覽、細節頁、維運頁、問題表、欄名、證據欄與頁尾的 key
 ```
+
+1.0 manifest 不能使用標為 1.1 的欄位與值。
+1.1 中, `operations` 使用 purpose `operations`, `operation_details` 使用 `work_item_detail`, `support` 使用 `narrative`。
+1.1 中, `challenges` 使用 `narrative` 或 `challenge_table`。
+其他 section 使用與 1.0 相同的 purpose。
+
+契約檢查 (`TemplateManifestChecker.CheckContracts`, JSON Schema 無法表達):
+
+- 欄 key 不屬於該 purpose 的集合、purpose 沒有集合卻有 `columns`、key 重複, 或寬度總和不是 100 → `manifest.column_mismatch`。
+- `header_style` 或 `row_styles` 的項目不是 `styles` 定義的角色 → `manifest.unknown_style`。
+
+欄 key 集合: `achievements`: `title`、`project`、`status`、`evidence`; `operations`: `title`、`status`、`evidence`; `challenge_table`: `problem`、`resolution`、`status`。
+其他 purpose 沒有集合。
 
 所有 IR 中的 `sha256` 欄位 (`evidence_document.sha256`、`source_report.sha256`、`template.sha256`) 一律是被參照檔案「寫出時的位元組」的 SHA-256 (小寫 hex), 不做任何正規化。
 
@@ -272,9 +307,11 @@ public sealed record WorkLensError(string Code, string Message, IReadOnlyDiction
 
 ### 7.1 版本契約
 
-- 每個 IR root record 公開 `public const string CurrentSchemaVersion = "1.0"` 與對應 `$id`。
+- 每個 IR root record 公開 `CurrentSchemaVersion` 與 `SchemaId`。兩者表示內建的最新 minor, 即 WorkLens 寫出的版本。
+- 一個 root record 讀取同一 schema name 的全部 minor。
 - 讀取時先讀 `schema_version`: 只接受內建的版本; 不是內建版本 (不同 major, 或比內建更新的 minor) 回 `schema.unsupported_version`, 不嘗試猜測 (migration 見 [schema-versioning.md](schema-versioning.md))。
 - Validator 依文件的 `schema_version` 選擇 schema, 不是依程式的最新版本。
+- Layout Resolver 寫出 `PresentationDocument.CurrentSchemaVersion`, 所以它的輸出是 Presentation IR 1.1。
 
 ### 7.2 組裝 (無 DI 容器)
 

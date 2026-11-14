@@ -2,7 +2,7 @@ using System.CommandLine;
 using System.Text.Json.Nodes;
 using WorkLens.Core.Errors;
 using WorkLens.Core.Presentation;
-using WorkLens.Core.Templates;
+using WorkLens.Core.Schemas;
 using WorkLens.Core.Validation;
 using WorkLens.Rendering.Pptx;
 
@@ -44,11 +44,7 @@ internal static class RenderCommand
             var outputPath = InputFiles.Resolve(host, parse.GetValue(output), ws, InputFiles.PptxFileName);
 
             var presentationFile = InputFiles.Read(presentationPath);
-            var manifestDocument = InputFiles.LoadUpstream<TemplateManifest>(InputFiles.Read(manifestPath), TemplateManifest.SchemaId);
-            if (TemplateManifestChecker.CheckIds(manifestDocument) is { Count: > 0 } idErrors)
-            {
-                throw CliException.FromErrors(idErrors, "manifest.invalid", manifestPath);
-            }
+            var manifestDocument = InputFiles.LoadManifest(manifestPath);
             var templatePath = parse.GetValue(template) is { } t
                 ? host.FullPath(t)
                 : host.FullPath(Path.Combine(Path.GetDirectoryName(manifestPath)!, manifestDocument.Template.File));
@@ -60,7 +56,7 @@ internal static class RenderCommand
             };
             result.Result = new JsonObject { ["files"] = files };
 
-            var (document, issues) = InputFiles.Load<PresentationDocument>(presentationFile, PresentationDocument.SchemaId);
+            var (document, issues) = InputFiles.Load<PresentationDocument>(presentationFile, IrSchemaCatalog.PresentationIr);
             if (document is not null)
             {
                 issues = PresentationManifestChecker.Check(document, manifestDocument).Issues;

@@ -54,13 +54,15 @@ public sealed class LayoutResolverTests
 
     private static TableSlotValue Table(Slide slide, string slot) => Assert.IsType<TableSlotValue>(slide.Bindings[slot]);
 
-    // The checked-in presentation example is exactly the resolver output for the example report and evidence.
+    // The checked-in 1.0 presentation example is exactly the resolver output for the example report and evidence,
+    // except for schema_version.
     [Fact]
     public void Example_output_equals_golden_bytes()
     {
-        var golden = File.ReadAllBytes(SchemaExamples.ExamplePath("presentation-ir", "valid", "monthly-presentation.json"));
+        var golden = File.ReadAllText(SchemaExamples.ExamplePath("presentation-ir", "valid", "monthly-presentation.json"));
+        var expected = System.Text.Encoding.UTF8.GetBytes(golden.Replace("\"schema_version\": \"1.0\"", "\"schema_version\": \"1.1\"", StringComparison.Ordinal));
 
-        Assert.Equal(golden, WorkLensJson.SerializeCanonicalUtf8(Example()));
+        Assert.Equal(expected, WorkLensJson.SerializeCanonicalUtf8(Example()));
     }
 
     [Fact]

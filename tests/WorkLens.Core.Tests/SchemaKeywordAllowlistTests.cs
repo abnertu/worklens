@@ -44,13 +44,13 @@ public sealed class SchemaKeywordAllowlistTests
 
     private static readonly HashSet<string> SchemaArrayKeywords = ["allOf", "anyOf", "oneOf", "prefixItems"];
 
-    public static TheoryData<string> SchemaNames() => SchemaConsistencyTests.SchemaNames();
+    public static TheoryData<string, string> SchemaVersions() => SchemaConsistencyTests.SchemaVersions();
 
     [Theory]
-    [MemberData(nameof(SchemaNames))]
-    public void Schema_uses_only_known_keywords_and_formats(string schemaName)
+    [MemberData(nameof(SchemaVersions))]
+    public void Schema_uses_only_known_keywords_and_formats(string schemaName, string version)
     {
-        var text = File.ReadAllText(SchemaExamples.SchemaFile(SchemaExamples.Info(schemaName)));
+        var text = File.ReadAllText(SchemaExamples.SchemaFile(SchemaExamples.Info(schemaName, version)));
 
         var problems = FindProblems(JsonNode.Parse(text));
 

@@ -12,7 +12,7 @@
 | `$schema` | 每份 schema 必須明確寫 `https://json-schema.org/draft/2020-12/schema` (JsonSchema.Net 9 的預設 dialect 不是 2020-12) |
 | 文件版本 | IR 文件根層 `schema_version: "<major.minor>"`, 與 `$id` 一致 (schema 中以 `const` 限定) |
 | 範例 | `examples/valid/*.json`、`examples/invalid/<keyword>--<desc>.json` (`<keyword>` 為預期失敗的 JSON Schema keyword) |
-| 發佈 | schema 以 embedded resource 打包進 `WorkLens.Core`, `worklens schema list` / `schema show <name>` 可查詢 |
+| 發佈 | schema 以 embedded resource 打包進 `WorkLens.Core`。`worklens schema list` 列出每個 (name, version)。`schema show <name>` 輸出最新 minor。`schema show <name>:<version>` 輸出該版本 |
 
 ## 2. 版本號語意
 
@@ -27,7 +27,12 @@
 ## 3. 支援政策
 
 - WorkLens 每個版本宣告各 schema 支援的 major 集合 (v0.1: 全部只有 `1`)。
-- 讀取: 依文件的 `schema_version` 選擇對應 schema 驗證; 同 major 不同 minor 以**文件宣告的 minor** 驗證; 若文件的 minor 比 WorkLens 內建的最新 minor 還新, 回 `schema.unsupported_version`。
+- 讀取: WorkLens 以文件版本欄位指定的內建版本驗證每份文件 ([ADR-0009](../adr/0009-multi-minor-reading.md))。
+  - 版本欄位為 `schema_version`, 設定檔為 `config_version`。
+  - 版本缺少、不是字串或不是內建版本時, 回 `schema.unsupported_version`, 位置為版本欄位。
+  - 根層不是物件時, 以最新 minor 驗證, 回 `schema.type`。
+  - 一個 C# root type 讀取同一 name 的全部 minor。每個 minor 是前一個 minor 的超集合。
+- 未發布的 minor 可以修改。沒有任何 WorkLens release tag 包含它時, 它是未發布。後續工作可以為它加選填欄位或 enum 值, 不升 minor。已發布 minor 的檔案不改。
 - 寫出: 永遠寫 WorkLens 內建的最新 minor。
 - 不支援的 major → 錯誤 `schema.unsupported_version`, 提示執行 `worklens migrate` (若有) 或使用對應版本的 WorkLens。
 
@@ -51,15 +56,17 @@ WorkLens 寫出的 JSON, 以及 `schemas/**/examples/valid/` 的範例, 遵循�
 | 時間 | UTC, 以 System.Text.Json 對 `DateTimeOffset` 的輸出形式 `yyyy-MM-ddTHH:mm:ss[.fffffff]+00:00`。Schema 的 `format: date-time` 也接受 `Z`, 所以 agent 寫 `Z` 仍然有效, 但 WorkLens 重寫後會變成 `+00:00` |
 | Enum | `snake_case` 字串 |
 | 數字 | 整數欄位不寫小數點 |
-| 未定義欄位 | 不允許 (schema `additionalProperties: false`; C# `JsonUnmappedMemberHandling.Disallow`) |
+| 未定義欄位 | 不允許 (schema `additionalProperties: false`; C# `JsonUnmappedMemberHandling.Disallow`, `SlotValueConverter` 讀取時也套用) |
 | `$schema` 屬性 | instance 文件**不寫** `"$schema"` (會被當成未定義欄位) |
 
 欄位順序不屬於 canonical 形式的一部分 (DeepEquals 不比較順序), 但 WorkLens 寫出時固定依 C# record 宣告順序, 讓 diff 穩定。
 
+`SlotValueConverter` 依此順序寫出 SlotValue: `kind`、該 kind 的欄位 (宣告順序)、`style`、`truncated`。它寫出 bullet 項目為 `text`、`level`、`style`, 寫出儲存格物件為 `text`、`style`。沒有樣式的儲存格是字串。
+
 ## 6. 驗證設定
 
 - `EvaluationOptions.RequireFormatValidation = true` — 否則 `format` 只是註解。
-- `OutputFormat.Hierarchical` 且 `IncludeApplicatorErrors = false` — 從根節點只走訪失敗 (invalid) 的節點, 略過 `if` 與 `not` 子樹 (它們失敗不代表文件無效), 通過的 `oneOf` / `anyOf` 其不匹配分支因父節點有效而不會被走訪。每個錯誤轉成 `ValidationIssue`: code = `schema.` + 錯誤 key (key 為空字串時, 如 `additionalProperties: false`, 取 `evaluation_path` 最後一段), `instance_path` = `instance_location`。(List 輸出會把 `if` 條件不成立與父層 applicator 也列為錯誤, 不採用。)
+- `OutputFormat.Hierarchical` 且 `IncludeApplicatorErrors = false` — 從根節點只走訪失敗 (invalid) 的節點, 略過 `if` 與 `not` 子樹 (它們失敗不代表文件無效), 通過的 `oneOf` / `anyOf` 其不匹配分支因父節點有效而不會被走訪。每個錯誤轉成 `ValidationIssue`: code = `schema.` + 錯誤 key (key 為空字串時, 如 `additionalProperties: false`, 取 `evaluation_path` 最後一段), `instance_path` = `instance_location`。`dependentSchemas` 的錯誤不轉成 issue, 因為 `IncludeApplicatorErrors = false` 不會略過它。它失敗的子 schema 回報 leaf keyword。(List 輸出會把 `if` 條件不成立與父層 applicator 也列為錯誤, 不採用。)
 - 所有 schema 註冊在同一個非 global `SchemaRegistry`, 每份只 build 一次。
 - Schema 品質檢查 (測試): meta-schema 驗證、keyword allowlist (擋拼字錯誤如 `addtionalProperties`)、`format` 值 allowlist (擋 `date_time` 等未知格式, JsonSchema.Net 對未知格式不報錯)。
 

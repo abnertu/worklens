@@ -165,6 +165,20 @@ public sealed class ConfigParserTests
     }
 
     [Fact]
+    public void Unknown_config_version_is_unsupported()
+    {
+        var config = Minimal();
+        config["config_version"] = "1.9";
+
+        var result = Parse(config);
+
+        Assert.Equal(ConfigParseResult.Invalid, result.ErrorCode);
+        var issue = Assert.Single(result.Issues);
+        Assert.Equal("schema.unsupported_version", issue.Code);
+        Assert.Equal("/config_version", issue.InstancePath);
+    }
+
+    [Fact]
     public void Schema_violation_is_config_invalid_with_schema_issues()
     {
         var config = Minimal();

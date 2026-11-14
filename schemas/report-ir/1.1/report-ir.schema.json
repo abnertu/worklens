@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:worklens:schema:report-ir:1.1",
+  "title": "WorkLens Report IR 1.1",
+  "description": "Semantic report: work items with evidence references, separating observed facts, agent inference and human notes. Contains no layout information. Activity statistics are computed by WorkLens and must not be written here.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "report_id", "period", "subject", "evidence_document", "work_items", "narratives"],
+  "properties": {
+    "schema_version": { "const": "1.1" },
+    "report_id": { "type": "string", "pattern": "^rpt-[a-z0-9-]+$" },
+    "period": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label", "start", "end", "timezone"],
+      "properties": {
+        "label": { "type": "string", "minLength": 1 },
+        "start": { "$ref": "#/$defs/timestamp" },
+        "end": { "$ref": "#/$defs/timestamp" },
+        "timezone": { "type": "string", "minLength": 1 }
+      }
+    },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["display_name"],
+      "properties": {
+        "display_name": { "type": "string", "minLength": 1 }
+      }
+    },
+    "evidence_document": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["document_id", "sha256"],
+      "properties": {
+        "document_id": { "type": "string", "pattern": "^evd-[a-z0-9-]+$" },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "analysis": {
+      "description": "Self-reported by the agent; not verified by WorkLens.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "agent": { "type": "string" },
+        "model": { "type": "string" },
+        "notes": { "type": "string" }
+      }
+    },
+    "work_items": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/work_item" }
+    },
+    "narratives": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/narrative" }
+    }
+  },
+  "$defs": {
+    "timestamp": { "type": "string", "format": "date-time" },
+    "sha256": {
+      "description": "Lowercase hex SHA-256 of the referenced file bytes as written.",
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "evidence_id": { "type": "string", "pattern": "^ev-[0-9a-f]{16}$" },
+    "narrative_id": { "type": "string", "pattern": "^nr-[a-z0-9-]+$" },
+    "origin": { "enum": ["agent", "human"] },
+    "work_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "origin", "category", "status", "title", "summary", "observed_facts", "evidence_refs"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^wi-[a-z0-9-]+$" },
+        "origin": { "$ref": "#/$defs/origin" },
+        "category": { "enum": ["feature", "fix", "refactor", "docs", "test", "ops", "research", "other"] },
+        "status": { "enum": ["completed", "in_progress", "unknown"] },
+        "title": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "summary": { "type": "string", "minLength": 1, "maxLength": 600 },
+        "observed_facts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["statement", "evidence_refs"],
+            "properties": {
+              "statement": { "type": "string", "minLength": 1, "maxLength": 300 },
+              "evidence_refs": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": { "$ref": "#/$defs/evidence_id" }
+              }
+            }
+          }
+        },
+        "agent_inference": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["statement", "confidence"],
+          "properties": {
+            "statement": { "type": "string", "minLength": 1, "maxLength": 300 },
+            "confidence": { "enum": ["low", "medium", "high"] }
+          }
+        },
+        "evidence_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/evidence_id" }
+        },
+        "rank": { "type": "integer", "minimum": 1 },
+        "human_notes": { "type": "string" },
+        "review_status": { "enum": ["pending", "approved", "rejected"] }
+      },
+      "if": {
+        "properties": { "origin": { "const": "agent" } }
+      },
+      "then": {
+        "properties": { "evidence_refs": { "minItems": 1 } }
+      }
+    },
+    "narrative": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "origin", "text"],
+      "properties": {
+        "id": { "$ref": "#/$defs/narrative_id" },
+        "kind": { "enum": ["challenge", "improvement", "next_plan", "other_work", "support"] },
+        "origin": { "$ref": "#/$defs/origin" },
+        "text": { "type": "string", "minLength": 1, "maxLength": 600 },
+        "evidence_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/evidence_id" }
+        },
+        "resolves": {
+          "description": "IDs of the challenge narratives that this improvement resolves.",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/narrative_id" }
+        }
+      },
+      "dependentSchemas": {
+        "resolves": { "properties": { "kind": { "const": "improvement" } } }
+      }
+    }
+  }
+}

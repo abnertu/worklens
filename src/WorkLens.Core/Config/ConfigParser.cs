@@ -3,6 +3,7 @@ using System.Text.Json.Nodes;
 using WorkLens.Core.Errors;
 using WorkLens.Core.Evidence;
 using WorkLens.Core.Json;
+using WorkLens.Core.Schemas;
 using WorkLens.Core.Security;
 using WorkLens.Core.Validation;
 
@@ -62,7 +63,12 @@ public static class ConfigParser
             return Invalid(Issue("schema.type", string.Empty, "Configuration must be a JSON object."));
         }
 
-        var schema = SchemaValidator.Validate(WorkLensConfig.SchemaId, json);
+        ValidationResult schema;
+        using (var document = JsonDocument.Parse(json))
+        {
+            schema = SchemaValidator.ValidateDocument(IrSchemaCatalog.Config, document.RootElement);
+        }
+
         if (!schema.IsValid)
         {
             return new ConfigParseResult(null, ConfigParseResult.Invalid, schema.Issues);

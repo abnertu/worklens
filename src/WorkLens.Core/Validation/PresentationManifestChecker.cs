@@ -24,6 +24,11 @@ public static class PresentationManifestChecker
                 $"The presentation was resolved for template {presentation.Template.Id} {presentation.Template.Version}, but the manifest is {manifest.Template.Id} {manifest.Template.Version}."));
         }
 
+        if (presentation.Footer is not null)
+        {
+            CheckCharacters(presentation.Footer, "/footer", issues);
+        }
+
         // First occurrence wins, as in the Layout Resolver (duplicate ids are reported by TemplateManifestChecker).
         var layouts = new Dictionary<string, LayoutDefinition>(StringComparer.Ordinal);
         foreach (var definition in manifest.Layouts)
@@ -72,29 +77,15 @@ public static class PresentationManifestChecker
                         $"Slot '{slotId}' of layout '{layout.Id}' takes {Name(slot.Kind)}, but slide {slide.Id} binds {Name(KindOf(value))}."));
                 }
 
+                IReadOnlyList<string?>?[] cellStyles = [];
                 if (value is TableSlotValue table)
                 {
-                    for (var r = 0; r < table.Rows.Count; r++)
-                    {
-                        if (table.Rows[r].Count != table.Columns.Count)
-                        {
-                            issues.Add(Issue(
-                                "presentation.table_row_width",
-                                $"{path}/rows/{r}",
-                                $"Row {r} has {table.Rows[r].Count} cells, but the table has {table.Columns.Count} columns."));
-                        }
-                    }
+                    cellStyles = CheckRows(table, path, issues);
                 }
 
-                foreach (var (text, textPath) in Strings(value, path))
+                foreach (var (text, textPath) in Strings(value, path, cellStyles))
                 {
-                    if (LayoutResolver.ContainsInvalidXmlCharacter(text))
-                    {
-                        issues.Add(Issue(
-                            "presentation.invalid_character",
-                            textPath,
-                            "The text contains a character that XML 1.0 (and therefore .pptx) cannot store, such as a control character."));
-                    }
+                    CheckCharacters(text, textPath, issues);
                 }
             }
         }
@@ -102,15 +93,65 @@ public static class PresentationManifestChecker
         return new ValidationResult(issues);
     }
 
+    // Reports each row whose width differs from the columns or from its cell styles, at most one issue for each row.
+    // Returns the cell styles of each row, or null for a row whose styles do not count. CellStyles comes only from a
+    // C# caller, so a row index can point past the rows in the JSON.
+    private static IReadOnlyList<string?>?[] CheckRows(TableSlotValue table, string path, List<ValidationIssue> issues)
+    {
+        var styles = table.CellStyles;
+        var rowCountsMatch = styles is null || styles.Count == table.Rows.Count;
+        var result = new IReadOnlyList<string?>?[table.Rows.Count];
+        var rowCount = Math.Max(table.Rows.Count, styles?.Count ?? 0);
+        for (var r = 0; r < rowCount; r++)
+        {
+            var hasRow = r < table.Rows.Count;
+            var hasStyles = styles is not null && r < styles.Count;
+            if (hasRow && table.Rows[r].Count != table.Columns.Count)
+            {
+                issues.Add(Issue(
+                    "presentation.table_row_width",
+                    $"{path}/rows/{r}",
+                    $"Row {r} has {table.Rows[r].Count} cells, but the table has {table.Columns.Count} columns."));
+            }
+            else if (styles is not null && (hasRow != hasStyles || (hasRow && styles[r].Count != table.Rows[r].Count)))
+            {
+                issues.Add(Issue(
+                    "presentation.table_row_width",
+                    $"{path}/rows/{r}",
+                    $"The cell styles of row {r} do not match its cells."));
+            }
+
+            if (hasRow && hasStyles && rowCountsMatch && styles![r].Count == table.Rows[r].Count)
+            {
+                result[r] = styles[r];
+            }
+        }
+
+        return result;
+    }
+
+    private static void CheckCharacters(string text, string path, List<ValidationIssue> issues)
+    {
+        if (LayoutResolver.ContainsInvalidXmlCharacter(text))
+        {
+            issues.Add(Issue(
+                "presentation.invalid_character",
+                path,
+                "The text contains a character that XML 1.0 (and therefore .pptx) cannot store, such as a control character."));
+        }
+    }
+
     private static SlotKind KindOf(SlotValue value) => value switch
     {
         TextSlotValue => SlotKind.Text,
         BulletsSlotValue => SlotKind.Bullets,
         TableSlotValue => SlotKind.Table,
+        MetricSlotValue => SlotKind.Metric,
         _ => throw new NotSupportedException($"Unsupported slot value {value.GetType().Name}."),
     };
 
-    private static IEnumerable<(string Text, string Path)> Strings(SlotValue value, string path)
+    // A cell with a style is a {text, style} object in JSON, so its path ends in /text.
+    private static IEnumerable<(string Text, string Path)> Strings(SlotValue value, string path, IReadOnlyList<string?>?[] cellStyles)
     {
         switch (value)
         {
@@ -134,8 +175,18 @@ public static class PresentationManifestChecker
                 {
                     for (var c = 0; c < table.Rows[r].Count; c++)
                     {
-                        yield return (table.Rows[r][c], $"{path}/rows/{r}/{c}");
+                        var styled = cellStyles[r]?[c] is not null;
+                        yield return (table.Rows[r][c], styled ? $"{path}/rows/{r}/{c}/text" : $"{path}/rows/{r}/{c}");
                     }
+                }
+
+                break;
+            case MetricSlotValue metric:
+                yield return (metric.Label, $"{path}/label");
+                yield return (metric.Value, $"{path}/value");
+                if (metric.Caption is not null)
+                {
+                    yield return (metric.Caption, $"{path}/caption");
                 }
 
                 break;

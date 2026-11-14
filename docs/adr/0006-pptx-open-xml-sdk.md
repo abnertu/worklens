@@ -4,6 +4,8 @@
 
 Accepted — 2026-11-12 (使用者依 M0 PoC 結果決定; Proposed 2026-11-11)
 
+「run 不寫格式覆寫」只適用 1.0 manifest。1.1 manifest 改依 [ADR-0010](0010-manifest-style-roles.md)。
+
 ## Context
 
 - 輸出必須是可編輯的 `.pptx`, 套用既有模板的 Master / Layout / Placeholder; 版面由模板與 Template Manifest 決定, 不由 AI 決定 (交接文件 §3.1、§4.3)。
