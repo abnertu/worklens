@@ -1,11 +1,10 @@
 # 月報模板設計
 
-> Status: Proposed — 2026-11-13
+> Status: Accepted — 2026-11-14
 
 本文件描述研發工作月報模板的目標設計。
-WorkLens 尚未實作這個設計。
-現行行為以 domain-model.md §5 為準。
-實作落差由後續計畫分析。
+`rd-monthly` 模板 (`templates/rd-monthly/`) 實作這個設計。
+它的 manifest 容量來自 PowerPoint 校正。
 
 ## 1. 讀者與內容
 
@@ -106,8 +105,8 @@ footer 與 tag 角色至少 9 pt。
 ## 6. 元件
 
 - 數字卡: surface 底色的方塊, 內含標籤 (meta)、數字 (metric) 與說明 (meta)。每個部分是各自的文字元素。
-- 狀態標籤: 圓角底色加上 tag 文字。完成用 accent 字配 accent-soft 底。進行中用 warn 字配 warn-soft 底。待確認用 muted 字配 neutral-soft 底。
-- 表格: 表頭列用 muted 文字, 下方有 accent 底線。內容列在 paper 與 surface 之間交錯。列之間沒有垂直線。
+- 狀態標籤: 底色加上 tag 文字。完成用 accent 字配 accent-soft 底。進行中用 warn 字配 warn-soft 底。待確認用 muted 字配 neutral-soft 底。表格中的狀態標籤是方角的儲存格底色; 細節頁標題旁的標籤是圓角。
+- 表格: 表頭列用 muted 文字, 下方有 accent 底線。內容列在 paper 與 surface 之間交錯。列之間沒有垂直線。這些格式由 manifest 的樣式套用到儲存格的底色與下框線, 表格使用 No Style, No Grid 表格樣式。
 - 證據列: accent 的 ID、body 的標題, 以及含日期與 commit 數的 meta 列。
 - 標記: neutral-soft 底色加上 tag 文字, 例如「推論 · 信心中」或「人工補充」。
 - 區塊標題: heading 文字, 下方有 2 px 的 accent 底線。
@@ -180,15 +179,15 @@ Label 是 template manifest 中的固定文字。
 |---|---|---|---|
 | 標題 | 標題區域 | title | label `achievements_title` |
 | 狀態摘要 | 標題列 meta | meta | 表中項目的狀態計數; label `summary_status` |
-| 表格 | 內容區域 | table | category 不是 `ops` 的 work item, 依 rank 排序 |
+| 表格 | 內容區域 | table | sequence 有維運 section 時為 category 不是 `ops` 的 work item, 否則為全部 work item; 依 rank 排序 |
 | 欄: 工作項目 | 42% | table | `work_items[].title` |
 | 欄: 專案 | 18% | table | 計算值, 見 9.3 |
 | 欄: 狀態 | 12% | tag | `work_items[].status`; labels `cell_status_*` |
 | 欄: 證據 | 28% | meta | 計算值, 見 9.4 |
-| 欄名 | 表頭列 | table | `achievements_columns`, 擴充為 4 欄 |
+| 欄名 | 表頭列 | table | slot `columns` 的 `column_<key>` labels |
 | 續頁標記 | 接在標題後 | title | 新增: label `continuation`, 含 `{index}` 與 `{total}` |
 
-表格每頁最多 6 列。
+表格每頁的列數為 slot 的 `max_items`。
 其餘的列接到下一頁, 標題加上續頁標記。
 
 ### 8.4 項目細節
@@ -205,7 +204,7 @@ Label 是 template manifest 中的固定文字。
 | 推論列 | 接在事實之後 | body 與 tag | `agent_inference`; label `inference` 與 `confidence_*` |
 | 人工補充列 | 接在推論之後 | body 與 tag | `human_notes`; label `human_notes` |
 | 證據標題 | 752, 148, 464, 32 | heading | 新增: label `evidence_title` |
-| 證據列 | 752, 192, 464, 400 | meta 與 body | 引用的 change request: Evidence IR 的 ID、標題、狀態、日期與 commit 數; 狀態與日期用字: 新增 labels |
+| 證據列 | 752, 192, 464, 400 | meta 與 body | 引用的 change request: Evidence IR 的 ID、標題、狀態、日期與 commit 數; 標題經過投影片揭露處理 (§10); 狀態與日期用字: 新增 labels |
 
 狀態只顯示在標籤中。
 這一頁沒有另外的狀態列。
@@ -221,7 +220,7 @@ Label 是 template manifest 中的固定文字。
 | 欄: 工作項目 | 52% | table | `work_items[].title`; 標題中寫出主機名稱 |
 | 欄: 狀態 | 14% | tag | `work_items[].status` |
 | 欄: 證據 | 34% | meta | 計算值, 見 9.4 |
-| 欄名 | 表頭列 | table | 新增: label `operations_columns` |
+| 欄名 | 表頭列 | table | `column_<key>` labels |
 
 ### 8.6 問題與處理
 
@@ -233,7 +232,7 @@ Label 是 template manifest 中的固定文字。
 | 欄: 問題 | 40% | table | 該 challenge 的 `narratives[].text` |
 | 欄: 處理方式 | 46% | table | 每個以新欄位 `resolves` 指向此 challenge 的 `improvement` 的文字, 一項一行; 沒有時顯示「—」 |
 | 欄: 狀態 | 14% | tag | 計算值: 至少一個 improvement 指向此 challenge 時為已處理, 否則為處理中; 新增: labels |
-| 欄名 | 表頭列 | table | 新增: label `challenges_columns` |
+| 欄名 | 表頭列 | table | `column_<key>` labels |
 
 已處理標籤用 accent 字配 accent-soft 底。
 處理中標籤用 warn 字配 warn-soft 底。
@@ -258,7 +257,7 @@ Label 是 template manifest 中的固定文字。
 
 | 元素 | 來源 |
 |---|---|
-| 頁尾文字 | 新增: config 的單位名稱, 接著是新增的 label `footer` (含 `{period}`), 例如「[單位名稱]｜研發工作月報 · 2026 年 11 月」 |
+| 頁尾文字 | `render --config` 的單位名稱, 接著是 Presentation IR 的 `footer` (label `footer` 代入 `{period}`), 以 `｜` 連接, 例如「[單位名稱]｜研發工作月報 · 2026-11」 |
 | 頁尾 logo | 新增: config 的 logo |
 | 頁碼 | 模板的投影片編號欄位 |
 
@@ -271,8 +270,8 @@ Label 是 template manifest 中的固定文字。
 
 | 指標 | 規則 |
 |---|---|
-| 完成項目 | `status: completed` 且 category 不是 `ops` 的 work item |
-| 進行中 | `status: in_progress` 且 category 不是 `ops` 的 work item |
+| 完成項目 | `status: completed` 且 category 不是 `ops` 的 work item; sequence 沒有維運 section 時也計入 `ops` |
+| 進行中 | `status: in_progress` 且 category 不是 `ops` 的 work item; sequence 沒有維運 section 時也計入 `ops`, 維運事項卡不顯示 |
 | 維運事項 | `category: ops` 的 work item, 不分狀態 |
 | 涉及專案 | 計入證據的不重複 repository |
 | 附註 | 計入證據中已合併的 change request、commit 與 repository |

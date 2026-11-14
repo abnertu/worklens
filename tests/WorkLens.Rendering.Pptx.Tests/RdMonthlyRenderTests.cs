@@ -69,6 +69,26 @@ public sealed class RdMonthlyRenderTests : IDisposable
         Assert.Empty(new OpenXmlValidator(FileFormatVersions.Office2016).Validate(document, TestContext.Current.CancellationToken));
     }
 
+    // The stress fixture fills every slot past its capacity: the calibration input must still give a valid package.
+    [Fact]
+    public void Stress_fixture_gives_valid_open_xml()
+    {
+        string Fixture(string file) => Path.Combine(AppContext.BaseDirectory, "Fixtures", "stress-1.1", file);
+        var layout = new WorkLens.Core.Layout.LayoutResolver().Resolve(
+            Load<WorkLens.Core.Report.ReportDocument>(Fixture("report.json")),
+            new string('0', 64),
+            Load<WorkLens.Core.Evidence.EvidenceDocument>(Fixture("evidence.json")),
+            Manifest);
+        Assert.Empty(layout.Errors);
+        var path = Path.Combine(_directory, "stress.pptx");
+
+        var result = PptxRenderer.Render(layout.Presentation!, Manifest, Path.Combine(TemplateDirectory, "rd-monthly.pptx"), path);
+
+        Assert.Empty(result.Errors);
+        using var document = PackageDocument.Open(path, isEditable: false);
+        Assert.Empty(new OpenXmlValidator(FileFormatVersions.Office2016).Validate(document, TestContext.Current.CancellationToken));
+    }
+
     [Fact]
     public void Table_header_and_rows_take_their_styles()
     {

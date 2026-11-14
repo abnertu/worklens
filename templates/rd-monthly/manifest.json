@@ -2,9 +2,9 @@
   "schema_version": "1.1",
   "template": {
     "id": "rd-monthly",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "file": "rd-monthly.pptx",
-    "sha256": "47698d3a32a458cf68104b57966305486cd40cbe1317aee0a3f2cdf08b5351f6"
+    "sha256": "b65befa3b912dee65ae76c26811f43ef5a1d35f4372b229546abba65a44aa307"
   },
   "layouts": [
     {
@@ -153,7 +153,7 @@
           },
           "kind": "bullets",
           "max_items": 6,
-          "max_chars": 40,
+          "max_chars": 44,
           "overflow": "truncate"
         },
         {
@@ -219,19 +219,19 @@
             "name": "Items"
           },
           "kind": "table",
-          "max_items": 6,
+          "max_items": 9,
           "max_chars": 40,
           "overflow": "split",
           "columns": [
             {
               "key": "title",
               "width": 42,
-              "max_chars": 24
+              "max_chars": 30
             },
             {
               "key": "project",
               "width": 18,
-              "max_chars": 12
+              "max_chars": 18
             },
             {
               "key": "status",
@@ -241,7 +241,7 @@
             {
               "key": "evidence",
               "width": 28,
-              "max_chars": 20
+              "max_chars": 30
             }
           ],
           "header_style": "table_header",
@@ -288,14 +288,14 @@
             "name": "Items"
           },
           "kind": "table",
-          "max_items": 6,
+          "max_items": 9,
           "max_chars": 40,
           "overflow": "split",
           "columns": [
             {
               "key": "title",
               "width": 52,
-              "max_chars": 30
+              "max_chars": 36
             },
             {
               "key": "status",
@@ -305,7 +305,7 @@
             {
               "key": "evidence",
               "width": 34,
-              "max_chars": 24
+              "max_chars": 36
             }
           ],
           "header_style": "table_header",
@@ -352,7 +352,7 @@
             "name": "Items"
           },
           "kind": "table",
-          "max_items": 5,
+          "max_items": 7,
           "max_chars": 60,
           "overflow": "split",
           "columns": [
@@ -400,7 +400,7 @@
           },
           "kind": "text",
           "required": true,
-          "max_chars": 30
+          "max_chars": 32
         },
         {
           "id": "kicker",
@@ -408,7 +408,7 @@
             "name": "Kicker"
           },
           "kind": "text",
-          "max_chars": 50
+          "max_chars": 60
         },
         {
           "id": "status",
@@ -433,7 +433,7 @@
           },
           "kind": "bullets",
           "required": true,
-          "max_items": 8,
+          "max_items": 10,
           "max_chars": 40,
           "overflow": "split"
         },
@@ -451,8 +451,8 @@
             "name": "Evidence"
           },
           "kind": "bullets",
-          "max_items": 9,
-          "max_chars": 28,
+          "max_items": 12,
+          "max_chars": 40,
           "overflow": "truncate"
         }
       ],
@@ -485,8 +485,8 @@
           },
           "kind": "bullets",
           "required": true,
-          "max_items": 8,
-          "max_chars": 60,
+          "max_items": 7,
+          "max_chars": 110,
           "overflow": "split"
         }
       ],

@@ -28,6 +28,19 @@ public sealed class ConfigParserTests
 
     private static ConfigParseResult Parse(JsonNode node) => ConfigParser.Parse(node.ToJsonString());
 
+    // The brand values are new in 1.1, so a 1.0 file keeps rejecting them.
+    [Fact]
+    public void Config_1_0_rejects_the_organization()
+    {
+        var node = Minimal();
+        node["report"] = new JsonObject { ["organization"] = "研發一處" };
+
+        var result = Parse(node);
+
+        Assert.Null(result.Config);
+        Assert.Contains(result.Issues, i => i.Code == "schema.additionalProperties" && i.InstancePath == "/report/organization");
+    }
+
     // Config 1.1 adds the brand values that render writes into the template.
     [Fact]
     public void Config_1_1_reads_the_organization_and_the_logo()

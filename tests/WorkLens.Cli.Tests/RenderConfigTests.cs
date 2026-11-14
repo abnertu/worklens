@@ -43,12 +43,19 @@ public sealed class RenderConfigTests : IDisposable
         return path;
     }
 
-    /// <summary>Copies the rd-monthly template, its manifest and the full fixture presentation.</summary>
-    private string CopyRdInputs()
+    /// <summary>
+    /// Copies the rd-monthly template, its manifest and the full fixture, and runs present, so that the presentation
+    /// names the template version of the manifest.
+    /// </summary>
+    private async Task<string> CopyRdInputs()
     {
-        _cli.CopyToWorkspace("tests/Fixtures/rd-monthly/full/presentation.json", "presentation.json");
+        _cli.CopyToWorkspace("tests/Fixtures/rd-monthly/full/report.json", "report.json");
+        _cli.CopyToWorkspace("tests/Fixtures/rd-monthly/full/evidence.json", "evidence.json");
         _cli.CopyToWorkspace("templates/rd-monthly/rd-monthly.pptx", "rd-monthly.pptx");
-        return _cli.CopyToWorkspace("templates/rd-monthly/manifest.json", "manifest.json");
+        var manifest = _cli.CopyToWorkspace("templates/rd-monthly/manifest.json", "manifest.json");
+        var present = await _cli.RunAsync("present", "--workspace", _cli.Workspace, "--manifest", manifest, "--json");
+        Assert.Equal(ExitCodes.Success, present.ExitCode);
+        return manifest;
     }
 
     private Task<CliRun> Render(string manifest, string config) =>
@@ -57,7 +64,7 @@ public sealed class RenderConfigTests : IDisposable
     [Fact]
     public async Task Render_writes_the_unit_name_and_the_logo_of_the_config()
     {
-        var manifest = CopyRdInputs();
+        var manifest = await CopyRdInputs();
         File.WriteAllBytes(Path.Combine(_cli.Workspace, "logo.png"), Png);
 
         var run = await Render(manifest, WriteConfig("logo.png"));
@@ -74,7 +81,7 @@ public sealed class RenderConfigTests : IDisposable
     [Fact]
     public async Task Missing_logo_file_is_input_not_found()
     {
-        var manifest = CopyRdInputs();
+        var manifest = await CopyRdInputs();
 
         var run = await Render(manifest, WriteConfig("missing.png"));
 
@@ -86,7 +93,7 @@ public sealed class RenderConfigTests : IDisposable
     [Fact]
     public async Task Logo_that_is_not_png_or_jpeg_is_config_invalid_logo()
     {
-        var manifest = CopyRdInputs();
+        var manifest = await CopyRdInputs();
         File.WriteAllBytes(Path.Combine(_cli.Workspace, "logo.gif"), [0x47, 0x49, 0x46, 0x38, 0x39, 0x61, 0, 0]);
 
         var run = await Render(manifest, WriteConfig("logo.gif"));
@@ -99,7 +106,7 @@ public sealed class RenderConfigTests : IDisposable
     [Fact]
     public async Task Logo_path_that_is_not_a_file_path_is_config_invalid_logo()
     {
-        var manifest = CopyRdInputs();
+        var manifest = await CopyRdInputs();
 
         var run = await Render(manifest, WriteConfig("logo\u0000.png"));
 

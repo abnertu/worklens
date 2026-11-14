@@ -365,7 +365,7 @@ description: 使用 WorkLens 產生具證據的工作月報 (GitHub/GitLab → P
    - 保留檔案中既有的 origin: human 項目與 human_notes, 不修改。
 5. `worklens report validate --json`。exit 2 → 依 issues 的 code 與 instance_path 修正, 重跑; 最多 3 次後把剩餘問題交給使用者。
 6. 請使用者審核 report.json (warning 需要使用者確認)。
-7. 使用者同意後: `worklens present --json`、`worklens render --json`。
+7. 使用者同意後: `worklens present --json`, 再 `worklens render --config <worklens.json> --json`。
 
 # 禁止事項
 - 不要在命令列傳 token, 不要印出環境變數。

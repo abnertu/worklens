@@ -1,0 +1,1350 @@
+{
+  "schema_version": "1.0",
+  "document_id": "evd-2026-11-stress",
+  "generated_at": "2026-12-01T02:10:00+00:00",
+  "generator": {
+    "name": "worklens",
+    "version": "0.1.0"
+  },
+  "query": {
+    "period": {
+      "label": "2026-11",
+      "start": "2026-10-31T16:00:00+00:00",
+      "end": "2026-11-30T16:00:00+00:00",
+      "timezone": "Asia/Taipei"
+    },
+    "identities": [
+      {
+        "platform": "github",
+        "username": "example-user"
+      },
+      {
+        "email": "example-user@example.com"
+      }
+    ],
+    "sources": [
+      {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-01"
+      },
+      {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-02"
+      },
+      {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-03"
+      },
+      {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-04"
+      },
+      {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-05"
+      },
+      {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-06"
+      },
+      {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-07"
+      },
+      {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-08"
+      },
+      {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-09"
+      },
+      {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-10"
+      },
+      {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-11"
+      },
+      {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-12"
+      }
+    ]
+  },
+  "items": [
+    {
+      "id": "ev-0000000000000001",
+      "kind": "change_request",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-01",
+        "external_id": "1001",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-01/-/merge_requests/1001"
+      },
+      "title": "Refactor the token rotation and session store of the billing export job Refactor the token rotation and session store of",
+      "state": "merged",
+      "author": {
+        "username": "example-user",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-12T03:00:00+00:00",
+        "created_at": "2026-11-12T03:00:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00",
+      "relations": [
+        {
+          "type": "contains",
+          "target_id": "ev-0000000000000002"
+        },
+        {
+          "type": "contains",
+          "target_id": "ev-0000000000000003"
+        },
+        {
+          "type": "contains",
+          "target_id": "ev-0000000000000004"
+        }
+      ]
+    },
+    {
+      "id": "ev-0000000000000002",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-01",
+        "external_id": "d95a92cec3a1eecc3bb36828a46cbc3c093ca938",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-01/commit/d95a92cec3a1eecc3bb36828a46cbc3c093ca938"
+      },
+      "title": "chore: update",
+      "author": {
+        "name": "Example User",
+        "email": "example-user@example.com",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-11T09:05:00+00:00",
+        "authored_at": "2026-11-11T09:05:00+00:00",
+        "committed_at": "2026-11-11T09:05:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-0000000000000003",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-01",
+        "external_id": "c290fec72c42851c545bbc64e81835f59e59962e",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-01/commit/c290fec72c42851c545bbc64e81835f59e59962e"
+      },
+      "title": "chore: update",
+      "author": {
+        "name": "Example User",
+        "email": "example-user@example.com",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-11T09:05:00+00:00",
+        "authored_at": "2026-11-11T09:05:00+00:00",
+        "committed_at": "2026-11-11T09:05:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-0000000000000004",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-01",
+        "external_id": "5f71a1c1bbf234d6bc568be02e7ced34ca28be86",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-01/commit/5f71a1c1bbf234d6bc568be02e7ced34ca28be86"
+      },
+      "title": "chore: update",
+      "author": {
+        "name": "Example User",
+        "email": "example-user@example.com",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-11T09:05:00+00:00",
+        "authored_at": "2026-11-11T09:05:00+00:00",
+        "committed_at": "2026-11-11T09:05:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-0000000000000005",
+      "kind": "change_request",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-02",
+        "external_id": "1002",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-02/-/merge_requests/1002"
+      },
+      "title": "Refactor the token rotation and session store of the billing export job Refactor the token rotation and session store of",
+      "state": "merged",
+      "author": {
+        "username": "example-user",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-12T03:00:00+00:00",
+        "created_at": "2026-11-12T03:00:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00",
+      "relations": [
+        {
+          "type": "contains",
+          "target_id": "ev-0000000000000006"
+        },
+        {
+          "type": "contains",
+          "target_id": "ev-0000000000000007"
+        },
+        {
+          "type": "contains",
+          "target_id": "ev-0000000000000008"
+        }
+      ]
+    },
+    {
+      "id": "ev-0000000000000006",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-02",
+        "external_id": "a0a6d160447388e2291ffcde829247272880a1a8",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-02/commit/a0a6d160447388e2291ffcde829247272880a1a8"
+      },
+      "title": "chore: update",
+      "author": {
+        "name": "Example User",
+        "email": "example-user@example.com",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-11T09:05:00+00:00",
+        "authored_at": "2026-11-11T09:05:00+00:00",
+        "committed_at": "2026-11-11T09:05:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-0000000000000007",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-02",
+        "external_id": "d228c06f33af96b40ed4178de5e38184c9bce241",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-02/commit/d228c06f33af96b40ed4178de5e38184c9bce241"
+      },
+      "title": "chore: update",
+      "author": {
+        "name": "Example User",
+        "email": "example-user@example.com",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-11T09:05:00+00:00",
+        "authored_at": "2026-11-11T09:05:00+00:00",
+        "committed_at": "2026-11-11T09:05:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-0000000000000008",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-02",
+        "external_id": "1616d1d2505bc675028be4dfb1c9b9c21134fa5b",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-02/commit/1616d1d2505bc675028be4dfb1c9b9c21134fa5b"
+      },
+      "title": "chore: update",
+      "author": {
+        "name": "Example User",
+        "email": "example-user@example.com",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-11T09:05:00+00:00",
+        "authored_at": "2026-11-11T09:05:00+00:00",
+        "committed_at": "2026-11-11T09:05:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-0000000000000009",
+      "kind": "change_request",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-03",
+        "external_id": "1003",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-03/-/merge_requests/1003"
+      },
+      "title": "Refactor the token rotation and session store of the billing export job Refactor the token rotation and session store of",
+      "state": "merged",
+      "author": {
+        "username": "example-user",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-12T03:00:00+00:00",
+        "created_at": "2026-11-12T03:00:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00",
+      "relations": [
+        {
+          "type": "contains",
+          "target_id": "ev-000000000000000a"
+        },
+        {
+          "type": "contains",
+          "target_id": "ev-000000000000000b"
+        },
+        {
+          "type": "contains",
+          "target_id": "ev-000000000000000c"
+        }
+      ]
+    },
+    {
+      "id": "ev-000000000000000a",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-03",
+        "external_id": "2bbb3b058989743a609c7ff033ad798fd8d3e578",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-03/commit/2bbb3b058989743a609c7ff033ad798fd8d3e578"
+      },
+      "title": "chore: update",
+      "author": {
+        "name": "Example User",
+        "email": "example-user@example.com",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-11T09:05:00+00:00",
+        "authored_at": "2026-11-11T09:05:00+00:00",
+        "committed_at": "2026-11-11T09:05:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-000000000000000b",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-03",
+        "external_id": "3fcab003d75dbfd6384ee139071e02af95c1da6a",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-03/commit/3fcab003d75dbfd6384ee139071e02af95c1da6a"
+      },
+      "title": "chore: update",
+      "author": {
+        "name": "Example User",
+        "email": "example-user@example.com",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-11T09:05:00+00:00",
+        "authored_at": "2026-11-11T09:05:00+00:00",
+        "committed_at": "2026-11-11T09:05:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-000000000000000c",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-03",
+        "external_id": "af8d8dd5d48955bc3e1b011451071f54032c9db8",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-03/commit/af8d8dd5d48955bc3e1b011451071f54032c9db8"
+      },
+      "title": "chore: update",
+      "author": {
+        "name": "Example User",
+        "email": "example-user@example.com",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-11T09:05:00+00:00",
+        "authored_at": "2026-11-11T09:05:00+00:00",
+        "committed_at": "2026-11-11T09:05:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-000000000000000d",
+      "kind": "change_request",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-04",
+        "external_id": "1004",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-04/-/merge_requests/1004"
+      },
+      "title": "Refactor the token rotation and session store of the billing export job Refactor the token rotation and session store of",
+      "state": "merged",
+      "author": {
+        "username": "example-user",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-12T03:00:00+00:00",
+        "created_at": "2026-11-12T03:00:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00",
+      "relations": [
+        {
+          "type": "contains",
+          "target_id": "ev-000000000000000e"
+        },
+        {
+          "type": "contains",
+          "target_id": "ev-000000000000000f"
+        },
+        {
+          "type": "contains",
+          "target_id": "ev-0000000000000010"
+        }
+      ]
+    },
+    {
+      "id": "ev-000000000000000e",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-04",
+        "external_id": "8c15f7d7e8492f3de06d8514e310e8d0e0622277",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-04/commit/8c15f7d7e8492f3de06d8514e310e8d0e0622277"
+      },
+      "title": "chore: update",
+      "author": {
+        "name": "Example User",
+        "email": "example-user@example.com",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-11T09:05:00+00:00",
+        "authored_at": "2026-11-11T09:05:00+00:00",
+        "committed_at": "2026-11-11T09:05:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-000000000000000f",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-04",
+        "external_id": "4bd82a70cbb5aa2195a8c4a73b0b15fa3adeb0c0",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-04/commit/4bd82a70cbb5aa2195a8c4a73b0b15fa3adeb0c0"
+      },
+      "title": "chore: update",
+      "author": {
+        "name": "Example User",
+        "email": "example-user@example.com",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-11T09:05:00+00:00",
+        "authored_at": "2026-11-11T09:05:00+00:00",
+        "committed_at": "2026-11-11T09:05:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-0000000000000010",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-04",
+        "external_id": "cecdd0aa13df3ec4c69c014b45ad0e9a419cf568",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-04/commit/cecdd0aa13df3ec4c69c014b45ad0e9a419cf568"
+      },
+      "title": "chore: update",
+      "author": {
+        "name": "Example User",
+        "email": "example-user@example.com",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-11T09:05:00+00:00",
+        "authored_at": "2026-11-11T09:05:00+00:00",
+        "committed_at": "2026-11-11T09:05:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-0000000000000011",
+      "kind": "change_request",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-05",
+        "external_id": "1005",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-05/-/merge_requests/1005"
+      },
+      "title": "Refactor the token rotation and session store of the billing export job Refactor the token rotation and session store of",
+      "state": "merged",
+      "author": {
+        "username": "example-user",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-12T03:00:00+00:00",
+        "created_at": "2026-11-12T03:00:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00",
+      "relations": [
+        {
+          "type": "contains",
+          "target_id": "ev-0000000000000012"
+        },
+        {
+          "type": "contains",
+          "target_id": "ev-0000000000000013"
+        },
+        {
+          "type": "contains",
+          "target_id": "ev-0000000000000014"
+        }
+      ]
+    },
+    {
+      "id": "ev-0000000000000012",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-05",
+        "external_id": "b6afb6263bfaabfacc5edfb10e4dccd97df57a9e",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-05/commit/b6afb6263bfaabfacc5edfb10e4dccd97df57a9e"
+      },
+      "title": "chore: update",
+      "author": {
+        "name": "Example User",
+        "email": "example-user@example.com",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-11T09:05:00+00:00",
+        "authored_at": "2026-11-11T09:05:00+00:00",
+        "committed_at": "2026-11-11T09:05:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-0000000000000013",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-05",
+        "external_id": "98d869d81b9abbf02c40cca81d20631d9991047c",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-05/commit/98d869d81b9abbf02c40cca81d20631d9991047c"
+      },
+      "title": "chore: update",
+      "author": {
+        "name": "Example User",
+        "email": "example-user@example.com",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-11T09:05:00+00:00",
+        "authored_at": "2026-11-11T09:05:00+00:00",
+        "committed_at": "2026-11-11T09:05:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-0000000000000014",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-05",
+        "external_id": "1279c7c650218992c4351578ecd1265260ccfa75",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-05/commit/1279c7c650218992c4351578ecd1265260ccfa75"
+      },
+      "title": "chore: update",
+      "author": {
+        "name": "Example User",
+        "email": "example-user@example.com",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-11T09:05:00+00:00",
+        "authored_at": "2026-11-11T09:05:00+00:00",
+        "committed_at": "2026-11-11T09:05:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-0000000000000015",
+      "kind": "change_request",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-06",
+        "external_id": "1006",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-06/-/merge_requests/1006"
+      },
+      "title": "Refactor the token rotation and session store of the billing export job Refactor the token rotation and session store of",
+      "state": "merged",
+      "author": {
+        "username": "example-user",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-12T03:00:00+00:00",
+        "created_at": "2026-11-12T03:00:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00",
+      "relations": [
+        {
+          "type": "contains",
+          "target_id": "ev-0000000000000016"
+        },
+        {
+          "type": "contains",
+          "target_id": "ev-0000000000000017"
+        },
+        {
+          "type": "contains",
+          "target_id": "ev-0000000000000018"
+        }
+      ]
+    },
+    {
+      "id": "ev-0000000000000016",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-06",
+        "external_id": "477cdc61178d891a967214873265e1ff33cab8ba",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-06/commit/477cdc61178d891a967214873265e1ff33cab8ba"
+      },
+      "title": "chore: update",
+      "author": {
+        "name": "Example User",
+        "email": "example-user@example.com",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-11T09:05:00+00:00",
+        "authored_at": "2026-11-11T09:05:00+00:00",
+        "committed_at": "2026-11-11T09:05:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-0000000000000017",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-06",
+        "external_id": "36054be40fd7e507b6b228a3569005614d27e1e9",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-06/commit/36054be40fd7e507b6b228a3569005614d27e1e9"
+      },
+      "title": "chore: update",
+      "author": {
+        "name": "Example User",
+        "email": "example-user@example.com",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-11T09:05:00+00:00",
+        "authored_at": "2026-11-11T09:05:00+00:00",
+        "committed_at": "2026-11-11T09:05:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-0000000000000018",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-06",
+        "external_id": "e9ba6bb82dcbfb56a5bb859d66a9be124117be55",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-06/commit/e9ba6bb82dcbfb56a5bb859d66a9be124117be55"
+      },
+      "title": "chore: update",
+      "author": {
+        "name": "Example User",
+        "email": "example-user@example.com",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-11T09:05:00+00:00",
+        "authored_at": "2026-11-11T09:05:00+00:00",
+        "committed_at": "2026-11-11T09:05:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-0000000000000019",
+      "kind": "change_request",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-07",
+        "external_id": "1007",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-07/-/merge_requests/1007"
+      },
+      "title": "Refactor the token rotation and session store of the billing export job Refactor the token rotation and session store of",
+      "state": "merged",
+      "author": {
+        "username": "example-user",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-12T03:00:00+00:00",
+        "created_at": "2026-11-12T03:00:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00",
+      "relations": [
+        {
+          "type": "contains",
+          "target_id": "ev-000000000000001a"
+        },
+        {
+          "type": "contains",
+          "target_id": "ev-000000000000001b"
+        },
+        {
+          "type": "contains",
+          "target_id": "ev-000000000000001c"
+        }
+      ]
+    },
+    {
+      "id": "ev-000000000000001a",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-07",
+        "external_id": "4bf3cd4c25c305d0840eccb7890fabd99d2cc649",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-07/commit/4bf3cd4c25c305d0840eccb7890fabd99d2cc649"
+      },
+      "title": "chore: update",
+      "author": {
+        "name": "Example User",
+        "email": "example-user@example.com",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-11T09:05:00+00:00",
+        "authored_at": "2026-11-11T09:05:00+00:00",
+        "committed_at": "2026-11-11T09:05:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-000000000000001b",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-07",
+        "external_id": "4f3ff3a12014dab99c42547ba12aa9d08ecd2d67",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-07/commit/4f3ff3a12014dab99c42547ba12aa9d08ecd2d67"
+      },
+      "title": "chore: update",
+      "author": {
+        "name": "Example User",
+        "email": "example-user@example.com",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-11T09:05:00+00:00",
+        "authored_at": "2026-11-11T09:05:00+00:00",
+        "committed_at": "2026-11-11T09:05:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-000000000000001c",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-07",
+        "external_id": "b335bdc00348ceecd3727e8023fe073188eeb38b",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-07/commit/b335bdc00348ceecd3727e8023fe073188eeb38b"
+      },
+      "title": "chore: update",
+      "author": {
+        "name": "Example User",
+        "email": "example-user@example.com",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-11T09:05:00+00:00",
+        "authored_at": "2026-11-11T09:05:00+00:00",
+        "committed_at": "2026-11-11T09:05:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-000000000000001d",
+      "kind": "change_request",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-08",
+        "external_id": "1008",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-08/-/merge_requests/1008"
+      },
+      "title": "Refactor the token rotation and session store of the billing export job Refactor the token rotation and session store of",
+      "state": "merged",
+      "author": {
+        "username": "example-user",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-12T03:00:00+00:00",
+        "created_at": "2026-11-12T03:00:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00",
+      "relations": [
+        {
+          "type": "contains",
+          "target_id": "ev-000000000000001e"
+        },
+        {
+          "type": "contains",
+          "target_id": "ev-000000000000001f"
+        },
+        {
+          "type": "contains",
+          "target_id": "ev-0000000000000020"
+        }
+      ]
+    },
+    {
+      "id": "ev-000000000000001e",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-08",
+        "external_id": "108b513ce7ef8ffa2b0925a20a7e1bc8dcb0e3a9",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-08/commit/108b513ce7ef8ffa2b0925a20a7e1bc8dcb0e3a9"
+      },
+      "title": "chore: update",
+      "author": {
+        "name": "Example User",
+        "email": "example-user@example.com",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-11T09:05:00+00:00",
+        "authored_at": "2026-11-11T09:05:00+00:00",
+        "committed_at": "2026-11-11T09:05:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-000000000000001f",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-08",
+        "external_id": "9c6729e2cd91ba0bcf66f7d3f7cc530822754b2b",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-08/commit/9c6729e2cd91ba0bcf66f7d3f7cc530822754b2b"
+      },
+      "title": "chore: update",
+      "author": {
+        "name": "Example User",
+        "email": "example-user@example.com",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-11T09:05:00+00:00",
+        "authored_at": "2026-11-11T09:05:00+00:00",
+        "committed_at": "2026-11-11T09:05:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-0000000000000020",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-08",
+        "external_id": "d50e832eb10b3dd5e37869987825fd154613bc11",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-08/commit/d50e832eb10b3dd5e37869987825fd154613bc11"
+      },
+      "title": "chore: update",
+      "author": {
+        "name": "Example User",
+        "email": "example-user@example.com",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-11T09:05:00+00:00",
+        "authored_at": "2026-11-11T09:05:00+00:00",
+        "committed_at": "2026-11-11T09:05:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-0000000000000021",
+      "kind": "change_request",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-09",
+        "external_id": "1009",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-09/-/merge_requests/1009"
+      },
+      "title": "Refactor the token rotation and session store of the billing export job Refactor the token rotation and session store of",
+      "state": "merged",
+      "author": {
+        "username": "example-user",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-12T03:00:00+00:00",
+        "created_at": "2026-11-12T03:00:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00",
+      "relations": [
+        {
+          "type": "contains",
+          "target_id": "ev-0000000000000022"
+        },
+        {
+          "type": "contains",
+          "target_id": "ev-0000000000000023"
+        },
+        {
+          "type": "contains",
+          "target_id": "ev-0000000000000024"
+        }
+      ]
+    },
+    {
+      "id": "ev-0000000000000022",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-09",
+        "external_id": "ec335902972acd606f75627e2ed6a2d2c9be4266",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-09/commit/ec335902972acd606f75627e2ed6a2d2c9be4266"
+      },
+      "title": "chore: update",
+      "author": {
+        "name": "Example User",
+        "email": "example-user@example.com",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-11T09:05:00+00:00",
+        "authored_at": "2026-11-11T09:05:00+00:00",
+        "committed_at": "2026-11-11T09:05:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-0000000000000023",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-09",
+        "external_id": "2d4713b44eb1c84a5e0cbfa39168ee58158c2e1d",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-09/commit/2d4713b44eb1c84a5e0cbfa39168ee58158c2e1d"
+      },
+      "title": "chore: update",
+      "author": {
+        "name": "Example User",
+        "email": "example-user@example.com",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-11T09:05:00+00:00",
+        "authored_at": "2026-11-11T09:05:00+00:00",
+        "committed_at": "2026-11-11T09:05:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-0000000000000024",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-09",
+        "external_id": "cd5a8d8a602c38e28c8dd8190778fc5b79ebb10a",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-09/commit/cd5a8d8a602c38e28c8dd8190778fc5b79ebb10a"
+      },
+      "title": "chore: update",
+      "author": {
+        "name": "Example User",
+        "email": "example-user@example.com",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-11T09:05:00+00:00",
+        "authored_at": "2026-11-11T09:05:00+00:00",
+        "committed_at": "2026-11-11T09:05:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-0000000000000025",
+      "kind": "change_request",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-10",
+        "external_id": "1010",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-10/-/merge_requests/1010"
+      },
+      "title": "Refactor the token rotation and session store of the billing export job Refactor the token rotation and session store of",
+      "state": "merged",
+      "author": {
+        "username": "example-user",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-12T03:00:00+00:00",
+        "created_at": "2026-11-12T03:00:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00",
+      "relations": [
+        {
+          "type": "contains",
+          "target_id": "ev-0000000000000026"
+        },
+        {
+          "type": "contains",
+          "target_id": "ev-0000000000000027"
+        },
+        {
+          "type": "contains",
+          "target_id": "ev-0000000000000028"
+        }
+      ]
+    },
+    {
+      "id": "ev-0000000000000026",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-10",
+        "external_id": "f4461e5946f01a1602174acc3ea94311d3483d09",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-10/commit/f4461e5946f01a1602174acc3ea94311d3483d09"
+      },
+      "title": "chore: update",
+      "author": {
+        "name": "Example User",
+        "email": "example-user@example.com",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-11T09:05:00+00:00",
+        "authored_at": "2026-11-11T09:05:00+00:00",
+        "committed_at": "2026-11-11T09:05:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-0000000000000027",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-10",
+        "external_id": "3549481554b68e5ff8f1b5963eb529d6362e49f9",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-10/commit/3549481554b68e5ff8f1b5963eb529d6362e49f9"
+      },
+      "title": "chore: update",
+      "author": {
+        "name": "Example User",
+        "email": "example-user@example.com",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-11T09:05:00+00:00",
+        "authored_at": "2026-11-11T09:05:00+00:00",
+        "committed_at": "2026-11-11T09:05:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-0000000000000028",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-10",
+        "external_id": "7844aca543984bc898208c41a9ab1e60308b81e8",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-10/commit/7844aca543984bc898208c41a9ab1e60308b81e8"
+      },
+      "title": "chore: update",
+      "author": {
+        "name": "Example User",
+        "email": "example-user@example.com",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-11T09:05:00+00:00",
+        "authored_at": "2026-11-11T09:05:00+00:00",
+        "committed_at": "2026-11-11T09:05:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-0000000000000029",
+      "kind": "change_request",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-11",
+        "external_id": "1011",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-11/-/merge_requests/1011"
+      },
+      "title": "Refactor the token rotation and session store of the billing export job Refactor the token rotation and session store of",
+      "state": "merged",
+      "author": {
+        "username": "example-user",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-12T03:00:00+00:00",
+        "created_at": "2026-11-12T03:00:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00",
+      "relations": [
+        {
+          "type": "contains",
+          "target_id": "ev-000000000000002a"
+        },
+        {
+          "type": "contains",
+          "target_id": "ev-000000000000002b"
+        },
+        {
+          "type": "contains",
+          "target_id": "ev-000000000000002c"
+        }
+      ]
+    },
+    {
+      "id": "ev-000000000000002a",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-11",
+        "external_id": "259d316343ccc1e1dfaaa92cbdfd731a7faa0b33",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-11/commit/259d316343ccc1e1dfaaa92cbdfd731a7faa0b33"
+      },
+      "title": "chore: update",
+      "author": {
+        "name": "Example User",
+        "email": "example-user@example.com",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-11T09:05:00+00:00",
+        "authored_at": "2026-11-11T09:05:00+00:00",
+        "committed_at": "2026-11-11T09:05:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-000000000000002b",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-11",
+        "external_id": "bb846c4eb521bc56378e8a3036b1e29ef99832d6",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-11/commit/bb846c4eb521bc56378e8a3036b1e29ef99832d6"
+      },
+      "title": "chore: update",
+      "author": {
+        "name": "Example User",
+        "email": "example-user@example.com",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-11T09:05:00+00:00",
+        "authored_at": "2026-11-11T09:05:00+00:00",
+        "committed_at": "2026-11-11T09:05:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-000000000000002c",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-11",
+        "external_id": "fec0d5543cee6f770095f5b0a108492958fc7b84",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-11/commit/fec0d5543cee6f770095f5b0a108492958fc7b84"
+      },
+      "title": "chore: update",
+      "author": {
+        "name": "Example User",
+        "email": "example-user@example.com",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-11T09:05:00+00:00",
+        "authored_at": "2026-11-11T09:05:00+00:00",
+        "committed_at": "2026-11-11T09:05:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-000000000000002d",
+      "kind": "change_request",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-12",
+        "external_id": "1012",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-12/-/merge_requests/1012"
+      },
+      "title": "Refactor the token rotation and session store of the billing export job Refactor the token rotation and session store of",
+      "state": "merged",
+      "author": {
+        "username": "example-user",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-12T03:00:00+00:00",
+        "created_at": "2026-11-12T03:00:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00",
+      "relations": [
+        {
+          "type": "contains",
+          "target_id": "ev-000000000000002e"
+        },
+        {
+          "type": "contains",
+          "target_id": "ev-000000000000002f"
+        },
+        {
+          "type": "contains",
+          "target_id": "ev-0000000000000030"
+        }
+      ]
+    },
+    {
+      "id": "ev-000000000000002e",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-12",
+        "external_id": "ba01a4aeb784ff56144bbcc9a2ef78f532310c84",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-12/commit/ba01a4aeb784ff56144bbcc9a2ef78f532310c84"
+      },
+      "title": "chore: update",
+      "author": {
+        "name": "Example User",
+        "email": "example-user@example.com",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-11T09:05:00+00:00",
+        "authored_at": "2026-11-11T09:05:00+00:00",
+        "committed_at": "2026-11-11T09:05:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-000000000000002f",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-12",
+        "external_id": "a06f580e127bd69df3f6f00c8fb5a69656ae5280",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-12/commit/a06f580e127bd69df3f6f00c8fb5a69656ae5280"
+      },
+      "title": "chore: update",
+      "author": {
+        "name": "Example User",
+        "email": "example-user@example.com",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-11T09:05:00+00:00",
+        "authored_at": "2026-11-11T09:05:00+00:00",
+        "committed_at": "2026-11-11T09:05:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00"
+    },
+    {
+      "id": "ev-0000000000000030",
+      "kind": "commit",
+      "source": {
+        "platform": "gitlab",
+        "base_url": "https://gitlab.example.com/api/v4",
+        "repository": "platform-engineering/very-long-service-name-number-12",
+        "external_id": "c1ce9d419d59947802aacf3ff816d716b6822fca",
+        "url": "https://gitlab.example.com/platform-engineering/very-long-service-name-number-12/commit/c1ce9d419d59947802aacf3ff816d716b6822fca"
+      },
+      "title": "chore: update",
+      "author": {
+        "name": "Example User",
+        "email": "example-user@example.com",
+        "role": "author"
+      },
+      "timestamps": {
+        "occurred_at": "2026-11-11T09:05:00+00:00",
+        "authored_at": "2026-11-11T09:05:00+00:00",
+        "committed_at": "2026-11-11T09:05:00+00:00"
+      },
+      "fetched_at": "2026-12-01T02:00:00+00:00"
+    }
+  ]
+}

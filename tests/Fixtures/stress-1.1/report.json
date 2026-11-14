@@ -1,0 +1,1268 @@
+{
+  "schema_version": "1.1",
+  "report_id": "rpt-2026-11-stress",
+  "period": {
+    "label": "2026-11",
+    "start": "2026-10-31T16:00:00+00:00",
+    "end": "2026-11-30T16:00:00+00:00",
+    "timezone": "Asia/Taipei"
+  },
+  "subject": {
+    "display_name": "王大明 (平台工程部 資深軟體工程師兼伺服器維運負責人)王大明 (平台工程部 資深軟體工程師兼伺服器維運負責人)王大明 "
+  },
+  "evidence_document": {
+    "document_id": "evd-2026-11-stress",
+    "sha256": "227658b2117d0310159958a120671a3cba826cc558e9eb7adbf9062008ad32a2"
+  },
+  "work_items": [
+    {
+      "id": "wi-dev-01",
+      "origin": "agent",
+      "category": "feature",
+      "status": "completed",
+      "title": "項目 1 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新項目",
+      "summary": "使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相",
+      "observed_facts": [
+        {
+          "statement": "事實 1: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 1: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000001"
+          ]
+        },
+        {
+          "statement": "事實 2: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 2: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000001"
+          ]
+        },
+        {
+          "statement": "事實 3: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 3: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000001"
+          ]
+        },
+        {
+          "statement": "事實 4: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 4: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000001"
+          ]
+        },
+        {
+          "statement": "事實 5: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 5: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000001"
+          ]
+        },
+        {
+          "statement": "事實 6: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 6: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000001"
+          ]
+        },
+        {
+          "statement": "事實 7: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 7: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000001"
+          ]
+        },
+        {
+          "statement": "事實 8: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 8: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000001"
+          ]
+        },
+        {
+          "statement": "事實 9: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 9: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000001"
+          ]
+        },
+        {
+          "statement": "事實 10: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 10: 使用者驗證與授權服務的 Session 與 T",
+          "evidence_refs": [
+            "ev-0000000000000001"
+          ]
+        },
+        {
+          "statement": "事實 11: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 11: 使用者驗證與授權服務的 Session 與 T",
+          "evidence_refs": [
+            "ev-0000000000000001"
+          ]
+        },
+        {
+          "statement": "事實 12: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 12: 使用者驗證與授權服務的 Session 與 T",
+          "evidence_refs": [
+            "ev-0000000000000001"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "ev-0000000000000001",
+        "ev-0000000000000002",
+        "ev-0000000000000003",
+        "ev-0000000000000004",
+        "ev-0000000000000005",
+        "ev-0000000000000009",
+        "ev-000000000000000d"
+      ],
+      "rank": 1,
+      "agent_inference": {
+        "statement": "使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Se",
+        "confidence": "medium"
+      },
+      "human_notes": "使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告"
+    },
+    {
+      "id": "wi-dev-02",
+      "origin": "agent",
+      "category": "feature",
+      "status": "completed",
+      "title": "項目 2 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新項目",
+      "summary": "使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相",
+      "observed_facts": [
+        {
+          "statement": "事實 1: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 1: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000005"
+          ]
+        },
+        {
+          "statement": "事實 2: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 2: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000005"
+          ]
+        },
+        {
+          "statement": "事實 3: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 3: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000005"
+          ]
+        },
+        {
+          "statement": "事實 4: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 4: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000005"
+          ]
+        },
+        {
+          "statement": "事實 5: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 5: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000005"
+          ]
+        },
+        {
+          "statement": "事實 6: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 6: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000005"
+          ]
+        },
+        {
+          "statement": "事實 7: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 7: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000005"
+          ]
+        },
+        {
+          "statement": "事實 8: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 8: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000005"
+          ]
+        },
+        {
+          "statement": "事實 9: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 9: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000005"
+          ]
+        },
+        {
+          "statement": "事實 10: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 10: 使用者驗證與授權服務的 Session 與 T",
+          "evidence_refs": [
+            "ev-0000000000000005"
+          ]
+        },
+        {
+          "statement": "事實 11: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 11: 使用者驗證與授權服務的 Session 與 T",
+          "evidence_refs": [
+            "ev-0000000000000005"
+          ]
+        },
+        {
+          "statement": "事實 12: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 12: 使用者驗證與授權服務的 Session 與 T",
+          "evidence_refs": [
+            "ev-0000000000000005"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "ev-0000000000000005",
+        "ev-0000000000000006",
+        "ev-0000000000000007",
+        "ev-0000000000000008",
+        "ev-0000000000000009",
+        "ev-000000000000000d",
+        "ev-0000000000000011"
+      ],
+      "rank": 2,
+      "agent_inference": {
+        "statement": "使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Se",
+        "confidence": "medium"
+      },
+      "human_notes": "使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告"
+    },
+    {
+      "id": "wi-dev-03",
+      "origin": "agent",
+      "category": "feature",
+      "status": "in_progress",
+      "title": "項目 3 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新項目",
+      "summary": "使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相",
+      "observed_facts": [
+        {
+          "statement": "事實 1: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 1: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000009"
+          ]
+        },
+        {
+          "statement": "事實 2: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 2: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000009"
+          ]
+        },
+        {
+          "statement": "事實 3: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 3: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000009"
+          ]
+        },
+        {
+          "statement": "事實 4: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 4: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000009"
+          ]
+        },
+        {
+          "statement": "事實 5: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 5: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000009"
+          ]
+        },
+        {
+          "statement": "事實 6: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 6: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000009"
+          ]
+        },
+        {
+          "statement": "事實 7: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 7: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000009"
+          ]
+        },
+        {
+          "statement": "事實 8: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 8: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000009"
+          ]
+        },
+        {
+          "statement": "事實 9: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 9: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000009"
+          ]
+        },
+        {
+          "statement": "事實 10: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 10: 使用者驗證與授權服務的 Session 與 T",
+          "evidence_refs": [
+            "ev-0000000000000009"
+          ]
+        },
+        {
+          "statement": "事實 11: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 11: 使用者驗證與授權服務的 Session 與 T",
+          "evidence_refs": [
+            "ev-0000000000000009"
+          ]
+        },
+        {
+          "statement": "事實 12: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 12: 使用者驗證與授權服務的 Session 與 T",
+          "evidence_refs": [
+            "ev-0000000000000009"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "ev-0000000000000009",
+        "ev-000000000000000a",
+        "ev-000000000000000b",
+        "ev-000000000000000c",
+        "ev-000000000000000d",
+        "ev-0000000000000011",
+        "ev-0000000000000015"
+      ],
+      "rank": 3,
+      "agent_inference": {
+        "statement": "使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Se",
+        "confidence": "medium"
+      },
+      "human_notes": "使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告"
+    },
+    {
+      "id": "wi-dev-04",
+      "origin": "agent",
+      "category": "feature",
+      "status": "completed",
+      "title": "項目 4 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新項目",
+      "summary": "使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相",
+      "observed_facts": [
+        {
+          "statement": "事實 1: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 1: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-000000000000000d"
+          ]
+        },
+        {
+          "statement": "事實 2: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 2: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-000000000000000d"
+          ]
+        },
+        {
+          "statement": "事實 3: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 3: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-000000000000000d"
+          ]
+        },
+        {
+          "statement": "事實 4: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 4: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-000000000000000d"
+          ]
+        },
+        {
+          "statement": "事實 5: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 5: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-000000000000000d"
+          ]
+        },
+        {
+          "statement": "事實 6: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 6: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-000000000000000d"
+          ]
+        },
+        {
+          "statement": "事實 7: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 7: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-000000000000000d"
+          ]
+        },
+        {
+          "statement": "事實 8: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 8: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-000000000000000d"
+          ]
+        },
+        {
+          "statement": "事實 9: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 9: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-000000000000000d"
+          ]
+        },
+        {
+          "statement": "事實 10: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 10: 使用者驗證與授權服務的 Session 與 T",
+          "evidence_refs": [
+            "ev-000000000000000d"
+          ]
+        },
+        {
+          "statement": "事實 11: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 11: 使用者驗證與授權服務的 Session 與 T",
+          "evidence_refs": [
+            "ev-000000000000000d"
+          ]
+        },
+        {
+          "statement": "事實 12: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 12: 使用者驗證與授權服務的 Session 與 T",
+          "evidence_refs": [
+            "ev-000000000000000d"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "ev-000000000000000d",
+        "ev-000000000000000e",
+        "ev-000000000000000f",
+        "ev-0000000000000010",
+        "ev-0000000000000011",
+        "ev-0000000000000015",
+        "ev-0000000000000019"
+      ],
+      "rank": 4,
+      "agent_inference": {
+        "statement": "使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Se",
+        "confidence": "medium"
+      },
+      "human_notes": "使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告"
+    },
+    {
+      "id": "wi-dev-05",
+      "origin": "agent",
+      "category": "feature",
+      "status": "completed",
+      "title": "項目 5 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新項目",
+      "summary": "使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相",
+      "observed_facts": [
+        {
+          "statement": "事實 1: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 1: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000011"
+          ]
+        },
+        {
+          "statement": "事實 2: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 2: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000011"
+          ]
+        },
+        {
+          "statement": "事實 3: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 3: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000011"
+          ]
+        },
+        {
+          "statement": "事實 4: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 4: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000011"
+          ]
+        },
+        {
+          "statement": "事實 5: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 5: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000011"
+          ]
+        },
+        {
+          "statement": "事實 6: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 6: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000011"
+          ]
+        },
+        {
+          "statement": "事實 7: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 7: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000011"
+          ]
+        },
+        {
+          "statement": "事實 8: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 8: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000011"
+          ]
+        },
+        {
+          "statement": "事實 9: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 9: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000011"
+          ]
+        },
+        {
+          "statement": "事實 10: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 10: 使用者驗證與授權服務的 Session 與 T",
+          "evidence_refs": [
+            "ev-0000000000000011"
+          ]
+        },
+        {
+          "statement": "事實 11: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 11: 使用者驗證與授權服務的 Session 與 T",
+          "evidence_refs": [
+            "ev-0000000000000011"
+          ]
+        },
+        {
+          "statement": "事實 12: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 12: 使用者驗證與授權服務的 Session 與 T",
+          "evidence_refs": [
+            "ev-0000000000000011"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "ev-0000000000000011",
+        "ev-0000000000000012",
+        "ev-0000000000000013",
+        "ev-0000000000000014",
+        "ev-0000000000000015",
+        "ev-0000000000000019",
+        "ev-000000000000001d"
+      ],
+      "rank": 5,
+      "agent_inference": {
+        "statement": "使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Se",
+        "confidence": "medium"
+      },
+      "human_notes": "使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告"
+    },
+    {
+      "id": "wi-dev-06",
+      "origin": "agent",
+      "category": "feature",
+      "status": "in_progress",
+      "title": "項目 6 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新項目",
+      "summary": "使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相",
+      "observed_facts": [
+        {
+          "statement": "事實 1: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 1: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000015"
+          ]
+        },
+        {
+          "statement": "事實 2: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 2: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000015"
+          ]
+        },
+        {
+          "statement": "事實 3: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 3: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000015"
+          ]
+        },
+        {
+          "statement": "事實 4: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 4: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000015"
+          ]
+        },
+        {
+          "statement": "事實 5: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 5: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000015"
+          ]
+        },
+        {
+          "statement": "事實 6: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 6: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000015"
+          ]
+        },
+        {
+          "statement": "事實 7: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 7: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000015"
+          ]
+        },
+        {
+          "statement": "事實 8: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 8: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000015"
+          ]
+        },
+        {
+          "statement": "事實 9: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 9: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000015"
+          ]
+        },
+        {
+          "statement": "事實 10: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 10: 使用者驗證與授權服務的 Session 與 T",
+          "evidence_refs": [
+            "ev-0000000000000015"
+          ]
+        },
+        {
+          "statement": "事實 11: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 11: 使用者驗證與授權服務的 Session 與 T",
+          "evidence_refs": [
+            "ev-0000000000000015"
+          ]
+        },
+        {
+          "statement": "事實 12: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 12: 使用者驗證與授權服務的 Session 與 T",
+          "evidence_refs": [
+            "ev-0000000000000015"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "ev-0000000000000015",
+        "ev-0000000000000016",
+        "ev-0000000000000017",
+        "ev-0000000000000018",
+        "ev-0000000000000019",
+        "ev-000000000000001d",
+        "ev-0000000000000021"
+      ],
+      "rank": 6,
+      "agent_inference": {
+        "statement": "使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Se",
+        "confidence": "medium"
+      },
+      "human_notes": "使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告"
+    },
+    {
+      "id": "wi-dev-07",
+      "origin": "agent",
+      "category": "feature",
+      "status": "completed",
+      "title": "項目 7 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新項目",
+      "summary": "使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相",
+      "observed_facts": [
+        {
+          "statement": "事實 1: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 1: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000019"
+          ]
+        },
+        {
+          "statement": "事實 2: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 2: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000019"
+          ]
+        },
+        {
+          "statement": "事實 3: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 3: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000019"
+          ]
+        },
+        {
+          "statement": "事實 4: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 4: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000019"
+          ]
+        },
+        {
+          "statement": "事實 5: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 5: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000019"
+          ]
+        },
+        {
+          "statement": "事實 6: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 6: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000019"
+          ]
+        },
+        {
+          "statement": "事實 7: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 7: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000019"
+          ]
+        },
+        {
+          "statement": "事實 8: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 8: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000019"
+          ]
+        },
+        {
+          "statement": "事實 9: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 9: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000019"
+          ]
+        },
+        {
+          "statement": "事實 10: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 10: 使用者驗證與授權服務的 Session 與 T",
+          "evidence_refs": [
+            "ev-0000000000000019"
+          ]
+        },
+        {
+          "statement": "事實 11: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 11: 使用者驗證與授權服務的 Session 與 T",
+          "evidence_refs": [
+            "ev-0000000000000019"
+          ]
+        },
+        {
+          "statement": "事實 12: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 12: 使用者驗證與授權服務的 Session 與 T",
+          "evidence_refs": [
+            "ev-0000000000000019"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "ev-0000000000000019",
+        "ev-000000000000001a",
+        "ev-000000000000001b",
+        "ev-000000000000001c",
+        "ev-000000000000001d",
+        "ev-0000000000000021",
+        "ev-0000000000000025"
+      ],
+      "rank": 7,
+      "agent_inference": {
+        "statement": "使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Se",
+        "confidence": "medium"
+      },
+      "human_notes": "使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告"
+    },
+    {
+      "id": "wi-dev-08",
+      "origin": "agent",
+      "category": "feature",
+      "status": "completed",
+      "title": "項目 8 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新項目",
+      "summary": "使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相",
+      "observed_facts": [
+        {
+          "statement": "事實 1: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 1: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-000000000000001d"
+          ]
+        },
+        {
+          "statement": "事實 2: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 2: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-000000000000001d"
+          ]
+        },
+        {
+          "statement": "事實 3: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 3: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-000000000000001d"
+          ]
+        },
+        {
+          "statement": "事實 4: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 4: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-000000000000001d"
+          ]
+        },
+        {
+          "statement": "事實 5: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 5: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-000000000000001d"
+          ]
+        },
+        {
+          "statement": "事實 6: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 6: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-000000000000001d"
+          ]
+        },
+        {
+          "statement": "事實 7: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 7: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-000000000000001d"
+          ]
+        },
+        {
+          "statement": "事實 8: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 8: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-000000000000001d"
+          ]
+        },
+        {
+          "statement": "事實 9: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 9: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-000000000000001d"
+          ]
+        },
+        {
+          "statement": "事實 10: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 10: 使用者驗證與授權服務的 Session 與 T",
+          "evidence_refs": [
+            "ev-000000000000001d"
+          ]
+        },
+        {
+          "statement": "事實 11: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 11: 使用者驗證與授權服務的 Session 與 T",
+          "evidence_refs": [
+            "ev-000000000000001d"
+          ]
+        },
+        {
+          "statement": "事實 12: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 12: 使用者驗證與授權服務的 Session 與 T",
+          "evidence_refs": [
+            "ev-000000000000001d"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "ev-000000000000001d",
+        "ev-000000000000001e",
+        "ev-000000000000001f",
+        "ev-0000000000000020",
+        "ev-0000000000000021",
+        "ev-0000000000000025",
+        "ev-0000000000000029"
+      ],
+      "rank": 8,
+      "agent_inference": {
+        "statement": "使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Se",
+        "confidence": "medium"
+      },
+      "human_notes": "使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告"
+    },
+    {
+      "id": "wi-dev-09",
+      "origin": "agent",
+      "category": "feature",
+      "status": "in_progress",
+      "title": "項目 9 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新項目",
+      "summary": "使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相",
+      "observed_facts": [
+        {
+          "statement": "事實 1: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 1: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000021"
+          ]
+        },
+        {
+          "statement": "事實 2: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 2: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000021"
+          ]
+        },
+        {
+          "statement": "事實 3: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 3: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000021"
+          ]
+        },
+        {
+          "statement": "事實 4: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 4: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000021"
+          ]
+        },
+        {
+          "statement": "事實 5: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 5: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000021"
+          ]
+        },
+        {
+          "statement": "事實 6: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 6: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000021"
+          ]
+        },
+        {
+          "statement": "事實 7: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 7: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000021"
+          ]
+        },
+        {
+          "statement": "事實 8: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 8: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000021"
+          ]
+        },
+        {
+          "statement": "事實 9: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 9: 使用者驗證與授權服務的 Session 與 Tok",
+          "evidence_refs": [
+            "ev-0000000000000021"
+          ]
+        },
+        {
+          "statement": "事實 10: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 10: 使用者驗證與授權服務的 Session 與 T",
+          "evidence_refs": [
+            "ev-0000000000000021"
+          ]
+        },
+        {
+          "statement": "事實 11: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 11: 使用者驗證與授權服務的 Session 與 T",
+          "evidence_refs": [
+            "ev-0000000000000021"
+          ]
+        },
+        {
+          "statement": "事實 12: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新事實 12: 使用者驗證與授權服務的 Session 與 T",
+          "evidence_refs": [
+            "ev-0000000000000021"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "ev-0000000000000021",
+        "ev-0000000000000022",
+        "ev-0000000000000023",
+        "ev-0000000000000024",
+        "ev-0000000000000025",
+        "ev-0000000000000029",
+        "ev-000000000000002d"
+      ],
+      "rank": 9,
+      "agent_inference": {
+        "statement": "使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Se",
+        "confidence": "medium"
+      },
+      "human_notes": "使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告"
+    },
+    {
+      "id": "wi-ops-01",
+      "origin": "human",
+      "category": "ops",
+      "status": "completed",
+      "title": "主機 build-01.example.internal 維運 使用者驗證與授權服務的 Session 與 Token ",
+      "summary": "使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相",
+      "observed_facts": [],
+      "evidence_refs": [],
+      "rank": 21
+    },
+    {
+      "id": "wi-ops-02",
+      "origin": "human",
+      "category": "ops",
+      "status": "completed",
+      "title": "主機 build-02.example.internal 維運 使用者驗證與授權服務的 Session 與 Token ",
+      "summary": "使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相",
+      "observed_facts": [],
+      "evidence_refs": [],
+      "rank": 22
+    },
+    {
+      "id": "wi-ops-03",
+      "origin": "human",
+      "category": "ops",
+      "status": "completed",
+      "title": "主機 build-03.example.internal 維運 使用者驗證與授權服務的 Session 與 Token ",
+      "summary": "使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相",
+      "observed_facts": [],
+      "evidence_refs": [],
+      "rank": 23
+    },
+    {
+      "id": "wi-ops-04",
+      "origin": "human",
+      "category": "ops",
+      "status": "completed",
+      "title": "主機 build-04.example.internal 維運 使用者驗證與授權服務的 Session 與 Token ",
+      "summary": "使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相",
+      "observed_facts": [],
+      "evidence_refs": [],
+      "rank": 24
+    },
+    {
+      "id": "wi-ops-05",
+      "origin": "human",
+      "category": "ops",
+      "status": "completed",
+      "title": "主機 build-05.example.internal 維運 使用者驗證與授權服務的 Session 與 Token ",
+      "summary": "使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相",
+      "observed_facts": [],
+      "evidence_refs": [],
+      "rank": 25
+    },
+    {
+      "id": "wi-ops-06",
+      "origin": "human",
+      "category": "ops",
+      "status": "completed",
+      "title": "主機 build-06.example.internal 維運 使用者驗證與授權服務的 Session 與 Token ",
+      "summary": "使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相",
+      "observed_facts": [],
+      "evidence_refs": [],
+      "rank": 26
+    },
+    {
+      "id": "wi-ops-07",
+      "origin": "human",
+      "category": "ops",
+      "status": "completed",
+      "title": "主機 build-07.example.internal 維運 使用者驗證與授權服務的 Session 與 Token ",
+      "summary": "使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相",
+      "observed_facts": [],
+      "evidence_refs": [],
+      "rank": 27
+    },
+    {
+      "id": "wi-ops-08",
+      "origin": "human",
+      "category": "ops",
+      "status": "completed",
+      "title": "主機 build-08.example.internal 維運 使用者驗證與授權服務的 Session 與 Token ",
+      "summary": "使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相",
+      "observed_facts": [],
+      "evidence_refs": [],
+      "rank": 28
+    }
+  ],
+  "narratives": [
+    {
+      "id": "nr-challenge-1",
+      "kind": "challenge",
+      "origin": "human",
+      "text": "問題 1: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新問題 1: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新問題 1: 使用者驗證與授權服務的 Session 與 Toke"
+    },
+    {
+      "id": "nr-challenge-2",
+      "kind": "challenge",
+      "origin": "human",
+      "text": "問題 2: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新問題 2: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新問題 2: 使用者驗證與授權服務的 Session 與 Toke"
+    },
+    {
+      "id": "nr-challenge-3",
+      "kind": "challenge",
+      "origin": "human",
+      "text": "問題 3: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新問題 3: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新問題 3: 使用者驗證與授權服務的 Session 與 Toke"
+    },
+    {
+      "id": "nr-challenge-4",
+      "kind": "challenge",
+      "origin": "human",
+      "text": "問題 4: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新問題 4: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新問題 4: 使用者驗證與授權服務的 Session 與 Toke"
+    },
+    {
+      "id": "nr-challenge-5",
+      "kind": "challenge",
+      "origin": "human",
+      "text": "問題 5: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新問題 5: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新問題 5: 使用者驗證與授權服務的 Session 與 Toke"
+    },
+    {
+      "id": "nr-challenge-6",
+      "kind": "challenge",
+      "origin": "human",
+      "text": "問題 6: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新問題 6: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新問題 6: 使用者驗證與授權服務的 Session 與 Toke"
+    },
+    {
+      "id": "nr-challenge-7",
+      "kind": "challenge",
+      "origin": "human",
+      "text": "問題 7: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新問題 7: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新問題 7: 使用者驗證與授權服務的 Session 與 Toke"
+    },
+    {
+      "id": "nr-improvement-1",
+      "kind": "improvement",
+      "origin": "human",
+      "text": "改善 1: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新改善 1: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新改善 1: 使用者驗證與授權服務的 Session 與 Toke",
+      "resolves": [
+        "nr-challenge-1",
+        "nr-challenge-2"
+      ]
+    },
+    {
+      "id": "nr-improvement-2",
+      "kind": "improvement",
+      "origin": "human",
+      "text": "改善 2: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新改善 2: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新改善 2: 使用者驗證與授權服務的 Session 與 Toke",
+      "resolves": [
+        "nr-challenge-2",
+        "nr-challenge-3"
+      ]
+    },
+    {
+      "id": "nr-improvement-3",
+      "kind": "improvement",
+      "origin": "human",
+      "text": "改善 3: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新改善 3: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新改善 3: 使用者驗證與授權服務的 Session 與 Toke",
+      "resolves": [
+        "nr-challenge-3",
+        "nr-challenge-4"
+      ]
+    },
+    {
+      "id": "nr-improvement-4",
+      "kind": "improvement",
+      "origin": "human",
+      "text": "改善 4: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新改善 4: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新改善 4: 使用者驗證與授權服務的 Session 與 Toke",
+      "resolves": [
+        "nr-challenge-4",
+        "nr-challenge-5"
+      ]
+    },
+    {
+      "id": "nr-improvement-5",
+      "kind": "improvement",
+      "origin": "human",
+      "text": "改善 5: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新改善 5: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新改善 5: 使用者驗證與授權服務的 Session 與 Toke",
+      "resolves": [
+        "nr-challenge-5",
+        "nr-challenge-6"
+      ]
+    },
+    {
+      "id": "nr-improvement-6",
+      "kind": "improvement",
+      "origin": "human",
+      "text": "改善 6: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新改善 6: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新改善 6: 使用者驗證與授權服務的 Session 與 Toke",
+      "resolves": [
+        "nr-challenge-6",
+        "nr-challenge-7"
+      ]
+    },
+    {
+      "id": "nr-improvement-7",
+      "kind": "improvement",
+      "origin": "human",
+      "text": "改善 7: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新改善 7: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新改善 7: 使用者驗證與授權服務的 Session 與 Toke",
+      "resolves": [
+        "nr-challenge-7",
+        "nr-challenge-1"
+      ]
+    },
+    {
+      "id": "nr-improvement-free-1",
+      "kind": "improvement",
+      "origin": "human",
+      "text": "獨立改善 1: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新獨立改善 1: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新獨立改善 1: 使用者驗證與授權服務的 Session "
+    },
+    {
+      "id": "nr-improvement-free-2",
+      "kind": "improvement",
+      "origin": "human",
+      "text": "獨立改善 2: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新獨立改善 2: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新獨立改善 2: 使用者驗證與授權服務的 Session "
+    },
+    {
+      "id": "nr-improvement-free-3",
+      "kind": "improvement",
+      "origin": "human",
+      "text": "獨立改善 3: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新獨立改善 3: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新獨立改善 3: 使用者驗證與授權服務的 Session "
+    },
+    {
+      "id": "nr-next-plan-1",
+      "kind": "next_plan",
+      "origin": "human",
+      "text": "規劃 1: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新規劃 1: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新規劃 1: 使用者驗證與授權服務的 Session 與 Toke"
+    },
+    {
+      "id": "nr-next-plan-2",
+      "kind": "next_plan",
+      "origin": "human",
+      "text": "規劃 2: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新規劃 2: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新規劃 2: 使用者驗證與授權服務的 Session 與 Toke"
+    },
+    {
+      "id": "nr-next-plan-3",
+      "kind": "next_plan",
+      "origin": "human",
+      "text": "規劃 3: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新規劃 3: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新規劃 3: 使用者驗證與授權服務的 Session 與 Toke"
+    },
+    {
+      "id": "nr-next-plan-4",
+      "kind": "next_plan",
+      "origin": "human",
+      "text": "規劃 4: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新規劃 4: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新規劃 4: 使用者驗證與授權服務的 Session 與 Toke"
+    },
+    {
+      "id": "nr-next-plan-5",
+      "kind": "next_plan",
+      "origin": "human",
+      "text": "規劃 5: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新規劃 5: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新規劃 5: 使用者驗證與授權服務的 Session 與 Toke"
+    },
+    {
+      "id": "nr-next-plan-6",
+      "kind": "next_plan",
+      "origin": "human",
+      "text": "規劃 6: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新規劃 6: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新規劃 6: 使用者驗證與授權服務的 Session 與 Toke"
+    },
+    {
+      "id": "nr-next-plan-7",
+      "kind": "next_plan",
+      "origin": "human",
+      "text": "規劃 7: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新規劃 7: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新規劃 7: 使用者驗證與授權服務的 Session 與 Toke"
+    },
+    {
+      "id": "nr-next-plan-8",
+      "kind": "next_plan",
+      "origin": "human",
+      "text": "規劃 8: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新規劃 8: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新規劃 8: 使用者驗證與授權服務的 Session 與 Toke"
+    },
+    {
+      "id": "nr-next-plan-9",
+      "kind": "next_plan",
+      "origin": "human",
+      "text": "規劃 9: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新規劃 9: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新規劃 9: 使用者驗證與授權服務的 Session 與 Toke"
+    },
+    {
+      "id": "nr-next-plan-10",
+      "kind": "next_plan",
+      "origin": "human",
+      "text": "規劃 10: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新規劃 10: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新規劃 10: 使用者驗證與授權服務的 Session 與 T"
+    },
+    {
+      "id": "nr-next-plan-11",
+      "kind": "next_plan",
+      "origin": "human",
+      "text": "規劃 11: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新規劃 11: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新規劃 11: 使用者驗證與授權服務的 Session 與 T"
+    },
+    {
+      "id": "nr-next-plan-12",
+      "kind": "next_plan",
+      "origin": "human",
+      "text": "規劃 12: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新規劃 12: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新規劃 12: 使用者驗證與授權服務的 Session 與 T"
+    },
+    {
+      "id": "nr-support-1",
+      "kind": "support",
+      "origin": "human",
+      "text": "支援 1: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新支援 1: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新支援 1: 使用者驗證與授權服務的 Session 與 Toke"
+    },
+    {
+      "id": "nr-support-2",
+      "kind": "support",
+      "origin": "human",
+      "text": "支援 2: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新支援 2: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新支援 2: 使用者驗證與授權服務的 Session 與 Toke"
+    },
+    {
+      "id": "nr-support-3",
+      "kind": "support",
+      "origin": "human",
+      "text": "支援 3: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新支援 3: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新支援 3: 使用者驗證與授權服務的 Session 與 Toke"
+    },
+    {
+      "id": "nr-support-4",
+      "kind": "support",
+      "origin": "human",
+      "text": "支援 4: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新支援 4: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新支援 4: 使用者驗證與授權服務的 Session 與 Toke"
+    },
+    {
+      "id": "nr-support-5",
+      "kind": "support",
+      "origin": "human",
+      "text": "支援 5: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新支援 5: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新支援 5: 使用者驗證與授權服務的 Session 與 Toke"
+    },
+    {
+      "id": "nr-other-1",
+      "kind": "other_work",
+      "origin": "human",
+      "text": "其他 1: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新其他 1: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新其他 1: 使用者驗證與授權服務的 Session 與 Toke"
+    },
+    {
+      "id": "nr-other-2",
+      "kind": "other_work",
+      "origin": "human",
+      "text": "其他 2: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新其他 2: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新其他 2: 使用者驗證與授權服務的 Session 與 Toke"
+    },
+    {
+      "id": "nr-other-3",
+      "kind": "other_work",
+      "origin": "human",
+      "text": "其他 3: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新其他 3: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新其他 3: 使用者驗證與授權服務的 Session 與 Toke"
+    },
+    {
+      "id": "nr-other-4",
+      "kind": "other_work",
+      "origin": "human",
+      "text": "其他 4: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新其他 4: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新其他 4: 使用者驗證與授權服務的 Session 與 Toke"
+    },
+    {
+      "id": "nr-other-5",
+      "kind": "other_work",
+      "origin": "human",
+      "text": "其他 5: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新其他 5: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新其他 5: 使用者驗證與授權服務的 Session 與 Toke"
+    },
+    {
+      "id": "nr-other-6",
+      "kind": "other_work",
+      "origin": "human",
+      "text": "其他 6: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新其他 6: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新其他 6: 使用者驗證與授權服務的 Session 與 Toke"
+    },
+    {
+      "id": "nr-other-7",
+      "kind": "other_work",
+      "origin": "human",
+      "text": "其他 7: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新其他 7: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新其他 7: 使用者驗證與授權服務的 Session 與 Toke"
+    },
+    {
+      "id": "nr-other-8",
+      "kind": "other_work",
+      "origin": "human",
+      "text": "其他 8: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新其他 8: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新其他 8: 使用者驗證與授權服務的 Session 與 Toke"
+    },
+    {
+      "id": "nr-other-9",
+      "kind": "other_work",
+      "origin": "human",
+      "text": "其他 9: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新其他 9: 使用者驗證與授權服務的 Session 與 Token 管理全面重構, 涵蓋舊版相容、監控、告警與文件更新其他 9: 使用者驗證與授權服務的 Session 與 Toke"
+    }
+  ]
+}

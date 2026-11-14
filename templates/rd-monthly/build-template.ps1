@@ -90,6 +90,12 @@ function Set-TextFormat($Shape, [double] $FontSize, [string] $Color, [bool] $Bol
     $range.ParagraphFormat.Alignment = $Align
     $range.ParagraphFormat.Bullet.Visible = if ($Bullets) { $msoTrue } else { $msoFalse }
     $Shape.TextFrame.VerticalAnchor = $Anchor
+    # The design boxes are one line high, so text boxes have no top and bottom margin (the default 3.6 pt each would
+    # push one line out of its box). Bullet boxes keep the default margins.
+    if (-not $Bullets) {
+        $Shape.TextFrame2.MarginTop = 0
+        $Shape.TextFrame2.MarginBottom = 0
+    }
     # No shrink to fit: Layout truncates to max_chars with an ellipsis, so text keeps the design sizes.
     $Shape.TextFrame2.AutoSize = $msoAutoSizeNone
 }
@@ -270,6 +276,7 @@ try {
     $cards = @('Metric Completed', 'Metric In Progress', 'Metric Operations', 'Metric Projects')
     for ($i = 0; $i -lt $cards.Count; $i++) {
         $card = Add-Text $summary $cards[$i] @((48 + $i * ($cardWidth + 15)), 90, $cardWidth, 90) $Size.meta $Colors.muted
+        $card.TextFrame2.MarginTop = 4
         Set-Fill $card $Colors.surface
     }
     $highlightsTitle = @(48, 210, 516, 24)

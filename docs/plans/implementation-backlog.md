@@ -167,13 +167,15 @@ m1b 已完成 GitLab `collect` 實作、fixture 測試與 self-managed GitLab 16
 本輪核對程式、測試與文件, 未逐一重現歷史發現。實作前先用隔離 fixture 確認失敗。
 已完成計畫維持 done。它們的 backlog 是新工作, 不影響原計畫結案。
 
+月報模板工作 (rt-1 到 rt-5) 已完成: 1.1 的 IR 契約、Layout 的 1.1 規則、`rd-monthly` 模板、Renderer 的樣式與品牌值 (`render --config`)。
+
 ### 優先修正
 
 | 項目 | 具體問題 | 驗收方向 |
 |---|---|---|
 | 路徑錯誤 | 空路徑選項與含 NUL 的 `template.file` 可能回 exit 70 | 以 CLI fixture 驗證錯誤分類與 JSON envelope |
 | 模板資料清理 | 未使用的損毀 part、`customXml`、section 資訊與部分文件屬性可能留在輸出 | 用含這些資料的模板驗證清理或拒絕行為 |
-| 未排入 sequence 的內容 | Layout 對未放置的 narrative 回報 warning ([ADR-0011](../adr/0011-layout-warnings.md))。Sequence 遺漏 work item 的 section 時仍沒有 warning | 定義 work item 的警告契約, 再測試遺漏的 section |
+| 未排入 sequence 的內容 | 1.1 manifest 對每個未放置的 narrative 回報 warning ([ADR-0011](../adr/0011-layout-warnings.md)); 1.0 manifest 只回報 support narrative, 其餘維持現狀。Sequence 遺漏 work item 的 section 時仍沒有 warning | 定義 work item 的警告契約, 再測試遺漏的 section |
 
 rt-3 已修正程序與模板的風險。腳本只結束 COM 啟動的 PowerPoint, 並在 PowerPoint 可能有使用者的工作時讓它繼續執行。其餘項目可以逐項安排。
 
@@ -185,9 +187,9 @@ rt-3 已修正程序與模板的風險。腳本只結束 COM 啟動的 PowerPoin
 | GitLab 最小權限 | 真實驗收的 token 權限多於 `read_api`; 最小 scope 尚未實測 | GitLab 手動驗收 |
 | GitLab diff 完整性 | 伺服器可能省略路徑且不提供截斷 metadata; 目前 3000 筆上限警告未涵蓋此情境 | 先研究可證明的方法; 無方法時保留已知限制 |
 | bullets 與儲存格換行 | 換行原樣寫入 `a:t`, 未轉為段落或 `a:br` | Renderer 修正 |
-| placeholder 衝突 | 多個 slot 共用 placeholder, 或使用頁尾與頁碼 placeholder, 可能產生重疊 shape | Manifest 驗證 |
+| placeholder 衝突 | 頁尾與頁碼部分已處理 (所有 manifest): slot 與品牌位置不能使用它們。多個 slot 共用 placeholder 仍未處理, 可能產生重疊 shape | Manifest 驗證 |
 | 英文預設 labels | 表格欄名不套用 `max_chars`; 英文標籤與樣本容量可能不相容 | 模板容量校正 |
-| 拆頁語意 | 標題缺續頁標記; L1 項目可能與 L0 父項分頁 | Layout 修正 |
+| 拆頁語意 | 1.1 manifest 已加上續頁標記, 1.0 manifest 維持現狀。L1 項目可能與 L0 父項分頁 | Layout 修正 |
 | 文字寬度 | `max_chars` 以全形最壞情況計算, 英文文字過早截斷 | Layout 改善 |
 | `oneOf` 診斷 | Presentation IR 錯誤列出所有分支, 未集中於 `kind` 對應分支 | 驗證訊息改善; 架構與 M0 重複項已合併 |
 | UTC 契約 | `collect` 已正規化 UTC; 共用序列化與其他輸入仍未強制 UTC | 先定義剩餘範圍; 架構與 M0 重複項已合併 |

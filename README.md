@@ -26,21 +26,22 @@ dotnet build WorkLens.slnx -c Release
 
 ## 使用
 
-以範例模板渲染範例報告:
+以研發工作月報模板 (`rd-monthly`) 渲染範例報告, 並加上 `templates/rd-monthly/demo/` 的單位名稱與 logo:
 
 ```bash
 mkdir demo
-cp schemas/evidence-ir/1.0/examples/valid/monthly-github-gitlab.json demo/evidence.json
-cp schemas/report-ir/1.0/examples/valid/monthly-report.json demo/report.json
+cp tests/Fixtures/rd-monthly/full/report.json tests/Fixtures/rd-monthly/full/evidence.json demo/
 dotnet run --project src/WorkLens.Cli -c Release -- report validate --workspace demo
-dotnet run --project src/WorkLens.Cli -c Release -- present --workspace demo --manifest templates/sample-monthly/manifest.json
-dotnet run --project src/WorkLens.Cli -c Release -- render --workspace demo --manifest templates/sample-monthly/manifest.json
+dotnet run --project src/WorkLens.Cli -c Release -- present --workspace demo --manifest templates/rd-monthly/manifest.json
+dotnet run --project src/WorkLens.Cli -c Release -- render --workspace demo --manifest templates/rd-monthly/manifest.json --config templates/rd-monthly/demo/worklens.json
 ```
 
+範例報告刻意包含 3 個 warning, 示範驗證規則:
+
 ```text
-/path/to/worklens/demo/report.json: 0 error(s), 0 warning(s)
-Wrote /path/to/worklens/demo/presentation.json (8 slides).
-Wrote /path/to/worklens/demo/report.pptx (8 slides).
+/path/to/worklens/demo/report.json: 0 error(s), 3 warning(s)
+Wrote /path/to/worklens/demo/presentation.json (15 slides).
+Wrote /path/to/worklens/demo/report.pptx (15 slides).
 ```
 
 在命令加上 `--json`, stdout 會輸出單一 JSON 物件, 供 agent 解析。Exit code 表示結果的類別。
