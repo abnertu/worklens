@@ -66,6 +66,16 @@ internal static class TemplateLayouts
                     continue;
                 }
 
+                // The renderer copies every footer and slide number placeholder, so a slot there would show twice.
+                if (IsType(match.Placeholder, P.PlaceholderValues.Footer) || IsType(match.Placeholder, P.PlaceholderValues.SlideNumber))
+                {
+                    errors.Add(Error(
+                        "template.slot_on_footer",
+                        $"Slot '{slot.Id}' of layout '{definition.Id}' is bound to the footer or slide number placeholder {Describe(slot.Placeholder)}.",
+                        path));
+                    continue;
+                }
+
                 Position? position = null;
                 if (slot.Kind == SlotKind.Table)
                 {
@@ -83,10 +93,85 @@ internal static class TemplateLayouts
                 slots.TryAdd(slot.Id, new LayoutPlaceholder(match.Shape, match.Placeholder, match.Name, position));
             }
 
+            // Brand positions take the same checks as slots, so that a brand value never disappears without notice.
+            if (definition.Brand is { } brand)
+            {
+                foreach (var (reference, name, needsPosition) in new[]
+                {
+                    (brand.Logo?.Placeholder, "logo", true),
+                    (brand.UnitName?.Placeholder, "unit_name", false),
+                })
+                {
+                    if (reference is not null && CheckBrand(part, definition, slots, reference, $"/layouts/{i}/brand/{name}/placeholder", needsPosition) is { } error)
+                    {
+                        errors.Add(error);
+                    }
+                }
+
+                // The logo and the unit name would be two shapes on one placeholder.
+                if (brand.Logo?.Placeholder is { } logo && brand.UnitName?.Placeholder is { } unit)
+                {
+                    var tree = part.SlideLayout?.CommonSlideData?.ShapeTree;
+                    var logoShape = Shapes(tree).FirstOrDefault(s => Matches(logo, s)).Shape;
+                    if (logoShape is not null && ReferenceEquals(logoShape, Shapes(tree).FirstOrDefault(s => Matches(unit, s)).Shape))
+                    {
+                        errors.Add(Error(
+                            "template.brand_conflict",
+                            $"The logo and the unit name of layout '{definition.Id}' are bound to the same placeholder {Describe(unit)}.",
+                            $"/layouts/{i}/brand/unit_name/placeholder"));
+                    }
+                }
+            }
+
             result.TryAdd(definition.Id, new TemplateLayout(definition, part, slots));
         }
 
         return result;
+    }
+
+    /// <summary>
+    /// The problem of a brand position: no placeholder, a footer or slide number placeholder, a placeholder that a slot
+    /// takes, or a logo placeholder without a position of its own; <c>null</c> when it is usable.
+    /// </summary>
+    private static WorkLensError? CheckBrand(
+        SlideLayoutPart part,
+        LayoutDefinition definition,
+        Dictionary<string, LayoutPlaceholder> slots,
+        PlaceholderRef reference,
+        string path,
+        bool needsPosition)
+    {
+        var match = Shapes(part.SlideLayout?.CommonSlideData?.ShapeTree).FirstOrDefault(s => Matches(reference, s));
+        if (match.Placeholder is null)
+        {
+            return Error(
+                "template.placeholder_missing",
+                $"Slide layout '{definition.SlideLayoutName}' has no placeholder {Describe(reference)} for a brand position.",
+                path);
+        }
+
+        if (IsType(match.Placeholder, P.PlaceholderValues.Footer) || IsType(match.Placeholder, P.PlaceholderValues.SlideNumber))
+        {
+            return Error(
+                "template.slot_on_footer",
+                $"A brand position of layout '{definition.Id}' is bound to the footer or slide number placeholder {Describe(reference)}.",
+                path);
+        }
+
+        if (slots.Values.Any(s => ReferenceEquals(s.Shape, match.Shape)))
+        {
+            return Error(
+                "template.brand_on_slot",
+                $"A brand position of layout '{definition.Id}' is bound to placeholder {Describe(reference)}, which a slot also takes.",
+                path);
+        }
+
+        return needsPosition && PositionOf(match.Shape) is null
+            ? Error(
+                "template.placeholder_position_missing",
+                $"Logo placeholder {Describe(reference)} of slide layout '{definition.SlideLayoutName}' has no position of its own; the logo needs one.",
+                path)
+            : null;
     }
 
     /// <summary>The top-level shapes of a shape tree with their non-visual name and placeholder (if any).</summary>
@@ -127,7 +212,7 @@ internal static class TemplateLayouts
     public static bool IsType(P.PlaceholderShape placeholder, P.PlaceholderValues type) =>
         placeholder.Type is { } t && t.Value == type;
 
-    private static bool Matches(PlaceholderRef reference, ShapeInfo shape)
+    internal static bool Matches(PlaceholderRef reference, ShapeInfo shape)
     {
         if (shape.Placeholder is not { } ph)
         {
@@ -148,7 +233,7 @@ internal static class TemplateLayouts
         return reference.Name is null || string.Equals(reference.Name, shape.Name, StringComparison.Ordinal);
     }
 
-    private static Position? PositionOf(OpenXmlElement shape)
+    internal static Position? PositionOf(OpenXmlElement shape)
     {
         var (offset, extents) = shape switch
         {

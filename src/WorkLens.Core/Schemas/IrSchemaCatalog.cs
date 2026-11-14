@@ -42,6 +42,7 @@ public static class IrSchemaCatalog
         new(TemplateManifest, "1.0", typeof(Templates.TemplateManifest)),
         new(TemplateManifest, "1.1", typeof(Templates.TemplateManifest)),
         new(Config, "1.0", typeof(WorkLensConfig)),
+        new(Config, "1.1", typeof(WorkLensConfig)),
     ];
 
     public static IrSchemaInfo? Find(string name, string version) =>

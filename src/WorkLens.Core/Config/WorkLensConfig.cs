@@ -4,7 +4,7 @@ using WorkLens.Core.Evidence;
 namespace WorkLens.Core.Config;
 
 /// <summary>
-/// <c>worklens.json</c> (<c>urn:worklens:schema:config:1.0</c>, docs/design/cli-ux.md section 3.1).
+/// <c>worklens.json</c> (<c>urn:worklens:schema:config:1.0</c> and <c>1.1</c>, docs/design/cli-ux.md section 3.1).
 /// Holds no secrets: each source names the environment variable of its token in <see cref="ConfigSource.TokenEnv"/>.
 /// </summary>
 public sealed record WorkLensConfig(
@@ -17,8 +17,8 @@ public sealed record WorkLensConfig(
     DigestConfig? Digest = null,
     ReportConfig? Report = null)
 {
-    public const string CurrentSchemaVersion = "1.0";
-    public const string SchemaId = "urn:worklens:schema:config:1.0";
+    public const string CurrentSchemaVersion = "1.1";
+    public const string SchemaId = "urn:worklens:schema:config:1.1";
 }
 
 public sealed record ConfigSubject(string DisplayName);
@@ -47,4 +47,6 @@ public sealed record RedactionConfig(string? Mode = null, IReadOnlyList<Redactio
 
 public sealed record RedactionPattern(string Match, string Replace);
 
-public sealed record ReportConfig(string? TemplateManifest = null);
+/// <param name="Organization">Unit name for the brand positions of the template (1.1).</param>
+/// <param name="Logo">PNG or JPEG logo, relative to the configuration file (1.1).</param>
+public sealed record ReportConfig(string? TemplateManifest = null, string? Organization = null, string? Logo = null);

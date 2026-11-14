@@ -1,5 +1,7 @@
 using System.CommandLine;
 using System.Text.Json.Nodes;
+using WorkLens.Core.Config;
+using WorkLens.Core.Contracts;
 using WorkLens.Core.Errors;
 using WorkLens.Core.Presentation;
 using WorkLens.Core.Schemas;
@@ -25,8 +27,12 @@ internal static class RenderCommand
             Description = "Template .pptx (default: the manifest's template.file, relative to the manifest).",
         };
         var output = Program.FileOption("--output", InputFiles.PptxFileName);
+        var config = new Option<string?>("--config")
+        {
+            Description = "Configuration file with the unit name and the logo (config 1.1); without it, render adds no brand.",
+        };
         var json = Program.JsonOption();
-        foreach (var option in new Option[] { workspace, presentation, manifest, template, output, json })
+        foreach (var option in new Option[] { workspace, presentation, manifest, template, output, config, json })
         {
             command.Options.Add(option);
         }
@@ -56,6 +62,15 @@ internal static class RenderCommand
             };
             result.Result = new JsonObject { ["files"] = files };
 
+            // Only an explicit --config adds brand values (D27): the configuration of collect stays out of render.
+            BrandElements? brand = null;
+            if (parse.GetValue(config) is { } configOption)
+            {
+                var (configPath, configDocument) = ConfigFiles.Load(host, configOption);
+                files["config"] = configPath;
+                brand = LoadBrand(configPath, configDocument);
+            }
+
             var (document, issues) = InputFiles.Load<PresentationDocument>(presentationFile, IrSchemaCatalog.PresentationIr);
             if (document is not null)
             {
@@ -79,11 +94,17 @@ internal static class RenderCommand
             }
 
             var temp = AtomicFile.TempPathFor(outputPath);
-            var rendered = PptxRenderer.Render(document!, manifestDocument, templatePath, temp);
+            var rendered = PptxRenderer.Render(document!, manifestDocument, templatePath, temp, brand);
             if (rendered.Errors.Count > 0)
             {
                 AtomicFile.TryDelete(temp);
                 throw RenderFailure(rendered.Errors, manifestPath, outputPath);
+            }
+
+            foreach (var warning in rendered.Warnings)
+            {
+                result.Issues.Add(new ValidationIssue(
+                    warning.Code, IssueSeverity.Warning, warning.Details?.GetValueOrDefault("path") ?? string.Empty, null, warning.Message));
             }
 
             AtomicFile.Commit(temp, outputPath);
@@ -93,6 +114,55 @@ internal static class RenderCommand
             return ExitCodes.Success;
         }));
         return command;
+    }
+
+    /// <summary>
+    /// The unit name and the logo of a configuration. The logo path is relative to the configuration file; a missing
+    /// file is <c>input.not_found</c> and a file that is not PNG or JPEG is <c>config.invalid_logo</c> (exit 3).
+    /// </summary>
+    private static BrandElements LoadBrand(string configPath, WorkLensConfig config)
+    {
+        LogoImage? logo = null;
+        if (config.Report?.Logo is { } logoOption)
+        {
+            string logoPath;
+            try
+            {
+                logoPath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(configPath)!, logoOption));
+            }
+            catch (Exception ex) when (ex is ArgumentException or NotSupportedException or PathTooLongException)
+            {
+                throw new CliException(
+                    ExitCodes.Configuration,
+                    "config.invalid_logo",
+                    "The logo path of the configuration is not a valid file path.",
+                    CliException.FileDetails(configPath));
+            }
+
+            byte[] bytes;
+            try
+            {
+                bytes = File.ReadAllBytes(logoPath);
+            }
+            catch (Exception ex) when (ex is FileNotFoundException or DirectoryNotFoundException)
+            {
+                throw new CliException(
+                    ExitCodes.Configuration, "input.not_found", $"Logo file not found: {logoPath}", CliException.FileDetails(logoPath));
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                throw new CliException(
+                    ExitCodes.Configuration, "input.unreadable", $"Cannot read logo file {logoPath}: {ex.Message}", CliException.FileDetails(logoPath));
+            }
+
+            logo = LogoImage.Read(bytes) ?? throw new CliException(
+                ExitCodes.Configuration,
+                "config.invalid_logo",
+                $"Logo file {logoPath} is not a PNG or JPEG image with a readable size.",
+                CliException.FileDetails(logoPath));
+        }
+
+        return new BrandElements(config.Report?.Organization, logo);
     }
 
     private static CliException RenderFailure(IReadOnlyList<WorkLensError> errors, string manifestPath, string outputPath)

@@ -48,7 +48,7 @@ public sealed class CliSmokeTests : IDisposable
             Path.Combine(TestPaths.RepositoryRoot(), "schemas", "config", "1.0", "config.schema.json"),
             TestContext.Current.CancellationToken);
 
-        var run = await _cli.RunAsync("schema", "show", "config");
+        var run = await _cli.RunAsync("schema", "show", "config:1.0");
 
         Assert.Equal(ExitCodes.Success, run.ExitCode);
         Assert.Equal(expected, run.StdoutBytes);

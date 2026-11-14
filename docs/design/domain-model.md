@@ -324,7 +324,7 @@ public interface IOutputRenderer
 {
     string Format { get; }   // "pptx"
     Task<RenderResult> RenderAsync(PresentationDocument presentation, TemplateManifest manifest,
-        string templatePath, string outputPath, CancellationToken cancellationToken);
+        string templatePath, string outputPath, BrandElements? brand, CancellationToken cancellationToken);
 }
 ```
 
@@ -348,7 +348,7 @@ public sealed record ValidationResult(IReadOnlyList<ValidationIssue> Issues)
 public sealed record WorkLensError(string Code, string Message, IReadOnlyDictionary<string, string>? Details = null);
 ```
 
-`SourceCollectResult`、`AnalysisResult`、`LayoutResult`、`RenderResult` 皆為「成功值 或 `WorkLensError` 清單」的形式。M1: `SourceCollectResult(Items, Errors, Warnings)` — `Warnings` (`IReadOnlyList<WorkLensError>`) 為非致命問題 (例 `source.truncated`: GitHub PR commits 超過 250、GitHub 或 GitLab commit files 達 3000), 不中止蒐集, CLI 以 warning issue 輸出。`LayoutResult(PresentationDocument? Presentation, Errors, Warnings)`、`RenderResult(string? OutputPath, Errors)`; error 的 `Details["path"]` 為 manifest 的 JSON Pointer (CLI 轉成 `issues`)。`LayoutResult` 的 `Warnings` 為不中止 Layout 的問題 (`layout.unplaced_narrative`)。它們的 `Details["path"]` 為 report 的 JSON Pointer。
+`SourceCollectResult`、`AnalysisResult`、`LayoutResult`、`RenderResult` 皆為「成功值 或 `WorkLensError` 清單」的形式。M1: `SourceCollectResult(Items, Errors, Warnings)` — `Warnings` (`IReadOnlyList<WorkLensError>`) 為非致命問題 (例 `source.truncated`: GitHub PR commits 超過 250、GitHub 或 GitLab commit files 達 3000), 不中止蒐集, CLI 以 warning issue 輸出。`LayoutResult(PresentationDocument? Presentation, Errors, Warnings)`、`RenderResult(string? OutputPath, Errors, Warnings)`; error 的 `Details["path"]` 為 manifest 的 JSON Pointer (CLI 轉成 `issues`)。`LayoutResult` 的 `Warnings` 為不中止 Layout 的問題 (`layout.unplaced_narrative`)。它們的 `Details["path"]` 為 report 的 JSON Pointer。`RenderResult` 的 `Warnings` 為沒有任何位置接收的品牌值 (`render.brand_not_written`)。
 
 ### 7.1 版本契約
 

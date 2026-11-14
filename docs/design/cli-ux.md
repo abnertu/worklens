@@ -16,7 +16,7 @@
 | `worklens report validate [--report <file>] [--evidence <file>] [--strict]` | `report.json`、`evidence.json` | 驗證結果 | M0 |
 | `worklens report rebind` | `report.json`、新的 `evidence.json` | 更新 `report.json` 的 `evidence_document` (所有參照仍存在時) | M3 |
 | `worklens present --manifest <file> [--strict]` | `report.json`、`evidence.json`、manifest | `presentation.json` | M0 |
-| `worklens render --manifest <file> [--template <pptx>] [--output <file>]` | `presentation.json`、manifest、模板 | `.pptx` | M0 |
+| `worklens render --manifest <file> [--template <pptx>] [--config <file>] [--output <file>]` | `presentation.json`、manifest、模板 | `.pptx` | M0 |
 | `worklens report generate --period <yyyy-MM> ...` | — | 依序執行 present + render (不含 agent 步驟) | M3 |
 | `worklens status` | 工作目錄 | 各檔案存在 / 過期 (stale) 狀態與建議的下一步 | M3 |
 
@@ -45,7 +45,7 @@ M0 命令提供下列選項。M1 的 `collect` 另提供 `--config`、`--dry-run
 |---|---|
 | `report validate` | `--workspace`、`--report`、`--evidence`、`--strict`、`--json` |
 | `present` | `--workspace`、`--report`、`--evidence`、`--manifest`、`--output`、`--strict`、`--json` |
-| `render` | `--workspace`、`--presentation`、`--manifest`、`--template`、`--output`、`--json` |
+| `render` | `--workspace`、`--presentation`、`--manifest`、`--template`、`--config`、`--output`、`--json` |
 | `schema show <name>[:<version>]` | 無 (stdout 為 schema 原文位元組; 未指定 `:<version>` 時輸出該名稱內建的最新 minor; 不認得的名稱或版本 → stderr `schema.not_found`, exit 1) |
 
 - `--workspace <dir>` 預設為目前目錄; 檔名 `report.json`、`evidence.json`、`presentation.json`、`report.pptx`, 各由 `--report` / `--evidence` / `--presentation` / `--output` 覆寫。其他相對路徑以目前目錄解析。
@@ -124,6 +124,7 @@ GitLab 蒐集範圍與限制 (驗證目標為 GitLab 16.9.1):
 ```
 
 M1a 提供 `urn:worklens:schema:config:1.0`。`worklens schema show config` 輸出設定 schema。
+Config 1.1 新增選填的 `report.organization` (單位名稱) 與 `report.logo` (PNG 或 JPEG, 相對於設定檔)。只有 `render --config` 讀取它們; 沒有 `--config` 時, `render` 不加品牌元素。
 `config` 不屬於 IR 三層, 但同樣以 schema 驗證。
 
 設定搜尋依下列順序進行。明確指定的檔案不存在時不嘗試下一項。
@@ -231,12 +232,14 @@ stdout 恰好一個 JSON 物件, 結尾換行:
 | `schema.*` | JSON Schema 違規 (`schema.required`、`schema.additionalProperties`、`schema.type` 等) | 同上 |
 | `schema.unsupported_version` | 版本欄位缺少、不是字串, 或不是內建的版本。`instance_path` 為版本欄位: `/schema_version`, 設定檔為 `/config_version`。訊息列出內建的版本 | 同上 |
 | `ref.*`、`rule.*` | Report IR 參照完整性 (error, 含 `resolves`) 與 domain 規則 (warning), 見 domain-model §3.2 | 2 (`rule.*` 只在 `--strict` 時) |
-| `presentation.*` | presentation 與 manifest 不一致: `template_mismatch`、`unknown_layout`、`unknown_slot`、`slot_kind_mismatch`、`missing_required_slot`、`table_row_width`、`table_column_count`、`invalid_character` | 2 |
+| `presentation.*` | presentation 與 manifest 不一致: `template_mismatch`、`unknown_layout`、`unknown_slot`、`slot_kind_mismatch`、`missing_required_slot`、`table_row_width`、`table_column_count`、`footer_without_position`、`footer_too_long`、`invalid_character` | 2 |
 | `layout.unplaced_narrative` | `present` 對沒有出現在任何投影片的 report narrative 給 warning issue。1.1 manifest 回報每個這樣的 narrative。1.0 manifest 只回報 `support` narrative。1.0 manifest 下, 其他 kind 的未放置 narrative 沒有 issue。`instance_path` 為 report 的 pointer `/narratives/<i>` | 2 (只在 `--strict` 時) |
 | `input.not_found` | 輸入檔 (含模板) 不存在 | 3 |
 | `input.unreadable` | 輸入檔存在但讀取失敗 (IO 錯誤、權限) | 3 |
 | `input.invalid` | evidence / manifest 不是有效 JSON 或不符合 schema (`issues` 附上原因) | 3 |
 | `config.missing_manifest` | `present` / `render` 未給 `--manifest` | 3 |
+| `config.invalid_logo` | `--config` 的 logo 不是能讀出尺寸的 PNG 或 JPEG 圖檔 | 3 |
+| `render.brand_not_written` | `render` 對沒有任何位置接收的品牌值給 warning issue。`instance_path` 為 manifest 的 pointer: 頁尾放不下時為 `/footer`, 沒有 layout 宣告位置時為 `/layouts` | 0 (warning) |
 | `manifest.invalid` | manifest 內容有問題。`issues` 含 `manifest.duplicate_id` (layout id 或同一 layout 內的 slot id 重複)、`manifest.column_mismatch` 與 `manifest.unknown_style`, 以及 `manifest.unknown_layout`、`manifest.purpose_mismatch` 與 `manifest.slot_mismatch` (只有 `present`) | 3 |
 | `template.invalid` | Renderer 回報模板問題; `issues` 含 `template.sha256_mismatch`、`template.unreadable`、`template.layout_missing`、`template.placeholder_missing`、`template.placeholder_position_missing` | 3 |
 | `output.write_failed` | 輸出目錄不存在或目標檔被鎖定 (例如在 PowerPoint 中開啟) | 3 |
@@ -252,6 +255,10 @@ stdout 恰好一個 JSON 物件, 結尾換行:
 - `present` 與 `render` 接受 1.0 與 1.1 manifest。
 
 `presentation.table_column_count`: 有 `columns` 的 slot, 其表格的欄數與 `columns` 不同。
+`presentation.footer_without_position`: presentation 有 `footer`, 但 manifest 沒有宣告頁尾位置。`presentation.footer_too_long`: `footer` 超過 manifest `footer.max_chars`。
+`template.invalid` 中的品牌與頁尾 code: `template.slot_on_footer`: slot 或品牌位置綁定到頁尾或頁碼 placeholder。`template.brand_on_slot`: 品牌位置綁定到 slot 使用的 placeholder。`template.brand_conflict`: 同一 layout 的 logo 與單位名稱綁定到同一個 placeholder。模板沒有品牌位置的 placeholder 時為 `template.placeholder_missing`, logo placeholder 沒有位置時為 `template.placeholder_position_missing`。
+
+`render` 的品牌規則: 單位名稱與 logo 只寫入 manifest 宣告的品牌位置。每個頁尾顯示單位名稱與 presentation `footer`, 以 `｜` 連接。超過頁尾容量時只截斷單位名稱; 放不下一個字時, 頁尾不放單位名稱, `render` 回 warning。
 
 `schema list --json` 的 `result` 每個 (name, version) 一筆:
 

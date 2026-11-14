@@ -115,12 +115,92 @@ public interface IOutputRenderer
 {
     string Format { get; }
 
+    /// <param name="brand">Unit name and logo from the user's configuration; <c>null</c> for none.</param>
     Task<RenderResult> RenderAsync(
         PresentationDocument presentation,
         TemplateManifest manifest,
         string templatePath,
         string outputPath,
+        BrandElements? brand,
         CancellationToken cancellationToken);
 }
 
-public sealed record RenderResult(string? OutputPath, IReadOnlyList<WorkLensError> Errors);
+/// <summary>
+/// The brand values that <c>render</c> writes into the brand positions that the manifest declares. They come from
+/// the user's configuration, not from the report.
+/// </summary>
+public sealed record BrandElements(string? UnitName, LogoImage? Logo);
+
+/// <summary>A logo image as the file holds it, with its pixel size from the file header.</summary>
+public sealed record LogoImage(byte[] Bytes, string ContentType, int Width, int Height)
+{
+    /// <summary>
+    /// Reads a PNG (IHDR) or JPEG (SOF marker) image; <c>null</c> for another format or a header without a size.
+    /// The bytes are kept as they are, metadata included.
+    /// </summary>
+    public static LogoImage? Read(byte[] bytes)
+    {
+        ArgumentNullException.ThrowIfNull(bytes);
+        ReadOnlySpan<byte> png = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
+        if (bytes.Length >= 24 && bytes.AsSpan(0, 8).SequenceEqual(png) && bytes.AsSpan(12, 4).SequenceEqual("IHDR"u8))
+        {
+            return Sized(bytes, "image/png", BigEndian(bytes, 16, 4), BigEndian(bytes, 20, 4));
+        }
+
+        if (bytes.Length >= 4 && bytes[0] == 0xFF && bytes[1] == 0xD8)
+        {
+            // Walk the marker segments to the first start-of-frame (SOF0..SOF15 without DHT, JPG and DAC).
+            var i = 2;
+            while (i + 9 < bytes.Length && bytes[i] == 0xFF)
+            {
+                // Fill bytes: any number of 0xFF may come before a marker.
+                if (bytes[i + 1] == 0xFF)
+                {
+                    i++;
+                    continue;
+                }
+
+                var marker = bytes[i + 1];
+                var length = BigEndian(bytes, i + 2, 2);
+                if (marker is >= 0xC0 and <= 0xCF and not 0xC4 and not 0xC8 and not 0xCC)
+                {
+                    return Sized(bytes, "image/jpeg", BigEndian(bytes, i + 7, 2), BigEndian(bytes, i + 5, 2));
+                }
+
+                if (length < 2)
+                {
+                    return null;
+                }
+
+                i += 2 + length;
+            }
+        }
+
+        return null;
+    }
+
+    private static LogoImage? Sized(byte[] bytes, string contentType, int width, int height) =>
+        width > 0 && height > 0 ? new LogoImage(bytes, contentType, width, height) : null;
+
+    private static int BigEndian(byte[] bytes, int offset, int count)
+    {
+        var value = 0L;
+        for (var k = 0; k < count; k++)
+        {
+            value = (value << 8) | bytes[offset + k];
+        }
+
+        return value > int.MaxValue ? 0 : (int)value;
+    }
+}
+
+/// <param name="Warnings">
+/// Problems that do not stop the rendering: <c>render.brand_not_written</c> for a brand value that no position takes.
+/// </param>
+public sealed record RenderResult(string? OutputPath, IReadOnlyList<WorkLensError> Errors, IReadOnlyList<WorkLensError> Warnings)
+{
+    public RenderResult(string? outputPath, IReadOnlyList<WorkLensError> errors)
+        : this(outputPath, errors, [])
+    {
+    }
+}

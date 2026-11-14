@@ -1,4 +1,5 @@
 using DocumentFormat.OpenXml;
+using WorkLens.Core.Contracts;
 using WorkLens.Core.Presentation;
 using WorkLens.Core.Templates;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -28,7 +29,16 @@ internal static class SlideBuilder
     private const string NumberedRole = "numbered";
 
     /// <param name="numberStart">The number of the first numbered item on the slide (greater than 1 on a continuation).</param>
-    public static P.Slide Build(Slide slide, TemplateLayout layout, string? defaultTableStyleId, StyleWriter styles, int numberStart = 1)
+    /// <param name="brand">The brand values and the footer text of the render.</param>
+    /// <param name="addImage">Adds an image part to the slide and returns its relationship id.</param>
+    public static P.Slide Build(
+        Slide slide,
+        TemplateLayout layout,
+        string? defaultTableStyleId,
+        StyleWriter styles,
+        int numberStart,
+        BrandWriter brand,
+        Func<LogoImage, string> addImage)
     {
         var tree = new P.ShapeTree(
             new P.NonVisualGroupShapeProperties(
@@ -66,8 +76,33 @@ internal static class SlideBuilder
                 });
             }
 
-            if (TemplateLayouts.IsType(placeholder, P.PlaceholderValues.Footer)
-                || TemplateLayouts.IsType(placeholder, P.PlaceholderValues.SlideNumber))
+            var brandPositions = layout.Definition.Brand;
+            if (brandPositions?.Logo is { } logoPosition && brand.Logo is { } logo && TemplateLayouts.Matches(logoPosition.Placeholder, shape)
+                && TemplateLayouts.PositionOf(shape.Shape) is { } box)
+            {
+                tree.Append(Picture(nextId++, shape.Name, placeholder, logo, addImage(logo), box));
+                brand.LogoWritten();
+            }
+
+            if (brandPositions?.UnitName is { } unitPosition && TemplateLayouts.Matches(unitPosition.Placeholder, shape)
+                && brand.UnitName(unitPosition.MaxChars) is { } unit)
+            {
+                var bound = new LayoutPlaceholder(shape.Shape, placeholder, shape.Name, null);
+                tree.Append(TextShape(nextId++, bound, null, TextParagraphs(unit, null)));
+            }
+
+            if (TemplateLayouts.IsType(placeholder, P.PlaceholderValues.Footer))
+            {
+                var footer = CopyLayoutShape(shape.Shape, nextId++);
+                if (brand.FooterText is { } text)
+                {
+                    BrandWriter.SetText(footer, text);
+                    brand.FooterWritten();
+                }
+
+                tree.Append(footer);
+            }
+            else if (TemplateLayouts.IsType(placeholder, P.PlaceholderValues.SlideNumber))
             {
                 tree.Append(CopyLayoutShape(shape.Shape, nextId++));
             }
@@ -228,11 +263,30 @@ internal static class SlideBuilder
     private static A.Run Run(string text, A.RunProperties? runProperties) =>
         runProperties is null ? new A.Run(new A.Text(text)) : new A.Run((A.RunProperties)runProperties.CloneNode(true), new A.Text(text));
 
-    private static P.PlaceholderShape PlaceholderCopy(LayoutPlaceholder bound)
+    private static P.PlaceholderShape PlaceholderCopy(LayoutPlaceholder bound) => PlaceholderCopy(bound.Placeholder);
+
+    private static P.PlaceholderShape PlaceholderCopy(P.PlaceholderShape placeholder)
     {
-        var copy = (P.PlaceholderShape)bound.Placeholder.CloneNode(true);
+        var copy = (P.PlaceholderShape)placeholder.CloneNode(true);
         copy.HasCustomPrompt = null;
         return copy;
+    }
+
+    /// <summary>The logo, scaled into the placeholder box with its aspect ratio kept, and centered in it.</summary>
+    private static P.Picture Picture(uint id, string name, P.PlaceholderShape placeholder, LogoImage logo, string relationshipId, Position box)
+    {
+        var scale = Math.Min((double)box.Width / logo.Width, (double)box.Height / logo.Height);
+        var width = (long)Math.Round(logo.Width * scale);
+        var height = (long)Math.Round(logo.Height * scale);
+        return new P.Picture(
+            new P.NonVisualPictureProperties(
+                new P.NonVisualDrawingProperties { Id = id, Name = name },
+                new P.NonVisualPictureDrawingProperties(new A.PictureLocks { NoGrouping = true, NoChangeAspect = true }),
+                new P.ApplicationNonVisualDrawingProperties(PlaceholderCopy(placeholder))),
+            new P.BlipFill(new A.Blip { Embed = relationshipId }, new A.Stretch(new A.FillRectangle())),
+            new P.ShapeProperties(new A.Transform2D(
+                new A.Offset { X = box.X + ((box.Width - width) / 2), Y = box.Y + ((box.Height - height) / 2) },
+                new A.Extents { Cx = width, Cy = height })));
     }
 
     /// <summary>Copies a footer / slide number placeholder with its text and fields, renumbered, without extensions.</summary>

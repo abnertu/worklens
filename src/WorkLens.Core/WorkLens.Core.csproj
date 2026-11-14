@@ -22,6 +22,7 @@
     <EmbeddedResource Include="..\..\schemas\template-manifest\1.0\template-manifest.schema.json" LogicalName="schemas/template-manifest/1.0/template-manifest.schema.json" />
     <EmbeddedResource Include="..\..\schemas\template-manifest\1.1\template-manifest.schema.json" LogicalName="schemas/template-manifest/1.1/template-manifest.schema.json" />
     <EmbeddedResource Include="..\..\schemas\config\1.0\config.schema.json" LogicalName="schemas/config/1.0/config.schema.json" />
+    <EmbeddedResource Include="..\..\schemas\config\1.1\config.schema.json" LogicalName="schemas/config/1.1/config.schema.json" />
   </ItemGroup>
 
 </Project>

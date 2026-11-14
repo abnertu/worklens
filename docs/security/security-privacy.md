@@ -86,6 +86,7 @@
 
 - 統計數字由 WorkLens 從證據計算, agent 不能填寫。
 - 推論 (`agent_inference`) 在投影片上標示為推論與信心等級。
+- 投影片顯示報告對象名稱、單位名稱與 ops 標題中的主機名稱。`render` 照原樣嵌入 logo 檔, 包含其中繼資料 (例如 EXIF)。在設定檔指定 logo 之前, 先移除中繼資料。
 - 投影片顯示的 change request 與 issue 標題先遮蔽 token 樣式, 再移除 URL、SSH remote、email 與 commit SHA ([ADR-0012](../adr/0012-slide-disclosure.md))。沒有路徑的主機名稱不移除。Agent 或使用者撰寫的文字照原樣顯示。
 - 驗證規則對無證據支持的百分比 / 倍數宣稱發出 warning (`rule.unreferenced_numeric_claim`)。
 - 不產生績效分數, 不以 commit 數排名。

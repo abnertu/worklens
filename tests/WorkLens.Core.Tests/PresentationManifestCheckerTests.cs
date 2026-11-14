@@ -194,8 +194,29 @@ public sealed class PresentationManifestCheckerTests
     }
 
     [Fact]
-    public void Footer_with_an_invalid_character() =>
-        Assert.Equal(("presentation.invalid_character", "/footer"), Single(Golden() with { Footer = "bad \u001B" }));
+    public void Footer_with_an_invalid_character()
+    {
+        var issue = Assert.Single(Issues(Golden() with { Footer = "bad \u001B" }, Manifest() with { Footer = new FooterDefinition() }));
+
+        Assert.Equal(("presentation.invalid_character", "/footer"), (issue.Code, issue.InstancePath));
+    }
+
+    // The renderer writes a footer only into a declared footer position.
+    [Fact]
+    public void Footer_without_a_manifest_footer_position() =>
+        Assert.Equal(("presentation.footer_without_position", "/footer"), Single(Golden() with { Footer = "2026-10" }));
+
+    [Fact]
+    public void Footer_over_the_manifest_footer_capacity()
+    {
+        var issue = Assert.Single(Issues(Golden() with { Footer = "研發工作月報" }, Manifest() with { Footer = new FooterDefinition(5) }));
+
+        Assert.Equal(("presentation.footer_too_long", "/footer"), (issue.Code, issue.InstancePath));
+    }
+
+    [Fact]
+    public void Footer_within_the_manifest_footer_capacity_passes() =>
+        Assert.Empty(Issues(Golden() with { Footer = "研發工作月報" }, Manifest() with { Footer = new FooterDefinition(6) }));
 
     [Fact]
     public void Styled_cell_with_an_invalid_character_reports_its_text()

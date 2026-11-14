@@ -30,17 +30,19 @@ public sealed class PptxRenderer : IOutputRenderer
         TemplateManifest manifest,
         string templatePath,
         string outputPath,
+        BrandElements? brand,
         CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        return Task.FromResult(Render(presentation, manifest, templatePath, outputPath));
+        return Task.FromResult(Render(presentation, manifest, templatePath, outputPath, brand));
     }
 
     public static RenderResult Render(
         PresentationDocument presentation,
         TemplateManifest manifest,
         string templatePath,
-        string outputPath)
+        string outputPath,
+        BrandElements? brand = null)
     {
         byte[] templateBytes;
         try
@@ -72,10 +74,11 @@ public sealed class PptxRenderer : IOutputRenderer
         stream.Position = 0;
 
         IReadOnlyList<WorkLensError> errors;
+        IReadOnlyList<WorkLensError> warnings = [];
         try
         {
             using var document = DocumentFormat.OpenXml.Packaging.PresentationDocument.Open(stream, isEditable: true);
-            errors = Build(document, presentation, manifest);
+            (errors, warnings) = Build(document, presentation, manifest, brand);
         }
         catch (Exception ex) when (IsTemplateFault(ex))
         {
@@ -102,7 +105,7 @@ public sealed class PptxRenderer : IOutputRenderer
                 new Dictionary<string, string> { ["file"] = outputPath }));
         }
 
-        return new RenderResult(outputPath, []);
+        return new RenderResult(outputPath, [], warnings);
     }
 
     private static RenderResult Failed(WorkLensError error) => new(null, [error]);
@@ -124,10 +127,11 @@ public sealed class PptxRenderer : IOutputRenderer
         or OverflowException
         or KeyNotFoundException;
 
-    private static IReadOnlyList<WorkLensError> Build(
+    private static (IReadOnlyList<WorkLensError> Errors, IReadOnlyList<WorkLensError> Warnings) Build(
         DocumentFormat.OpenXml.Packaging.PresentationDocument document,
         PresentationDocument presentation,
-        TemplateManifest manifest)
+        TemplateManifest manifest,
+        BrandElements? brand)
     {
         var presentationPart = document.PresentationPart
             ?? throw new InvalidDataException("The package has no presentation part.");
@@ -135,7 +139,7 @@ public sealed class PptxRenderer : IOutputRenderer
         var idErrors = TemplateManifestChecker.CheckIds(manifest);
         if (idErrors.Count > 0)
         {
-            return idErrors;
+            return (idErrors, []);
         }
 
         var template = TemplateLayouts.Resolve(presentationPart, manifest, out var errors);
@@ -147,7 +151,7 @@ public sealed class PptxRenderer : IOutputRenderer
 
         if (errors.Count > 0)
         {
-            return errors;
+            return (errors, []);
         }
 
         TemplateCleaner.RemoveSlidesAndPersonalParts(document, presentationPart);
@@ -164,6 +168,8 @@ public sealed class PptxRenderer : IOutputRenderer
         var nextRelationshipId = NextRelationshipNumber(presentationPart);
         var tableStyleId = presentationPart.TableStylesPart?.TableStyleList?.Default?.Value;
         var styles = new StyleWriter(manifest.Styles);
+        var brandWriter = new BrandWriter(brand, manifest, presentation);
+        ImagePart? logoPart = null;
         uint slideId = 256;
         var numbered = 0;
         foreach (var slide in presentation.Slides)
@@ -178,7 +184,19 @@ public sealed class PptxRenderer : IOutputRenderer
             var relationshipId = $"rId{nextRelationshipId++}";
             var slidePart = presentationPart.AddNewPart<SlidePart>(relationshipId);
             slidePart.AddPart(layout.Part, "rId1");
-            slidePart.Slide = SlideBuilder.Build(slide, layout, tableStyleId, styles, numbered + 1);
+            slidePart.Slide = SlideBuilder.Build(slide, layout, tableStyleId, styles, numbered + 1, brandWriter, logo =>
+            {
+                // One image part holds the logo; every slide that shows it refers to the same part.
+                if (logoPart is null)
+                {
+                    logoPart = slidePart.AddImagePart(logo.ContentType == "image/png" ? ImagePartType.Png : ImagePartType.Jpeg);
+                    using var data = new MemoryStream(logo.Bytes);
+                    logoPart.FeedData(data);
+                    return slidePart.GetIdOfPart(logoPart);
+                }
+
+                return slidePart.GetIdOfPart(slidePart.AddPart(logoPart));
+            });
             numbered += SlideBuilder.NumberedItems(slide);
             slideIdList.Append(new P.SlideId { Id = slideId++, RelationshipId = relationshipId });
         }
@@ -186,7 +204,7 @@ public sealed class PptxRenderer : IOutputRenderer
         root.RemovePersonalInfoOnSave = null;
         root.Save();
         DocumentPropertiesWriter.Write(document, presentation, template);
-        return [];
+        return ([], brandWriter.Warnings());
     }
 
     /// <summary>Defensive: the CLI checks the presentation against the manifest before rendering.</summary>

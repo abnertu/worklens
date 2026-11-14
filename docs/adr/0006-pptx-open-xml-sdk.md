@@ -16,7 +16,7 @@ Accepted — 2026-11-12 (使用者依 M0 PoC 結果決定; Proposed 2026-11-11)
 ## Decision
 
 - 以 **DocumentFormat.OpenXml** (Open XML SDK, MIT) 實作 `IOutputRenderer` 的 PPTX 版本, 放在 `WorkLens.Rendering.Pptx`。
-- 渲染策略: 開啟模板 → 移除模板中的範例 slides (含 notes) 與個人資訊 parts → 依 Presentation IR 的 `layout_id` 找到 Template Manifest 指定的 slide layout → 以該 layout 建立新 slide (不複製 prototype slide) → 依 slot 的 placeholder 識別 (`idx` / name) 填入文字、項目符號、表格, run 不寫格式覆寫 → 複製 layout 的頁尾 / 頁碼 placeholder → 重寫文件屬性 → 存檔。
+- 渲染策略: 開啟模板 → 移除模板中的範例 slides (含 notes) 與個人資訊 parts → 依 Presentation IR 的 `layout_id` 找到 Template Manifest 指定的 slide layout → 以該 layout 建立新 slide (不複製 prototype slide) → 依 slot 的 placeholder 識別 (`idx` / name) 填入文字、項目符號、表格, run 不寫格式覆寫 → 複製 layout 的頁尾 / 頁碼 placeholder, 並在 manifest 宣告的位置寫入頁尾文字與品牌值 (單位名稱、logo) → 重寫文件屬性 → 存檔。
 - Overflow 由 Layout Resolver 依 manifest 的容量 (`max_items`、`max_chars`) 事先處理 (拆頁 / 截斷 + 標記), Renderer 不做文字量測。容量以 PowerPoint 實測校正; 模板的 `normAutofit` 不能當作後備 (PowerPoint 開檔時不計算 `fontScale`)。
 - 驗證: 自動測試以 Open XML 結構斷言、`OpenXmlValidator` 與正規化 snapshot 為主 (不需 Office); 可編輯性與視覺以 PowerPoint 開啟 / 編輯 / 另存與人工檢視 PNG 驗證 (`tools/poc/run-poc-checks.ps1`)。不做跨檢視器 (LibreOffice 等) 驗證 (OQ-10)。
 - PoC 結果與證據: [pptx-poc-report.md](../plans/pptx-poc-report.md)。

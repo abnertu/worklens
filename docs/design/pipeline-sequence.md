@@ -78,6 +78,6 @@ sequenceDiagram
 
 - **確定性區段**: `present` 與 `render` 只依賴檔案內容與版本; 以同一份已審核的 `report.json` 重跑, 得到相同的 Presentation IR 與相同的 slide 結構與文字 (交接文件 §1.1 原則 5)。重跑不需要 agent。
 - **過期偵測**: 若 `evidence.json` 在 `report.json` 之後被重新產生 (hash 改變), M0 的 `report validate` / `present` 以 `ref.evidence_document_mismatch` 回 exit 2 (由 agent 或人工重新綁定)。M3 起改為 `present` 回 exit 5, 並提供 `worklens report rebind` (所有參照仍存在時更新綁定) 後重新 `report validate`。
-- **M0 的檔案指定**: `present` / `render` 需以 `--manifest` 指定 template manifest (未給 → exit 3 `config.missing_manifest`); `worklens.json` 與 `.worklens/reports/<period>/` 預設路徑於 M3 提供。`render` 前會檢查 presentation 與 manifest 一致 (`presentation.*`, exit 2) 與模板 sha256 (`template.sha256_mismatch`, exit 3)。M0 尚不寫 provenance `manifest.json`。
+- **M0 的檔案指定**: `present` / `render` 需以 `--manifest` 指定 template manifest (未給 → exit 3 `config.missing_manifest`); `worklens.json` 與 `.worklens/reports/<period>/` 預設路徑於 M3 提供。`render` 前會檢查 presentation 與 manifest 一致 (`presentation.*`, exit 2) 與模板 sha256 (`template.sha256_mismatch`, exit 3)。`render --config` 讀取單位名稱與 logo; 沒有 `--config` 時不加品牌元素。M0 尚不寫 provenance `manifest.json`。
 - **人工介入點**: 「請審核 report.json 與 warnings」之後的人工審核是必要的; v0.1 不提供自動跳過審核的選項。
 - **失敗處理**: 每個命令失敗時不覆寫既有輸出檔; agent 依 exit code 決定重試、修正或回報 (cli-ux.md §6)。

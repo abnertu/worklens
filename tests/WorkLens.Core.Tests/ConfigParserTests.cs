@@ -28,6 +28,21 @@ public sealed class ConfigParserTests
 
     private static ConfigParseResult Parse(JsonNode node) => ConfigParser.Parse(node.ToJsonString());
 
+    // Config 1.1 adds the brand values that render writes into the template.
+    [Fact]
+    public void Config_1_1_reads_the_organization_and_the_logo()
+    {
+        var node = Minimal();
+        node["config_version"] = "1.1";
+        node["report"] = new JsonObject { ["organization"] = "研發一處", ["logo"] = "brand/logo.png" };
+
+        var result = Parse(node);
+
+        Assert.Empty(result.Issues);
+        Assert.Equal("研發一處", result.Config!.Report!.Organization);
+        Assert.Equal("brand/logo.png", result.Config.Report.Logo);
+    }
+
     [Fact]
     public void Full_example_parses()
     {

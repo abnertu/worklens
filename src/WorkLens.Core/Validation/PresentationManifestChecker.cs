@@ -24,9 +24,25 @@ public static class PresentationManifestChecker
                 $"The presentation was resolved for template {presentation.Template.Id} {presentation.Template.Version}, but the manifest is {manifest.Template.Id} {manifest.Template.Version}."));
         }
 
-        if (presentation.Footer is not null)
+        if (presentation.Footer is { } footer)
         {
-            CheckCharacters(presentation.Footer, "/footer", issues);
+            CheckCharacters(footer, "/footer", issues);
+
+            // The renderer writes the footer only into a footer position that the manifest declares.
+            if (manifest.Footer is not { } position)
+            {
+                issues.Add(Issue(
+                    "presentation.footer_without_position",
+                    "/footer",
+                    "The presentation has a footer, but the manifest declares no footer position."));
+            }
+            else if (position.MaxChars is { } max && new System.Globalization.StringInfo(footer).LengthInTextElements > max)
+            {
+                issues.Add(Issue(
+                    "presentation.footer_too_long",
+                    "/footer",
+                    $"The footer has {new System.Globalization.StringInfo(footer).LengthInTextElements} characters, but the manifest footer holds {max}."));
+            }
         }
 
         // First occurrence wins, as in the Layout Resolver (duplicate ids are reported by TemplateManifestChecker).
