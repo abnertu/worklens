@@ -1,5 +1,6 @@
 using DocumentFormat.OpenXml;
 using WorkLens.Core.Presentation;
+using WorkLens.Core.Templates;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -8,7 +9,8 @@ namespace WorkLens.Rendering.Pptx;
 /// <summary>
 /// Builds one slide from its layout: a shape per bound slot (same <c>p:ph</c> as the layout placeholder, empty
 /// <c>p:spPr</c> so position and formatting are inherited), plus copies of the layout's footer and slide number
-/// placeholders. Shapes follow the layout's shape order; <c>cNvPr/@id</c> is numbered from 2.
+/// placeholders. Shapes follow the layout's shape order; <c>cNvPr/@id</c> is numbered from 2. Formats come only from
+/// the manifest style roles that the presentation names (ADR-0010); without roles, runs carry no <c>a:rPr</c>.
 /// </summary>
 internal static class SlideBuilder
 {
@@ -17,7 +19,16 @@ internal static class SlideBuilder
     /// <summary>Default row height (0.39 in); PowerPoint grows rows to fit their text.</summary>
     private const long RowHeight = 370840;
 
-    public static P.Slide Build(Slide slide, TemplateLayout layout, string? tableStyleId)
+    /// <summary>The style roles of the three parts of a metric card.</summary>
+    private const string MetricLabelRole = "metric_label";
+    private const string MetricValueRole = "metric_value";
+    private const string MetricCaptionRole = "metric_caption";
+
+    /// <summary>Items with this role are numbered; the role formats the number, not the text.</summary>
+    private const string NumberedRole = "numbered";
+
+    /// <param name="numberStart">The number of the first numbered item on the slide (greater than 1 on a continuation).</param>
+    public static P.Slide Build(Slide slide, TemplateLayout layout, string? defaultTableStyleId, StyleWriter styles, int numberStart = 1)
     {
         var tree = new P.ShapeTree(
             new P.NonVisualGroupShapeProperties(
@@ -41,12 +52,17 @@ internal static class SlideBuilder
                     continue;
                 }
 
+                var slot = layout.Definition.Slots.First(s => s.Id == slotId);
+                var style = styles.Find(value.Style);
                 tree.Append(value switch
                 {
-                    TableSlotValue table => TableShape(nextId++, bound, table, tableStyleId),
-                    TextSlotValue text => TextShape(nextId++, bound, TextParagraphs(text.Text)),
-                    BulletsSlotValue bullets => TextShape(nextId++, bound, bullets.Items.Select(BulletParagraph)),
-                    _ => throw new NotSupportedException($"Unsupported slot value {value.GetType().Name}."),
+                    TableSlotValue table => TableShape(nextId++, bound, slot, table, slot.TableStyle ?? defaultTableStyleId, styles),
+                    TextSlotValue text => TextShape(nextId++, bound, style, TextParagraphs(text.Text, StyleWriter.RunProperties(style))),
+                    BulletsSlotValue bullets => TextShape(nextId++, bound, style, bullets.Items.Select(i => BulletParagraph(i, style, styles, numberStart))),
+                    MetricSlotValue metric => TextShape(nextId++, bound, style, MetricParagraphs(metric, style, styles)),
+
+                    // Not a template fault: the presentation was checked before rendering, so this is a program error.
+                    _ => throw new ArgumentOutOfRangeException(nameof(slide), $"Unsupported slot value {value.GetType().Name}."),
                 });
             }
 
@@ -62,7 +78,7 @@ internal static class SlideBuilder
             new P.ColorMapOverride(new A.MasterColorMapping()));
     }
 
-    private static P.Shape TextShape(uint id, LayoutPlaceholder bound, IEnumerable<A.Paragraph> paragraphs)
+    private static P.Shape TextShape(uint id, LayoutPlaceholder bound, StyleDefinition? style, IEnumerable<A.Paragraph> paragraphs)
     {
         var body = new P.TextBody(new A.BodyProperties(), new A.ListStyle());
         body.Append(paragraphs);
@@ -72,16 +88,23 @@ internal static class SlideBuilder
             body.Append(new A.Paragraph());
         }
 
+        var properties = new P.ShapeProperties();
+        if (StyleWriter.Fill(style) is { } fill)
+        {
+            properties.Append(fill);
+        }
+
         return new P.Shape(
             new P.NonVisualShapeProperties(
                 new P.NonVisualDrawingProperties { Id = id, Name = bound.Name },
                 new P.NonVisualShapeDrawingProperties(new A.ShapeLocks { NoGrouping = true }),
                 new P.ApplicationNonVisualDrawingProperties(PlaceholderCopy(bound))),
-            new P.ShapeProperties(),
+            properties,
             body);
     }
 
-    private static P.GraphicFrame TableShape(uint id, LayoutPlaceholder bound, TableSlotValue value, string? tableStyleId)
+    private static P.GraphicFrame TableShape(
+        uint id, LayoutPlaceholder bound, SlotDefinition slot, TableSlotValue value, string? tableStyleId, StyleWriter styles)
     {
         var position = bound.Position
             ?? throw new InvalidOperationException($"Table placeholder '{bound.Name}' has no resolved position.");
@@ -93,20 +116,27 @@ internal static class SlideBuilder
             properties.Append(new A.TableStyleId(tableStyleId));
         }
 
-        // Equal-width columns; the last column takes the rounding remainder so the grid fills the placeholder.
+        // Column widths: the percentages of the slot columns, else equal widths. The last column takes the rounding
+        // remainder so the grid fills the placeholder.
         var grid = new A.TableGrid();
-        var width = position.Width / columnCount;
+        var percents = slot.Columns is { } columns && columns.Count == columnCount ? columns.Select(c => c.Width).ToList() : null;
+        long used = 0;
         for (var c = 0; c < columnCount; c++)
         {
-            var w = c == columnCount - 1 ? position.Width - (width * (columnCount - 1)) : width;
+            var w = c == columnCount - 1
+                ? position.Width - used
+                : percents is null ? position.Width / columnCount : position.Width * percents[c] / 100;
+            used += w;
             grid.Append(new A.GridColumn { Width = w });
         }
 
         var table = new A.Table(properties, grid);
-        table.Append(TableRow(value.Columns));
-        foreach (var row in value.Rows)
+        table.Append(TableRow(value.Columns, styles.Find(slot.HeaderStyle), null, styles));
+        var rowStyles = slot.RowStyles ?? [];
+        for (var r = 0; r < value.Rows.Count; r++)
         {
-            table.Append(TableRow(row));
+            var rowStyle = rowStyles.Count > 0 ? styles.Find(rowStyles[r % rowStyles.Count]) : null;
+            table.Append(TableRow(value.Rows[r], rowStyle, value.CellStyles?[r], styles));
         }
 
         return new P.GraphicFrame(
@@ -120,36 +150,83 @@ internal static class SlideBuilder
             new A.Graphic(new A.GraphicData(table) { Uri = TableUri }));
     }
 
-    private static A.TableRow TableRow(IEnumerable<string> cells)
+    /// <summary>A row whose cells take the row style, each with its own cell style on top (status tags).</summary>
+    private static A.TableRow TableRow(
+        IReadOnlyList<string> cells, StyleDefinition? rowStyle, IReadOnlyList<string?>? cellStyles, StyleWriter styles)
     {
         var row = new A.TableRow { Height = RowHeight };
-        foreach (var cell in cells)
+        for (var c = 0; c < cells.Count; c++)
         {
+            var style = StyleWriter.Merge(rowStyle, styles.Find(cellStyles?[c]));
             var body = new A.TextBody(new A.BodyProperties(), new A.ListStyle());
-            body.Append(TextParagraphs(cell));
-            row.Append(new A.TableCell(body, new A.TableCellProperties()));
+            body.Append(TextParagraphs(cells[c], StyleWriter.RunProperties(style)));
+            row.Append(new A.TableCell(body, StyleWriter.CellProperties(style)));
         }
 
         return row;
     }
 
-    /// <summary>One paragraph per <c>\n</c>-separated line; runs carry no <c>a:rPr</c> (P7).</summary>
-    private static IEnumerable<A.Paragraph> TextParagraphs(string text) =>
-        text.Split('\n').Select(line => line.Length == 0 ? new A.Paragraph() : new A.Paragraph(Run(line)));
+    /// <summary>One paragraph per <c>\n</c>-separated line; runs carry <c>a:rPr</c> only when a style sets one.</summary>
+    private static IEnumerable<A.Paragraph> TextParagraphs(string text, A.RunProperties? runProperties) =>
+        text.Split('\n').Select(line => line.Length == 0 ? new A.Paragraph() : new A.Paragraph(Run(line, runProperties)));
 
-    private static A.Paragraph BulletParagraph(BulletItem item)
+    /// <summary>The numbered items that a slide shows, so that its continuation goes on from them.</summary>
+    public static int NumberedItems(Slide slide) =>
+        slide.Bindings.Values.OfType<BulletsSlotValue>().Sum(b => b.Items.Count(i => i.Style == NumberedRole));
+
+    private static A.Paragraph BulletParagraph(BulletItem item, StyleDefinition? slotStyle, StyleWriter styles, int numberStart)
     {
         var paragraph = new A.Paragraph();
-        if (item.Level > 0)
+        var numbered = item.Style == NumberedRole;
+        var itemStyle = numbered ? null : styles.Find(item.Style);
+        if (item.Level > 0 || numbered)
         {
-            paragraph.Append(new A.ParagraphProperties { Level = item.Level });
+            var properties = new A.ParagraphProperties();
+            if (item.Level > 0)
+            {
+                properties.Level = item.Level;
+            }
+
+            if (numbered)
+            {
+                // The number takes the role's color; the item text keeps the placeholder's body format.
+                if (styles.Find(NumberedRole)?.Color is { } color)
+                {
+                    properties.Append(new A.BulletColor(new A.RgbColorModelHex { Val = color.TrimStart('#').ToUpperInvariant() }));
+                }
+
+                var number = new A.AutoNumberedBullet { Type = A.TextAutoNumberSchemeValues.ArabicPeriod };
+                if (numberStart > 1)
+                {
+                    number.StartAt = numberStart;
+                }
+
+                properties.Append(number);
+            }
+
+            paragraph.Append(properties);
         }
 
-        paragraph.Append(Run(item.Text));
+        paragraph.Append(Run(item.Text, StyleWriter.RunProperties(StyleWriter.Merge(slotStyle, itemStyle))));
         return paragraph;
     }
 
-    private static A.Run Run(string text) => new(new A.Text(text));
+    /// <summary>The label, the value and the caption of a metric card, each a paragraph with its own role.</summary>
+    private static IEnumerable<A.Paragraph> MetricParagraphs(MetricSlotValue metric, StyleDefinition? slotStyle, StyleWriter styles)
+    {
+        A.Paragraph Part(string text, string role) =>
+            new(Run(text, StyleWriter.RunProperties(StyleWriter.Merge(slotStyle, styles.Find(role)))));
+
+        yield return Part(metric.Label, MetricLabelRole);
+        yield return Part(metric.Value, MetricValueRole);
+        if (metric.Caption is { } caption)
+        {
+            yield return Part(caption, MetricCaptionRole);
+        }
+    }
+
+    private static A.Run Run(string text, A.RunProperties? runProperties) =>
+        runProperties is null ? new A.Run(new A.Text(text)) : new A.Run((A.RunProperties)runProperties.CloneNode(true), new A.Text(text));
 
     private static P.PlaceholderShape PlaceholderCopy(LayoutPlaceholder bound)
     {

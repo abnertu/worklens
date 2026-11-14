@@ -227,6 +227,7 @@ Layout Resolver 規則 (M0, `WorkLens.Core.Layout.LayoutResolver`, 純函式; �
 - 統計只計 `occurred_at ∈ [period.start, period.end)` 且無 `duplicate` flag 的證據; 排除 `review_status: rejected` 的 work item; 順序依 `rank` (見 §3)。
 - Overflow: 文字超過 `max_chars` → 截為 `max_chars - 1` 個 text element + `…`; 超過 `max_items` → `overflow: split` 且為流動 slot (`facts`、`body`、`items`) 時拆成多頁並設 `continuation` (標題不變), 其他情況截斷; 有截斷的 SlotValue 設 `truncated: true`。
 - 1.1: 處理容量時保留值與項目的樣式角色。Layout 已標為 `truncated` 的值保持 `truncated`。欄有 `max_chars` 時, 該欄的儲存格用它。metric 的每個欄位依 `max_chars` 截斷, metric 不拆頁。
+- Renderer 使用的角色: `metric_label`、`metric_value` 與 `metric_caption` 為數字卡的三個部分; `numbered` 讓項目編號, 只為編號著色。接到下一頁的編號清單從下一個號碼繼續。
 - 所有輸出文字移除 XML 1.0 不允許的字元, 讓 resolver 產出的 presentation 必定可渲染。
 - 固定文字取自 `labels` (`{name}` 單次代入, 代入值內的大括號不展開), 未提供時用英文預設。容量值以 PowerPoint 實測校正 ([pptx-poc-report.md](../plans/pptx-poc-report.md) P5)。
 

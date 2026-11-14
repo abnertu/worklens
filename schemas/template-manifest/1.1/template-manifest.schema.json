@@ -235,7 +235,7 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "font_size": { "$ref": "#/$defs/points" },
+        "font_size": { "$ref": "#/$defs/font_points" },
         "bold": { "type": "boolean" },
         "color": { "$ref": "#/$defs/color" },
         "fill": { "$ref": "#/$defs/color" },
@@ -245,12 +245,13 @@
           "required": ["color", "width"],
           "properties": {
             "color": { "$ref": "#/$defs/color" },
-            "width": { "$ref": "#/$defs/points" }
+            "width": { "$ref": "#/$defs/line_points" }
           }
         }
       }
     },
     "color": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
-    "points": { "description": "A size in points.", "type": "number", "exclusiveMinimum": 0, "multipleOf": 0.01 }
+    "font_points": { "description": "A type size in points, in the range of DrawingML run sizes.", "type": "number", "minimum": 1, "maximum": 4000, "multipleOf": 0.01 },
+    "line_points": { "description": "A line width in points, in the range of DrawingML line widths.", "type": "number", "exclusiveMinimum": 0, "maximum": 1584, "multipleOf": 0.01 }
   }
 }

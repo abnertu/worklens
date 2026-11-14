@@ -163,14 +163,23 @@ public sealed class PptxRenderer : IOutputRenderer
 
         var nextRelationshipId = NextRelationshipNumber(presentationPart);
         var tableStyleId = presentationPart.TableStylesPart?.TableStyleList?.Default?.Value;
+        var styles = new StyleWriter(manifest.Styles);
         uint slideId = 256;
+        var numbered = 0;
         foreach (var slide in presentation.Slides)
         {
+            // A continuation slide goes on numbering where the slide before it ended.
+            if (slide.Continuation is not { Index: > 1 })
+            {
+                numbered = 0;
+            }
+
             var layout = template[slide.LayoutId];
             var relationshipId = $"rId{nextRelationshipId++}";
             var slidePart = presentationPart.AddNewPart<SlidePart>(relationshipId);
             slidePart.AddPart(layout.Part, "rId1");
-            slidePart.Slide = SlideBuilder.Build(slide, layout, tableStyleId);
+            slidePart.Slide = SlideBuilder.Build(slide, layout, tableStyleId, styles, numbered + 1);
+            numbered += SlideBuilder.NumberedItems(slide);
             slideIdList.Append(new P.SlideId { Id = slideId++, RelationshipId = relationshipId });
         }
 

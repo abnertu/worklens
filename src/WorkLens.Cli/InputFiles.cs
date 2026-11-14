@@ -135,33 +135,15 @@ internal static class InputFiles
 
     /// <summary>
     /// Loads the template manifest of <c>present</c> and <c>render</c> and checks it: duplicate ids and the 1.1
-    /// contracts first, then, for <c>render</c>, the supported version. Any problem is <c>manifest.invalid</c> (exit 3).
+    /// contracts. Any problem is <c>manifest.invalid</c> (exit 3).
     /// </summary>
-    /// <param name="forRender">Refuse a manifest version that the renderer does not implement yet.</param>
-    public static TemplateManifest LoadManifest(string manifestPath, bool forRender)
+    public static TemplateManifest LoadManifest(string manifestPath)
     {
         var manifest = LoadUpstream<TemplateManifest>(Read(manifestPath), IrSchemaCatalog.TemplateManifest);
         IReadOnlyList<WorkLensError> errors =
             [.. TemplateManifestChecker.CheckIds(manifest), .. TemplateManifestChecker.CheckContracts(manifest)];
-        if (errors.Count == 0 && forRender && manifest.SchemaVersion != SupportedRenderManifestVersion)
-        {
-            errors =
-            [
-                new WorkLensError(
-                    "manifest.unsupported_version",
-                    $"Manifest schema_version {manifest.SchemaVersion} is not supported by render yet; use a {SupportedRenderManifestVersion} manifest.",
-                    new Dictionary<string, string> { ["path"] = "/schema_version" }),
-            ];
-        }
-
         return errors.Count == 0 ? manifest : throw CliException.FromErrors(errors, "manifest.invalid", manifestPath);
     }
-
-    /// <summary>
-    /// The renderer implements only the 1.0 manifest rules. A 1.1 presentation would lose its metrics and styles
-    /// without an error.
-    /// </summary>
-    private const string SupportedRenderManifestVersion = "1.0";
 
     public static ValidationIssue Issue(string code, string pointer, string message) =>
         new(code, IssueSeverity.Error, pointer, null, message);

@@ -44,7 +44,7 @@ internal static class RenderCommand
             var outputPath = InputFiles.Resolve(host, parse.GetValue(output), ws, InputFiles.PptxFileName);
 
             var presentationFile = InputFiles.Read(presentationPath);
-            var manifestDocument = InputFiles.LoadManifest(manifestPath, forRender: true);
+            var manifestDocument = InputFiles.LoadManifest(manifestPath);
             var templatePath = parse.GetValue(template) is { } t
                 ? host.FullPath(t)
                 : host.FullPath(Path.Combine(Path.GetDirectoryName(manifestPath)!, manifestDocument.Template.File));

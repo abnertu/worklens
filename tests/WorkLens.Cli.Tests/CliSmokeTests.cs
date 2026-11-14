@@ -140,20 +140,22 @@ public sealed class CliSmokeTests : IDisposable
         Assert.False(File.Exists(Path.Combine(_cli.Workspace, "report.pptx")));
     }
 
-    // The renderer implements only 1.0 manifest rules; a 1.1 manifest is refused, not rendered wrongly.
+    // present and render take the rd-monthly 1.1 manifest from report to .pptx.
     [Fact]
-    public async Task Render_refuses_a_1_1_manifest()
+    public async Task Present_and_render_turn_a_1_1_report_into_a_pptx()
     {
-        var manifest = CopyManifestInputs("render");
+        _cli.CopyToWorkspace("tests/Fixtures/rd-monthly/full/report.json", "report.json");
+        _cli.CopyToWorkspace("tests/Fixtures/rd-monthly/full/evidence.json", "evidence.json");
+        _cli.CopyToWorkspace("templates/rd-monthly/rd-monthly.pptx", "rd-monthly.pptx");
+        var manifest = _cli.CopyToWorkspace("templates/rd-monthly/manifest.json", "manifest.json");
 
-        var run = await _cli.RunAsync("render", "--workspace", _cli.Workspace, "--manifest", manifest, "--json");
+        var present = await _cli.RunAsync("present", "--workspace", _cli.Workspace, "--manifest", manifest, "--json");
+        var render = await _cli.RunAsync("render", "--workspace", _cli.Workspace, "--manifest", manifest, "--json");
 
-        Assert.Equal(ExitCodes.Configuration, run.ExitCode);
-        Assert.Equal("manifest.invalid", run.Json["error"]!["code"]!.GetValue<string>());
-        var issue = Assert.Single(run.Json["issues"]!.AsArray());
-        Assert.Equal("manifest.unsupported_version", issue!["code"]!.GetValue<string>());
-        Assert.Equal("/schema_version", issue["instance_path"]!.GetValue<string>());
-        Assert.False(File.Exists(Path.Combine(_cli.Workspace, "report.pptx")));
+        Assert.Equal(ExitCodes.Success, present.ExitCode);
+        Assert.Equal(ExitCodes.Success, render.ExitCode);
+        Assert.Empty(render.Json["issues"]!.AsArray());
+        Assert.True(File.Exists(Path.Combine(_cli.Workspace, "report.pptx")));
     }
 
     // Layout implements the 1.1 rules, so present resolves a 1.1 report with a 1.1 manifest.
@@ -197,11 +199,11 @@ public sealed class CliSmokeTests : IDisposable
         Assert.Equal(!strict, File.Exists(Path.Combine(_cli.Workspace, "presentation.json")));
     }
 
-    // The contract checks run first, also before the render version guard, so a 1.1 manifest author sees the manifest's own problems.
+    // Both commands run the 1.1 contract checks, so a manifest author sees the manifest's own problems.
     [Theory]
     [InlineData("present")]
     [InlineData("render")]
-    public async Task Present_and_render_report_manifest_contract_problems_before_the_version(string command)
+    public async Task Present_and_render_report_manifest_contract_problems(string command)
     {
         var manifest = CopyManifestInputs(command);
         var node = JsonNode.Parse(File.ReadAllText(manifest))!;

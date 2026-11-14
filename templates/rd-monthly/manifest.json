@@ -617,6 +617,19 @@
       "font_size": 12,
       "color": "#4B5563"
     },
+    "metric_label": {
+      "font_size": 12,
+      "color": "#4B5563"
+    },
+    "metric_value": {
+      "font_size": 36,
+      "bold": true,
+      "color": "#111827"
+    },
+    "metric_caption": {
+      "font_size": 12,
+      "color": "#4B5563"
+    },
     "empty": {
       "color": "#4B5563"
     },

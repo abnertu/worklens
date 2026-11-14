@@ -129,7 +129,7 @@ internal static class PresentCommand
                 return checkedReport.ExitCode;
             }
 
-            var manifestDocument = InputFiles.LoadManifest(manifestPath, forRender: false);
+            var manifestDocument = InputFiles.LoadManifest(manifestPath);
             var reportDocument = JsonSerializer.Deserialize<ReportDocument>(checkedReport.Report.Content.Span, WorkLensJson.Options)!;
 
             var layout = new LayoutResolver().Resolve(reportDocument, checkedReport.Report.Sha256, checkedReport.Evidence, manifestDocument);

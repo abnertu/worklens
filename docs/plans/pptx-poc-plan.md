@@ -36,7 +36,7 @@
 | P4 | 表格 | `table` slot 建立 `a:tbl` | 欄數 / 列數正確; 套用模板表格樣式; 可在 PowerPoint 中編輯儲存格 |
 | P5 | Overflow | Layout Resolver 依 `max_items` / `max_chars` 拆頁或截斷 | 20 個 facts、300 字摘要的壓力案例: `split` 產生多頁並設 `continuation`; `truncate` 截斷並加 `…`, `truncated: true`; 不出現超出 placeholder 邊界的文字 (人工檢視) |
 | P6 | 中文換行 | 純中文、中英混合、長 URL、全形標點 | PowerPoint 中無字元遺失或亂碼; 標點不出現在行首 (依 PowerPoint 的東亞換行規則) |
-| P7 | 樣式保持 | 不設定任何 run 層級的字型 / 顏色 / 大小 | 輸出的 run 不含 `a:rPr` 字型 / 顏色覆寫 (結構斷言); 視覺與模板一致 |
+| P7 | 樣式保持 | 格式只來自模板與 manifest `styles` ([ADR-0010](../adr/0010-manifest-style-roles.md))。沒有樣式角色時, 不設定 run 層級的字型 / 顏色 / 大小 | 1.0 manifest 的 run 不含 `a:rPr` 覆寫 (結構斷言); 1.1 manifest 只有被指定角色的格式; 視覺與模板一致 |
 | P8 | 可編輯性 | 在 PowerPoint 開啟、修改文字、另存 | 開啟時無「修復」提示; 文字可直接編輯; 版面可切換 layout |
 | P9 | 檔案有效性 | `OpenXmlValidator` (Office 2019 以上) | 0 個驗證錯誤 |
 | P10 | 確定性 | 同一 Presentation IR 渲染兩次 | 抽取的 slide 結構與文字 (正規化後的 JSON) 相同; 不比較 `.pptx` 二進位雜湊 (交接文件 §4.3) |

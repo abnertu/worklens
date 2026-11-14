@@ -22,6 +22,7 @@ Accepted — 2026-11-14 (使用者於 2026-11-13 決定樣式契約)
 7. Presentation IR 中 `styles` 沒有定義的角色不是錯誤。此時 Renderer 不為它寫入格式。
 8. Manifest 內引用未定義的角色是錯誤 (`manifest.unknown_style`)。
 9. 字重為 bold 或 regular。設計規格的 medium 以 regular 呈現。
+10. Renderer 本身使用這些角色: `metric_label`、`metric_value` 與 `metric_caption` 格式化數字卡的三個部分。`numbered` 讓項目編號, 只格式化編號; 項目文字維持 placeholder 的格式。沒有這些角色時, 各部分使用 placeholder 的格式。
 
 ## Consequences
 
