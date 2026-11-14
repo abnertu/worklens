@@ -215,6 +215,8 @@ TemplateManifest
 欄 key 集合: `achievements`: `title`、`project`、`status`、`evidence`; `operations`: `title`、`status`、`evidence`; `challenge_table`: `problem`、`resolution`、`status`。
 其他 purpose 沒有集合。
 
+`template.version` 依 Semantic Versioning。Major: 讓既有 manifest 或 presentation 無法使用的變更, 例如移除或改名 layout 或 placeholder。Minor: 新增 layout 或 placeholder。Patch: 只改外觀, 例如顏色、字型或位置。新模板從 `1.0.0` 開始。Manifest 的變更依同樣的規則。Major: 移除或改名 layout 或 slot。Minor: 新增 layout、slot 或 sequence 項目。Patch: 只改容量、labels、styles 或欄寬。
+
 所有 IR 中的 `sha256` 欄位 (`evidence_document.sha256`、`source_report.sha256`、`template.sha256`) 一律是被參照檔案「寫出時的位元組」的 SHA-256 (小寫 hex), 不做任何正規化。
 
 Layout Resolver 規則 (M0, `WorkLens.Core.Layout.LayoutResolver`, 純函式; 同樣輸入必定得到位元組相同的輸出):

@@ -5,7 +5,10 @@
 
 .DESCRIPTION
     Requires Windows with PowerPoint installed. Refuses to run while any POWERPNT process exists, so it never
-    attaches to the user's open documents. The PowerPoint process started by this script is always ended.
+    attaches to the user's open documents. PowerPoint runs one instance, so do not open PowerPoint while the script
+    runs: a file opened then belongs to this instance. The script then leaves PowerPoint running, warns and exits 1,
+    so that the user's work is never closed. Otherwise the PowerPoint process started by this script is always
+    ended. The old template is replaced only after the new one is saved.
 
     After running, read the placeholders back from the .pptx (p:cSld/@name, p:ph/@idx, p:cNvPr/@name), update
     manifest.json if they changed, and set manifest template.sha256 to the SHA-256 of the written file.
@@ -123,6 +126,14 @@ function Set-DocumentProperty($Presentation, [string] $Name, [string] $Value) {
 }
 
 $outputFull = Get-FullWindowsPath $OutputPath
+# SaveAs writes here first, so that a failed save leaves the old template as it was.
+$tempFull = Join-Path ([IO.Path]::GetDirectoryName($outputFull)) "~build-$PID.pptx"
+
+# COM starts PowerPoint with /automation -Embedding. A window that the user opens has neither, so it is never ended.
+function Get-ComPowerPointId {
+    @(Get-CimInstance Win32_Process -Filter "Name = 'POWERPNT.EXE'" -ErrorAction SilentlyContinue |
+        Where-Object { $_.CommandLine -match '/automation|-Embedding' } | ForEach-Object ProcessId)
+}
 $logoPath = Get-FullWindowsPath (Join-Path ([IO.Path]::GetTempPath()) "worklens-logo-$PID.png")
 
 if (Get-Process POWERPNT -ErrorAction SilentlyContinue) {
@@ -132,12 +143,14 @@ if (Get-Process POWERPNT -ErrorAction SilentlyContinue) {
 
 $app = $null
 $startedPids = @()
+$ownOpen = $false
 $exitCode = 0
 try {
     $app = New-Object -ComObject PowerPoint.Application
-    $startedPids = @(Get-Process POWERPNT -ErrorAction SilentlyContinue | ForEach-Object Id)
+    $startedPids = @(Get-ComPowerPointId)
 
     $presentation = $app.Presentations.Add($msoFalse)
+    $ownOpen = $true
     $master = $presentation.Designs.Item(1).SlideMaster
 
     # Theme fonts: Latin Calibri, East Asian Microsoft JhengHei, for both heading (major) and body (minor).
@@ -213,9 +226,10 @@ try {
     $presentation.RemovePersonalInformation = $msoTrue
     foreach ($name in @('Author', 'Title', 'Last Author')) { Set-DocumentProperty $presentation $name '' }
 
-    if (Test-Path -LiteralPath $outputFull) { Remove-Item -LiteralPath $outputFull }
-    $presentation.SaveAs($outputFull, $ppSaveAsOpenXMLPresentation)
+    $presentation.SaveAs($tempFull, $ppSaveAsOpenXMLPresentation)
     $presentation.Close()
+    $ownOpen = $false
+    Move-Item -LiteralPath $tempFull -Destination $outputFull -Force
     Write-Output "Wrote $outputFull"
 }
 catch {
@@ -223,17 +237,38 @@ catch {
     $exitCode = 1
 }
 finally {
+    if ($ownOpen) {
+        try { $presentation.Close(); $ownOpen = $false } catch { Write-Warning "Close failed: $($_.Exception.Message)" }
+    }
     # Release COM references before Quit, otherwise POWERPNT can stay alive after Quit.
     Get-Variable presentation, master, contentLayout, tableLayout, object, shape, layout, slide, fontSet -ErrorAction SilentlyContinue |
         ForEach-Object { $_.Value = $null }
     [GC]::Collect(); [GC]::WaitForPendingFinalizers(); [GC]::Collect()
+    # PowerPoint runs one instance: a file that the user opens during the run opens in this one. Quit only when no
+    # other presentation is open, so that the user's work is never closed.
+    $keep = $false
     if ($null -ne $app) {
-        try { $app.Quit() } catch { Write-Warning "Quit failed: $($_.Exception.Message)" }
+        # Our own presentation counts when it could not be closed; Quit closes it. A failed check keeps PowerPoint,
+        # because a dialog on the user's file can make PowerPoint reject the call.
+        try { $keep = $app.Presentations.Count - $(if ($ownOpen) { 1 } else { 0 }) -gt 0 }
+        catch {
+            Write-Warning "Presentation check failed: $($_.Exception.Message)"
+            $keep = $true
+        }
+        if ($keep) {
+            Write-Warning 'PowerPoint has another open presentation; it is left running. Do not open PowerPoint while this script runs.'
+            $exitCode = 1
+        }
+        else {
+            try { $app.Quit() } catch { Write-Warning "Quit failed: $($_.Exception.Message)" }
+        }
         [void][Runtime.InteropServices.Marshal]::FinalReleaseComObject($app)
         $app = $null
         [GC]::Collect(); [GC]::WaitForPendingFinalizers()
     }
-    foreach ($id in $startedPids) {
+    # New-Object can fail after PowerPoint starts; no PowerPoint ran before this script, so a COM one is its own.
+    if (-not $keep -and $startedPids.Count -eq 0) { $startedPids = @(Get-ComPowerPointId) }
+    foreach ($id in $(if ($keep) { @() } else { $startedPids })) {
         $process = Get-Process -Id $id -ErrorAction SilentlyContinue
         if ($process) {
             $process | Wait-Process -Timeout 30 -ErrorAction SilentlyContinue
@@ -241,5 +276,9 @@ finally {
         }
     }
     if (Test-Path -LiteralPath $logoPath) { Remove-Item -LiteralPath $logoPath }
+    # The temporary file stays locked when PowerPoint is kept running; it is then left for the user to remove.
+    if (Test-Path -LiteralPath $tempFull) {
+        try { Remove-Item -LiteralPath $tempFull } catch { Write-Warning "Cannot remove ${tempFull}: $($_.Exception.Message)" }
+    }
 }
 exit $exitCode

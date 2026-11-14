@@ -171,13 +171,11 @@ m1b 已完成 GitLab `collect` 實作、fixture 測試與 self-managed GitLab 16
 
 | 項目 | 具體問題 | 驗收方向 |
 |---|---|---|
-| PoC 程序清理 | `run-poc-checks.ps1` 會終止檢查期間新出現的所有 POWERPNT, 可能關閉使用者另開的視窗 | 只清理腳本建立的程序; 測試逾時與並行啟動 |
-| 模板重建 | `build-template.ps1` 在 SaveAs 前刪除舊模板; COM 建立失敗的清理仍有缺口 | 寫入失敗時保留舊模板; 清理本次建立的程序 |
 | 路徑錯誤 | 空路徑選項與含 NUL 的 `template.file` 可能回 exit 70 | 以 CLI fixture 驗證錯誤分類與 JSON envelope |
 | 模板資料清理 | 未使用的損毀 part、`customXml`、section 資訊與部分文件屬性可能留在輸出 | 用含這些資料的模板驗證清理或拒絕行為 |
-| 未排入 sequence 的內容 | 自訂 manifest 可讓部分 report section 靜默消失 | 先定義警告契約, 再測試遺漏的 section |
+| 未排入 sequence 的內容 | Layout 對未放置的 narrative 回報 warning ([ADR-0011](../adr/0011-layout-warnings.md))。Sequence 遺漏 work item 的 section 時仍沒有 warning | 定義 work item 的警告契約, 再測試遺漏的 section |
 
-程序與模板風險應在下一次執行相關 PowerPoint 腳本前處理。其餘項目可分開安排, 不必合成大型修正計畫。
+rt-3 已修正程序與模板的風險。腳本只結束 COM 啟動的 PowerPoint, 並在 PowerPoint 可能有使用者的工作時讓它繼續執行。其餘項目可以逐項安排。
 
 ### 後續修正與驗證
 

@@ -10,8 +10,12 @@
 
     Requires Windows with PowerPoint installed. Refuses to run while any POWERPNT process exists, so it never
     touches the user's open documents. All PowerPoint work runs in one background job with a timeout (a repair
-    prompt or modal dialog shows up as a timeout). Whatever the outcome, the POWERPNT process started for a file is
-    ended before the next file. Exit code: 0 when every file passes, 1 otherwise, 2 when PowerPoint was running.
+    prompt or modal dialog shows up as a timeout). After a file, the POWERPNT process that COM started for it is
+    ended, unless PowerPoint may hold the user's work. PowerPoint runs one instance, so do not open PowerPoint during
+    the run: a file opened then belongs to the checked instance. When that instance holds another presentation, or
+    when the check times out (a dialog may be on the user's file), PowerPoint is left running, the file fails and the
+    files after it are skipped (SKIP); close PowerPoint before the next run. Exit code: 0 when every file passes, 1
+    otherwise, 2 when PowerPoint was running at the start.
 
     Call it with -Command so that -Pptx receives an array:
         pwsh -Command "& tools/poc/run-poc-checks.ps1 -Pptx out/poc/monthly.pptx,out/poc/stress.pptx"
@@ -24,12 +28,16 @@
 
 .PARAMETER TimeoutSeconds
     Time limit of the PowerPoint job per file (default 300).
+
+.PARAMETER SwitchToLayout
+    Name of the layout that the last slide switches to (default Two Content, a layout of sample-monthly).
 #>
 [CmdletBinding()]
 param(
     [Parameter(Mandatory)] [string[]] $Pptx,
     [string] $OutputRoot = 'out/poc',
-    [int] $TimeoutSeconds = 300
+    [int] $TimeoutSeconds = 300,
+    [string] $SwitchToLayout = 'Two Content'
 )
 
 Set-StrictMode -Version Latest
@@ -42,7 +50,7 @@ function Get-FullWindowsPath([string] $Path) {
 
 # Runs inside the job (a separate pwsh process). Returns one result object; never throws.
 $comChecks = {
-    param([string] $File, [string] $OutDir, [string] $PidFile)
+    param([string] $File, [string] $OutDir, [string] $PidFile, [string] $SwitchToLayout, [string] $KeepFile)
 
     Set-StrictMode -Version Latest
     $ErrorActionPreference = 'Stop'
@@ -50,7 +58,6 @@ $comChecks = {
     $msoFalse = 0
     $msoPlaceholder = 14
     $ppSaveAsOpenXMLPresentation = 24
-    $SwitchToLayout = 'Two Content'
     $EditedTitle = 'PoC edited title'
     $EditedCell = 'PoC edited cell'
 
@@ -139,12 +146,27 @@ $comChecks = {
         $result.error = $_.Exception.Message
     }
     finally {
+        $ownOpen = 0
+        if ($null -ne (Get-Variable presentation -ValueOnly -ErrorAction SilentlyContinue)) {
+            try { $presentation.Close() } catch { $ownOpen = 1 }
+        }
         # Release COM references before Quit, otherwise POWERPNT can stay alive after Quit.
         Get-Variable presentation, slide, shape, first, last, layout, candidate -ErrorAction SilentlyContinue |
             ForEach-Object { $_.Value = $null }
         [GC]::Collect(); [GC]::WaitForPendingFinalizers(); [GC]::Collect()
+        # A file that the user opened during the run is in this instance; keep it running so that the work stays open.
+        $keep = $false
         if ($null -ne $app) {
-            try { $app.Quit() } catch { }
+            # A failed check keeps PowerPoint: a dialog on the user's file can make PowerPoint reject the call.
+            try { $keep = $app.Presentations.Count - $ownOpen -gt 0 } catch { $keep = $true }
+        }
+        if ($keep) {
+            Set-Content -LiteralPath $KeepFile -Value 'keep'
+            $result.ok = $false
+            $result.error = 'PowerPoint has another open presentation; it is left running. Do not open PowerPoint during the check.'
+        }
+        if ($null -ne $app) {
+            if (-not $keep) { try { $app.Quit() } catch { } }
             [void][Runtime.InteropServices.Marshal]::FinalReleaseComObject($app)
             $app = $null
             [GC]::Collect(); [GC]::WaitForPendingFinalizers()
@@ -158,17 +180,29 @@ function Get-RunningPowerPointId {
     @(Get-Process POWERPNT -ErrorAction SilentlyContinue | Where-Object { -not $_.HasExited } | ForEach-Object Id)
 }
 
+# COM starts PowerPoint with /automation -Embedding. A window that the user opens has neither, so it is never ended.
+function Test-ComPowerPoint([int] $Id) {
+    $process = Get-CimInstance Win32_Process -Filter "ProcessId = $Id" -ErrorAction SilentlyContinue
+    $null -ne $process -and $process.CommandLine -match '/automation|-Embedding'
+}
+
 function Test-Running([int] $Id) {
     $process = Get-Process -Id $Id -ErrorAction SilentlyContinue
     $null -ne $process -and -not $process.HasExited
 }
 
-function Stop-StartedPowerPoint([int[]] $Before, [string] $PidFile) {
+function Stop-StartedPowerPoint([int[]] $Before, [string] $PidFile, [string] $KeepFile) {
+    if (Test-Path -LiteralPath $KeepFile) {
+        $reason = if ((Get-Content -LiteralPath $KeepFile) -eq 'timeout') { 'the check timed out' } else { 'PowerPoint holds another presentation' }
+        Write-Warning "PowerPoint is left running because $reason. Close it before the next run."
+        return
+    }
     $ids = @()
     if (Test-Path -LiteralPath $PidFile) { $ids += @(Get-Content -LiteralPath $PidFile | ForEach-Object { [int]$_ }) }
     # Also any POWERPNT that appeared since the start (the job may time out before it writes the PID file).
     $ids += @(@(Get-RunningPowerPointId) | Where-Object { $Before -notcontains $_ })
-    foreach ($id in ($ids | Sort-Object -Unique)) {
+    $ids = @($ids | Sort-Object -Unique | Where-Object { Test-ComPowerPoint $_ })
+    foreach ($id in $ids) {
         if (Test-Running $id) {
             Wait-Process -Id $id -Timeout 30 -ErrorAction SilentlyContinue
             if (Test-Running $id) {
@@ -183,8 +217,8 @@ function Stop-StartedPowerPoint([int[]] $Before, [string] $PidFile) {
 }
 
 $exitCode = 0
-foreach ($path in $Pptx) {
-    $file = Get-FullWindowsPath $path
+for ($index = 0; $index -lt $Pptx.Count; $index++) {
+    $file = Get-FullWindowsPath $Pptx[$index]
     $stem = [IO.Path]::GetFileNameWithoutExtension($file)
     $outDir = Get-FullWindowsPath (Join-Path $OutputRoot $stem)
 
@@ -197,23 +231,28 @@ foreach ($path in $Pptx) {
     if (Test-Path -LiteralPath $outDir) { Remove-Item -LiteralPath $outDir -Recurse -Force }
     New-Item -ItemType Directory -Path $outDir | Out-Null
     $pidFile = Join-Path $outDir 'powerpnt.pid'
+    $keepFile = Join-Path $outDir 'keep-powerpoint'
 
     $result = $null
-    $job = Start-Job -ScriptBlock $comChecks -ArgumentList $file, $outDir, $pidFile
+    $job = Start-Job -ScriptBlock $comChecks -ArgumentList $file, $outDir, $pidFile, $SwitchToLayout, $keepFile
     try {
         if (Wait-Job -Job $job -Timeout $TimeoutSeconds) {
             $result = Receive-Job -Job $job -ErrorAction Continue | Select-Object -Last 1 |
                 Select-Object -Property * -ExcludeProperty PSComputerName, RunspaceId, PSShowComputerName
         }
         else {
+            # The dialog that blocks the job may be on a file that the user opened in this instance, so a timeout
+            # leaves PowerPoint running for the user to close.
             Stop-Job -Job $job
-            $result = [pscustomobject]@{ file = $file; ok = $false; error = "Timed out after $TimeoutSeconds s (repair prompt or dialog?)." }
+            Set-Content -LiteralPath $keepFile -Value 'timeout'
+            $result = [pscustomobject]@{ file = $file; ok = $false; error = "Timed out after $TimeoutSeconds s (repair prompt or dialog?). PowerPoint is left running; close it before the next run." }
         }
     }
     finally {
         Remove-Job -Job $job -Force
-        Stop-StartedPowerPoint -Before $before -PidFile $pidFile
-        Remove-Item -LiteralPath $pidFile -ErrorAction SilentlyContinue
+        $kept = Test-Path -LiteralPath $keepFile
+        Stop-StartedPowerPoint -Before $before -PidFile $pidFile -KeepFile $keepFile
+        Remove-Item -LiteralPath $pidFile, $keepFile -ErrorAction SilentlyContinue
     }
 
     if ($null -eq $result) {
@@ -226,6 +265,14 @@ foreach ($path in $Pptx) {
     if (-not $result.ok) {
         Write-Output ($result | ConvertTo-Json -Depth 5)
         $exitCode = 1
+    }
+
+    # The next file would find PowerPoint running, so the files after a kept PowerPoint are not checked.
+    if ($kept) {
+        for ($rest = $index + 1; $rest -lt $Pptx.Count; $rest++) {
+            Write-Output "SKIP $(Get-FullWindowsPath $Pptx[$rest]): PowerPoint was left running."
+        }
+        break
     }
 }
 

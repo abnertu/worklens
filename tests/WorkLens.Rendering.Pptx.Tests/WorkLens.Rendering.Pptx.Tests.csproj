@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <Content Include="..\..\templates\sample-monthly\*" Link="templates\sample-monthly\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\templates\rd-monthly\rd-monthly.pptx;..\..\templates\rd-monthly\manifest.json" Link="templates\rd-monthly\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="..\Fixtures\**\*" Link="Fixtures\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="..\..\schemas\presentation-ir\1.0\examples\valid\*.json" Link="examples\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="Snapshots\**\*" CopyToOutputDirectory="PreserveNewest" />
