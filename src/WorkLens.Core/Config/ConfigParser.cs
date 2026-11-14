@@ -39,7 +39,11 @@ public static class ConfigParser
         JsonNode? root;
         try
         {
-            root = JsonNode.Parse(json, documentOptions: new JsonDocumentOptions { AllowTrailingCommas = false });
+            root = JsonNode.Parse(json, documentOptions: new JsonDocumentOptions
+            {
+                AllowTrailingCommas = false,
+                AllowDuplicateProperties = false,
+            });
         }
         catch (JsonException ex)
         {

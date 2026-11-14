@@ -46,13 +46,13 @@ internal static class InputFiles
     public const string PptxFileName = "report.pptx";
 
     /// <summary>
-    /// An explicit file option is resolved against the current directory; without it the default file name is
-    /// taken from the workspace (default: the current directory).
+    /// An explicit file option is resolved against the host's current directory; without it the default file name
+    /// is taken from the workspace (default: the host's current directory).
     /// </summary>
-    public static string Resolve(string? explicitPath, string? workspace, string defaultFileName) =>
+    public static string Resolve(CliHost host, string? explicitPath, string? workspace, string defaultFileName) =>
         explicitPath is not null
-            ? System.IO.Path.GetFullPath(explicitPath)
-            : System.IO.Path.GetFullPath(System.IO.Path.Combine(workspace ?? Directory.GetCurrentDirectory(), defaultFileName));
+            ? host.FullPath(explicitPath)
+            : host.FullPath(System.IO.Path.Combine(workspace ?? host.CurrentDirectory, defaultFileName));
 
     /// <summary>Reads a file; a missing or unreadable file is a configuration error (exit 3).</summary>
     public static InputFile Read(string path)

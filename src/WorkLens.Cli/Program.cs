@@ -1,5 +1,6 @@
 using System.CommandLine;
-using System.Text;
+using System.CommandLine.Parsing;
+using System.Reflection;
 using System.Text.Json.Nodes;
 using WorkLens.Core.Schemas;
 
@@ -16,73 +17,120 @@ public static class ExitCodes
     public const int Stale = 5;
     public const int NotImplemented = 10;
     public const int Internal = 70;
+
+    /// <summary>The user cancelled the command (Ctrl+C), as a shell reports SIGINT (D23).</summary>
+    public const int Cancelled = 130;
 }
 
 public static class Program
 {
-    public static int Main(string[] args)
+    /// <summary>The informational version, such as <c>0.1.0</c>.</summary>
+    internal static string Version { get; } =
+        typeof(Program).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "0.0.0";
+
+    public static Task<int> Main(string[] args) => RunAsync(args, CliHost.CreateDefault(), CancellationToken.None);
+
+    /// <summary>
+    /// Parses and runs one command on <paramref name="host"/>. Ctrl+C and <paramref name="cancellationToken"/> both
+    /// cancel the command. Every exception that a command does not handle becomes exit 70, written through the
+    /// host's redactor.
+    /// </summary>
+    internal static async Task<int> RunAsync(string[] args, CliHost host, CancellationToken cancellationToken)
     {
-        Console.OutputEncoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
+        var output = new CliOutput(host);
         var json = args.Contains("--json", StringComparer.Ordinal);
         var command = string.Empty;
         try
         {
-            var parse = BuildRootCommand().Parse(args);
+            // Usage errors can echo arguments before the collect action resolves its tokens.
+            foreach (var name in CollectCommand.DefaultGitHubTokenVariables)
+            {
+                host.Redactor.AddSecret(host.GetEnvironmentVariable(name));
+            }
+
+            var parse = BuildRootCommand(host).Parse(args);
             command = CommandName(parse.CommandResult);
 
-            // With --json, a parse error is still one envelope on stdout (parent backlog B5).
-            if (json && parse.Errors.Count > 0)
+            // Route parser diagnostics through the same redactor as command failures.
+            if (parse.Errors.Count > 0)
             {
-                CliOutput.WriteFailure(
-                    command,
-                    ExitCodes.Usage,
-                    "command.usage_error",
-                    string.Join(" ", parse.Errors.Select(e => e.Message)));
+                var message = UsageMessage(parse);
+                if (json)
+                {
+                    await output.WriteFailureAsync(command, ExitCodes.Usage, "command.usage_error", message).ConfigureAwait(false);
+                }
+                else
+                {
+                    await output.WriteErrorAsync("command.usage_error", message).ConfigureAwait(false);
+                }
+
                 return ExitCodes.Usage;
             }
 
             // Disable System.CommandLine's handler so exceptions from actions reach the catch below
             // and map to ExitCodes.Internal instead of 1 (which means a usage error).
-            var configuration = new InvocationConfiguration { EnableDefaultExceptionHandler = false };
-            return parse.Invoke(configuration);
+            var configuration = new InvocationConfiguration
+            {
+                EnableDefaultExceptionHandler = false,
+                Output = host.Out,
+                Error = host.Error,
+            };
+            return await parse.InvokeAsync(configuration, cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
             if (json)
             {
-                CliOutput.WriteFailure(command, ExitCodes.Internal, "command.internal_error", ex.Message);
+                await output.WriteFailureAsync(command, ExitCodes.Internal, "command.internal_error", ex.Message).ConfigureAwait(false);
             }
             else
             {
-                Console.Error.WriteLine($"internal error: {ex.Message}");
+                await output.WriteErrorAsync("internal error", ex.Message).ConfigureAwait(false);
             }
 
             return ExitCodes.Internal;
         }
     }
 
-    internal static RootCommand BuildRootCommand()
+    private static string UsageMessage(ParseResult parse)
+    {
+        var message = string.Join(" ", parse.Errors.Select(e => e.Message));
+        // Argument values can contain secrets from custom variables that are not known before configuration loads.
+        var values = parse.Tokens.Where(t => t.Type == TokenType.Argument).Select(t => t.Value)
+            .Concat(parse.UnmatchedTokens)
+            .Where(value => value.Length > 0)
+            .Distinct(StringComparer.Ordinal)
+            .OrderByDescending(value => value.Length);
+        foreach (var value in values)
+        {
+            message = message.Replace(value, "<value>", StringComparison.Ordinal);
+        }
+
+        return message;
+    }
+
+    internal static RootCommand BuildRootCommand(CliHost host)
     {
         var root = new RootCommand("WorkLens - evidence-backed work reports for agent CLIs.");
 
         var schema = new Command("schema", "Inspect built-in JSON Schemas.");
-        schema.Subcommands.Add(SchemaCommands.List());
-        schema.Subcommands.Add(SchemaCommands.Show());
+        schema.Subcommands.Add(SchemaCommands.List(host));
+        schema.Subcommands.Add(SchemaCommands.Show(host));
         root.Subcommands.Add(schema);
 
-        // Registered stubs: no required options, so a bare invocation returns NotImplemented, not a parse error.
-        root.Subcommands.Add(Stub("collect", "Collect evidence from GitHub/GitLab into evidence.json."));
+        root.Subcommands.Add(CollectCommand.Create(host));
 
+        // A registered stub: no required options, so a bare invocation returns NotImplemented, not a parse error.
         var evidence = new Command("evidence", "Work with Evidence IR.");
-        evidence.Subcommands.Add(Stub("digest", "Create the agent input digest.json from evidence.json.", "evidence digest"));
+        evidence.Subcommands.Add(Stub(host, "digest", "Create the agent input digest.json from evidence.json.", "evidence digest"));
         root.Subcommands.Add(evidence);
 
         var report = new Command("report", "Work with Report IR.");
-        report.Subcommands.Add(ReportCommands.Validate());
+        report.Subcommands.Add(ReportCommands.Validate(host));
         root.Subcommands.Add(report);
 
-        root.Subcommands.Add(PresentCommand.Create());
-        root.Subcommands.Add(RenderCommand.Create());
+        root.Subcommands.Add(PresentCommand.Create(host));
+        root.Subcommands.Add(RenderCommand.Create(host));
 
         return root;
     }
@@ -114,7 +162,7 @@ public static class Program
         return string.Join(' ', names);
     }
 
-    private static Command Stub(string name, string description, string? fullName = null)
+    private static Command Stub(CliHost host, string name, string description, string? fullName = null)
     {
         // Stubs accept any arguments (e.g. the documented --period) and still report NotImplemented.
         var command = new Command(name, description + " (not implemented in v0.1)")
@@ -124,7 +172,7 @@ public static class Program
         var json = JsonOption();
         command.Options.Add(json);
         var commandName = fullName ?? name;
-        command.SetAction(parse => CliOutput.Run(commandName, parse.GetValue(json), _ =>
+        command.SetAction(parse => new CliOutput(host).Run(commandName, parse.GetValue(json), _ =>
             throw new CliException(
                 ExitCodes.NotImplemented,
                 "command.not_implemented",
@@ -135,12 +183,12 @@ public static class Program
 
 internal static class SchemaCommands
 {
-    public static Command List()
+    public static Command List(CliHost host)
     {
         var command = new Command("list", "List built-in schema ids.");
         var json = Program.JsonOption();
         command.Options.Add(json);
-        command.SetAction(parse => CliOutput.Run("schema list", parse.GetValue(json), output =>
+        command.SetAction(parse => new CliOutput(host).Run("schema list", parse.GetValue(json), output =>
         {
             var schemas = new JsonArray();
             foreach (var info in IrSchemaCatalog.All)
@@ -156,12 +204,12 @@ internal static class SchemaCommands
     }
 
     /// <summary><c>schema show &lt;name&gt;[:&lt;version&gt;]</c>: writes the built-in schema bytes unchanged to stdout.</summary>
-    public static Command Show()
+    public static Command Show(CliHost host)
     {
         var command = new Command("show", "Print a built-in schema, e.g. 'report-ir' or 'report-ir:1.0'.");
         var name = new Argument<string>("name") { Description = "Schema name, optionally with ':<version>'." };
         command.Arguments.Add(name);
-        command.SetAction(parse =>
+        command.SetAction(async (parse, cancellationToken) =>
         {
             var value = parse.GetValue(name)!;
             var separator = value.IndexOf(':', StringComparison.Ordinal);
@@ -171,14 +219,13 @@ internal static class SchemaCommands
             if (info is null || (version is not null && version != info.Version))
             {
                 var known = string.Join(", ", IrSchemaCatalog.All.Select(i => $"{i.Name}:{i.Version}"));
-                Console.Error.WriteLine($"schema.not_found: No built-in schema '{value}'. Built-in schemas: {known}.");
+                await new CliOutput(host).WriteErrorAsync("schema.not_found", $"No built-in schema '{value}'. Built-in schemas: {known}.").ConfigureAwait(false);
                 return ExitCodes.Usage;
             }
 
-            Console.Out.Flush();
-            using var stdout = Console.OpenStandardOutput();
-            stdout.Write(WorkLensSchemaRegistry.Default.GetBytes(info.Id).Span);
-            stdout.Flush();
+            await host.Out.FlushAsync(cancellationToken).ConfigureAwait(false);
+            await host.StdoutStream.WriteAsync(WorkLensSchemaRegistry.Default.GetBytes(info.Id), cancellationToken).ConfigureAwait(false);
+            await host.StdoutStream.FlushAsync(cancellationToken).ConfigureAwait(false);
             return ExitCodes.Success;
         });
         return command;

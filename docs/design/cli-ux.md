@@ -20,7 +20,8 @@
 | `worklens report generate --period <yyyy-MM> ...` | — | 依序執行 present + render (不含 agent 步驟) | M3 |
 | `worklens status` | 工作目錄 | 各檔案存在 / 過期 (stale) 狀態與建議的下一步 | M3 |
 
-M0 (現況): `--version`、`schema list`、`schema show`、`report validate`、`present`、`render` 可用; `collect`、`evidence digest` 已註冊但回 exit code **10** (`command.not_implemented`)。Stub 命令**沒有必填參數**且接受任何參數 (例 `collect --period 2026-10 --json`), 以確保回 10 而不是解析錯誤 1。
+M1a 現況: `collect` 支援 GitHub。GitLab 蒐集於 M1b 提供。M0 命令維持可用。
+`evidence digest` 仍為 stub, 回 exit code **10** (`command.not_implemented`)。
 
 交接文件 §5.4 的概念命令 `worklens report generate --period ... --author ... --template ... --output ...` 對應到 M3 的便利命令; 由於分析由 agent 執行, 它只負責 agent 完成 `report.json` 之後的步驟。
 
@@ -28,8 +29,8 @@ M0 (現況): `--version`、`schema list`、`schema show`、`report validate`、`
 
 | 選項 | 說明 |
 |---|---|
-| `--workspace <dir>` | 工作目錄; 預設 `.worklens/reports/<period>/` (由 `--period` 或 `worklens.json` 推得) |
-| `--config <file>` | 設定檔; 預設依序找 `./worklens.json`、`~/.worklens/worklens.json` |
+| `--workspace <dir>` | 工作目錄; 目前預設為目前目錄, 自動期間目錄於 M3 提供 |
+| `--config <file>` | 設定檔; 搜尋順序見 §3.1 |
 | `--json` | stdout 輸出單一 JSON 物件 (見 §5); 不輸出進度文字 |
 | `--dry-run` | 只顯示將執行的動作 (要呼叫的 API、要寫入的檔案), 不發出網路請求、不寫檔 |
 | `--verbose` | stderr 輸出詳細日誌 (仍經過脫敏) |
@@ -37,7 +38,8 @@ M0 (現況): `--version`、`schema list`、`schema show`、`report validate`、`
 
 ### 2.1 M0 實際提供的選項
 
-M0 只實作下列選項; `--config`、`--dry-run`、`--verbose`、`--no-color` 與 `worklens.json` 於 M3 起提供。
+M0 命令提供下列選項。M1a 的 `collect` 另提供 `--config`、`--dry-run`、`--verbose` 與 `worklens.json`。
+`--no-color` 仍為後續規劃。
 
 | 命令 | 選項 |
 |---|---|
@@ -52,13 +54,37 @@ M0 只實作下列選項; `--config`、`--dry-run`、`--verbose`、`--no-color` 
 - 輸出一律原子寫入 (同目錄暫存檔 + rename); 失敗時不留下暫存檔, 也不覆寫既有輸出。
 - 讀檔以位元組讀入: SHA-256 對原始位元組計算, 解析前去除 UTF-8 BOM。JSON 輸出為 UTF-8 無 BOM、LF、結尾換行。
 
+### 2.2 M1a 的 `collect`
+
+```bash
+worklens collect --period 2026-10 --source gh-auth --config worklens.json --workspace .worklens/reports/2026-10 --json
+```
+
+- `--period` 必填, 格式為 `yyyy-MM`。缺少或格式錯誤回 exit 1 `command.usage_error`。
+- 月份與下一個月的 UTC 邊界必須可表示。年份 `0000`、`9999-12` 或時區換算溢位也回 exit 1。
+- `--source <id>` 可重複。未指定時選取全部 sources, 選取結果維持設定順序。
+- 選取的 source 只要含 GitLab, 即在網路請求前回 `config.unsupported_platform`。混合設定可用 `--source` 只選 GitHub。
+- `--workspace` 預設為目前目錄。`--output` 預設為 workspace 中的 `evidence.json`; 明確指定的相對路徑以目前目錄解析。
+- `collect` 在 HTTP 請求前建立缺少的輸出目錄。任一 source 失敗即停止, 回 exit 4, 並保留既有輸出。
+- `collect` 只標記 bot、merge 與 revert。`exclude` 由 M2 的 digest 套用。
+
+蒐集範圍與限制:
+
+- 讀取 default branch commits 與本人的 PR, 並收錄這些 PR 中身分相符的 commits。
+- Commit 以 author date 歸屬期間。PR 以 merged_at 歸屬期間, 未合併時用 created_at。
+- PR 中的 commits 可在期間外。身分比對與 `contains` 關聯見 [domain-model.md §2.1](domain-model.md#21-規則)。
+- Default branch 查詢窗結束於期間結束後 30 天。更晚的 committer date 可能使較早的 author date 漏收。
+- PR 依更新時間分頁。翻頁期間的 PR 更新可能造成漏收。
+- PR commits 最多取得 250 筆。單一 commit 的檔案最多取得 3000 筆。
+- 達截斷條件時輸出 `source.truncated` warning, exit 0。
+
 ## 3. 設定
 
 ### 3.1 `worklens.json` (不含任何 secret)
 
 ```json
 {
-  "config_version": "1",
+  "config_version": "1.0",
   "subject": { "display_name": "Example User" },
   "timezone": "Asia/Taipei",
   "identities": [
@@ -81,20 +107,39 @@ M0 只實作下列選項; `--config`、`--dry-run`、`--verbose`、`--no-color` 
 }
 ```
 
-設定的 JSON Schema 於 M3 定義 (`config` 不屬於 IR 三層, 但同樣以 schema 驗證)。
+M1a 提供 `urn:worklens:schema:config:1.0`。`worklens schema show config` 輸出設定 schema。
+`config` 不屬於 IR 三層, 但同樣以 schema 驗證。
+
+設定搜尋依下列順序進行。明確指定的檔案不存在時不嘗試下一項。
+
+1. `--config <file>`。
+2. `WORKLENS_CONFIG`。
+3. 目前目錄的 `worklens.json`。
+4. `~/.worklens/worklens.json`。
+
+- `identities` 與 `sources` 皆不可為空。每個 identity 至少有一個身分欄位。
+- Source `id` 不可重複。正規化後的 platform、base_url 與 repository 組合也不可重複。
+- `base_url` 必須使用 HTTPS, 且不可含 userinfo、query 或 fragment。
+- `timezone` 必須為 IANA 名稱。未設定時使用本機時區轉換後的 IANA 名稱。
+- 本機時區無法轉換時回 `config.invalid`, 並要求設定 `timezone`。
+- 設定不接受 secret 欄位或完整 token 值。拒絕訊息只列 JSON Pointer, 見 [security-privacy.md §2](../security/security-privacy.md#2-secret-management)。
+- 同一物件內不可有重複的 JSON 屬性。重複屬性回 `config.invalid`, 並附 `json.invalid` issue。
 
 ### 3.2 環境變數
 
 | 變數 | 用途 |
 |---|---|
-| `WORKLENS_GITHUB_TOKEN` | GitHub token (預設); 未設定時嘗試 `GITHUB_TOKEN` |
-| `WORKLENS_GITLAB_TOKEN` | GitLab token (預設) |
+| `WORKLENS_GITHUB_TOKEN` | 僅限 `https://api.github.com`; 未設定時嘗試 `GITHUB_TOKEN` |
+| `WORKLENS_GITLAB_TOKEN` | GitLab token 預設值 (M1b) |
 | 自訂 (`token_env`) | 每個 source 可指定讀取哪個環境變數, 支援多個 GitLab 實例 |
 | `WORKLENS_CONFIG` | 設定檔路徑 (優先於預設搜尋) |
-| `WORKLENS_WORKSPACE_ROOT` | 工作目錄根 (預設 `.worklens/`) |
-| `NO_COLOR` | 停用色彩 |
+| `WORKLENS_WORKSPACE_ROOT` | 工作目錄根 (M3 規劃; 目前未讀取) |
+| `NO_COLOR` | 停用色彩 (規劃) |
 
 **Token 只能從環境變數 (或 M4 評估的 OS credential store) 讀取; 不提供 `--token` 命令列選項**, 避免 token 進入 shell history 與 agent 的命令紀錄 (交接文件 §5.4)。
+
+Source 指定 `token_env` 時只讀該變數, 不 fallback。空字串或只有空白視為未設定。
+GitHub Enterprise 必須指定 `token_env`。一般蒐集缺少 token 時回 `config.missing_token`; dry-run 不要求 token。
 
 ## 4. 工作目錄布局
 
@@ -105,9 +150,10 @@ M0 只實作下列選項; `--config`、`--dry-run`、`--verbose`、`--no-color` 
 ├── report.json          # agent 撰寫 → 人工審核
 ├── presentation.json    # present
 ├── report.pptx          # render
-├── manifest.json        # provenance (每個命令更新)
-└── cache/               # HTTP 回應快取, 可刪除
+└── manifest.json        # provenance (M3)
 ```
+
+此布局由使用者以 `--workspace` 選取。HTTP 回應快取已延後, M1a 不建立 `cache/`。
 
 ## 5. 輸出契約
 
@@ -176,7 +222,7 @@ stdout 恰好一個 JSON 物件, 結尾換行:
 | `template.invalid` | Renderer 回報模板問題; `issues` 含 `template.sha256_mismatch`、`template.unreadable`、`template.layout_missing`、`template.placeholder_missing`、`template.placeholder_position_missing` | 3 |
 | `output.write_failed` | 輸出目錄不存在或目標檔被鎖定 (例如在 PowerPoint 中開啟) | 3 |
 | `schema.not_found` | `schema show` 不認得的名稱或版本 (stderr) | 1 |
-| `command.usage_error` | 參數解析錯誤 (`--json` 時仍輸出 envelope) | 1 |
+| `command.usage_error` | 參數解析錯誤或期間邊界無法表示 (`--json` 時仍輸出 envelope) | 1 |
 | `command.not_implemented` | stub 命令 | 10 |
 | `command.internal_error` | 未預期的例外 (`--json` 時仍輸出 envelope) | 70 |
 
@@ -185,6 +231,50 @@ stdout 恰好一個 JSON 物件, 結尾換行:
 ```json
 { "schemas": [ { "id": "urn:worklens:schema:evidence-ir:1.0", "name": "evidence-ir", "version": "1.0" } ] }
 ```
+
+### 5.4 M1a 的 code 與結果
+
+| Code | 原因 | Exit |
+|---|---|---|
+| `config.not_found` | 找不到設定檔 | 3 |
+| `config.invalid` | 設定無法讀取、schema 不符或語意規則失敗 | 3 |
+| `config.secret_in_file` | 設定含 secret 欄位或完整 token 值 | 3 |
+| `config.unknown_source` | `--source` 指定未知 id | 3 |
+| `config.unsupported_platform` | 選取的 source 尚無 connector | 3 |
+| `config.missing_token` | 所需 token 變數未設定 | 3 |
+| `source.unauthorized` | HTTP 401 | 4 |
+| `source.forbidden` | HTTP 403, 且不是可重試的 rate limit | 4 |
+| `source.not_found` | HTTP 404 | 4 |
+| `source.moved` | HTTP 3xx; 不自動跟隨重新導向 | 4 |
+| `source.request_failed` | 其他不可重試的 4xx | 4 |
+| `source.rate_limited` | Rate limit 重試用盡或等待超過上限 | 4 |
+| `source.server_error` | 5xx 重試用盡或等待超過上限 | 4 |
+| `source.unreachable` | 網路錯誤或逾時重試用盡 | 4 |
+| `source.invalid_response` | 回應無效或分頁連結離開 API 主機 | 4 |
+| `source.truncated` | PR commits 或 commit files 截斷 (warning) | 0 |
+| `output.not_ignored` | 輸出位於 Git work tree 且未被忽略 (warning) | 0 |
+| `command.cancelled` | 使用者取消 | 130 |
+
+輸出目錄建立或寫檔失敗使用 `output.write_failed` (exit 3)。蒐集結果未通過內建 schema 使用 `command.internal_error` (exit 70)。
+
+成功的 `collect --json` 結果:
+
+```json
+{
+  "files": { "evidence": "/work/evidence.json", "config": "/work/worklens.json" },
+  "document_id": "evd-2026-10-12345678",
+  "period": { "label": "2026-10", "start": "2026-09-30T16:00:00Z", "end": "2026-10-31T16:00:00Z", "timezone": "Asia/Taipei" },
+  "items_by_kind": { "commit": 12, "change_request": 3 },
+  "requests": 20,
+  "warnings": 0
+}
+```
+
+`requests` 為所有 sources 的 HTTP 嘗試總數, 包含重試。`warnings` 為 warning issue 數量, 詳細內容在 envelope 的 `issues`。
+
+Dry-run 的 `result` 包含 `dry_run: true`、`files.evidence`、`period` 與 `sources`。
+每個 source 包含 `id`、`platform`、`base_url`、`repository`、`endpoints`、`token` 與 `scopes`。
+`token` 只含 `variable` 與 `set`。Enterprise 未指定變數時, `variable` 為 `null`。
 
 ## 6. Exit codes
 
@@ -198,13 +288,17 @@ stdout 恰好一個 JSON 物件, 結尾換行:
 | 5 | 上游檔案過期 (stale): 輸入檔在下游產生後被修改 | 依提示重跑上游命令 |
 | 10 | 命令尚未實作 | 回報使用者 |
 | 70 | 未預期的內部錯誤 | 回報使用者, 附 `--verbose` 日誌 |
+| 130 | 使用者取消 | 需要時重新執行 |
 
 ## 7. Dry-run 與錯誤處理
 
-- `--dry-run` 適用於 `collect` (列出將查詢的 repo、期間的 UTC 範圍、預估分頁數)、`present`、`render` (列出將產生的 slides 與輸出路徑)。
+- M1a 的 `collect --dry-run` 列出 repo、UTC 範圍、端點、token 變數名稱與設定狀態、所需權限。
+- Dry-run 不要求 token、不建立目錄、不寫檔, 也不發出網路請求。平台檢查仍會執行。
+- Dry-run 不估算分頁數, 因為分頁需要伺服器回應。`present` 與 `render` 的 dry-run 留待後續提供。
 - 錯誤訊息包含: 發生什麼、哪個檔案 / 欄位、建議動作。範例: `config.missing_token: Source 'gl-billing' requires environment variable WORKLENS_GITLAB_TOKEN_CORP.`
 - 所有日誌與錯誤訊息都經過脫敏 (token、Authorization header、URL 中的 `private_token=` 等), 見 [security-privacy.md](../security/security-privacy.md)。
 - 中斷 (Ctrl+C) 時取消進行中的 HTTP 請求, 不留下半寫的檔案 (原子寫入)。
+- 一般取消回 exit 130 `command.cancelled`。超過 System.CommandLine 的 `ProcessTerminationTimeout` 時, 強制結束可只回 130, 沒有 JSON envelope。
 
 ## 8. Agent Skill 草案
 

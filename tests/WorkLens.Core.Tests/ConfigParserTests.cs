@@ -144,6 +144,17 @@ public sealed class ConfigParserTests
         Assert.Equal("json.invalid", Assert.Single(result.Issues).Code);
     }
 
+    [Theory]
+    [InlineData("{\"config_version\":\"1.0\",\"config_version\":\"1.0\"}")]
+    [InlineData("{\"identities\":[{\"username\":\"alice\",\"username\":\"bob\"}]}")]
+    public void Duplicate_properties_are_config_invalid(string json)
+    {
+        var result = ConfigParser.Parse(json);
+
+        Assert.Equal(ConfigParseResult.Invalid, result.ErrorCode);
+        Assert.Equal("json.invalid", Assert.Single(result.Issues).Code);
+    }
+
     [Fact]
     public void Non_object_root_is_config_invalid()
     {

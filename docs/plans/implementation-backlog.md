@@ -52,7 +52,8 @@ M0 與 M1 只透過 Evidence IR schema 相依, 可平行開發; 但 M0 的參照
 - `m1a-github-collect`: 設定 schema 與載入、期間計算、Redactor、身分比對、HTTP 基礎 (分頁 / retry / rate limit)、GitHub connector、`worklens collect`。
 - `m1b-gitlab-connector`: 在 m1a 的接縫 (`ISourceConnector`、HTTP 基礎、`collect`) 上加入 GitLab 與 self-managed GitLab 實測。
 
-狀態: m1a 進行中。
+狀態: m1a 已完成 GitHub `collect` 實作與 fixture 測試。
+真實 GitHub repo 驗收與最終差異審查尚未完成。m1b 尚未開始。
 
 目標: 從 GitHub / GitLab 取得期間內的活動, 產生 Evidence IR。
 

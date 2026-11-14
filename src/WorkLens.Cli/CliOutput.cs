@@ -45,25 +45,36 @@ internal sealed class CliException(
 }
 
 /// <summary>
-/// Writes command output (docs/design/cli-ux.md section 5): with <c>--json</c>, exactly one envelope object and a
-/// trailing LF on stdout; otherwise a human-readable summary on stdout and errors on stderr.
+/// Writes command output (docs/design/cli-ux.md section 5) to the host's writers: with <c>--json</c>, exactly one
+/// envelope object and a trailing LF on stdout; otherwise a human-readable summary on stdout and errors on stderr.
+/// Every string passes through the host's <see cref="Redactor"/>.
 /// </summary>
-internal static class CliOutput
+internal sealed class CliOutput(CliHost host)
 {
     private const string OutputVersion = "1";
 
+    /// <summary>Runs a synchronous command body; see <see cref="RunAsync"/>.</summary>
+    public int Run(string command, bool json, Func<CommandResultBuilder, int> body) =>
+        RunAsync(command, json, (builder, _) => Task.FromResult(body(builder)), CancellationToken.None)
+            .GetAwaiter()
+            .GetResult();
+
     /// <summary>
     /// Runs a command body. A <see cref="CliException"/> becomes its exit code, error and issues; other exceptions
-    /// propagate to <c>Main</c> (exit 70).
+    /// propagate to <c>Program.RunAsync</c> (exit 70).
     /// </summary>
-    public static int Run(string command, bool json, Func<CommandResultBuilder, int> body)
+    public async Task<int> RunAsync(
+        string command,
+        bool json,
+        Func<CommandResultBuilder, CancellationToken, Task<int>> body,
+        CancellationToken cancellationToken)
     {
         var builder = new CommandResultBuilder();
         int exitCode;
         JsonObject? error = null;
         try
         {
-            exitCode = body(builder);
+            exitCode = await body(builder, cancellationToken).ConfigureAwait(false);
         }
         catch (CliException ex)
         {
@@ -71,36 +82,53 @@ internal static class CliOutput
             builder.Issues.AddRange(ex.Issues);
             error = Error(ex.Code, ex.Message, ex.Details);
         }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            // Ctrl+C or the caller's token; a timeout is not a cancellation and is retried by the connector (D23).
+            exitCode = ExitCodes.Cancelled;
+            builder.Result = null;
+            error = Error("command.cancelled", "The command was cancelled; no file was written.", details: null);
+        }
 
         if (json)
         {
-            WriteJson(Envelope(command, exitCode, builder.Result, builder.Issues, error));
+            await WriteJsonAsync(Envelope(command, exitCode, builder.Result, builder.Issues, error)).ConfigureAwait(false);
+            return exitCode;
         }
-        else
+
+        foreach (var line in builder.Lines)
         {
-            foreach (var line in builder.Lines)
-            {
-                Console.Out.WriteLine(line);
-            }
-
-            foreach (var issue in builder.Issues)
-            {
-                var path = issue.InstancePath.Length == 0 ? "(root)" : issue.InstancePath;
-                Console.Out.WriteLine($"{Severity(issue.Severity)} {issue.Code} {path}: {issue.Message}");
-            }
-
-            if (error is not null)
-            {
-                Console.Error.WriteLine($"{error["code"]!.GetValue<string>()}: {error["message"]!.GetValue<string>()}");
-            }
+            await WriteLineAsync(host.Out, line).ConfigureAwait(false);
         }
 
+        foreach (var issue in builder.Issues)
+        {
+            var path = issue.InstancePath.Length == 0 ? "(root)" : issue.InstancePath;
+            await WriteLineAsync(host.Out, $"{Severity(issue.Severity)} {issue.Code} {path}: {issue.Message}").ConfigureAwait(false);
+        }
+
+        if (error is not null)
+        {
+            await WriteErrorAsync(error["code"]!.GetValue<string>(), error["message"]!.GetValue<string>()).ConfigureAwait(false);
+        }
+
+        await host.Out.FlushAsync(CancellationToken.None).ConfigureAwait(false);
         return exitCode;
     }
 
     /// <summary>Writes the envelope for a failure that happens outside a command body (usage or internal error).</summary>
-    public static void WriteFailure(string command, int exitCode, string code, string message) =>
-        WriteJson(Envelope(command, exitCode, result: null, issues: [], Error(code, message, details: null)));
+    public Task WriteFailureAsync(string command, int exitCode, string code, string message) =>
+        WriteJsonAsync(Envelope(command, exitCode, result: null, issues: [], Error(code, message, details: null)));
+
+    /// <summary>Writes <c>&lt;code&gt;: &lt;message&gt;</c> to stderr.</summary>
+    public async Task WriteErrorAsync(string code, string message)
+    {
+        await WriteLineAsync(host.Error, $"{code}: {message}").ConfigureAwait(false);
+        await host.Error.FlushAsync(CancellationToken.None).ConfigureAwait(false);
+    }
+
+    /// <summary>Writes one diagnostic line to stderr (for example a <c>--verbose</c> request log).</summary>
+    public Task LogAsync(string line) => WriteLineAsync(host.Error, line);
 
     public static JsonObject Envelope(
         string command,
@@ -126,6 +154,18 @@ internal static class CliOutput
     };
 
     /// <summary>
+    /// One JSON object and one LF; never <c>WriteLine</c>, whose newline is CRLF on Windows. String values are
+    /// redacted in the tree, before serialization escapes them.
+    /// </summary>
+    public async Task WriteJsonAsync(JsonNode node)
+    {
+        Redact(node);
+        await host.Out.WriteAsync(node.ToJsonString(WorkLensJson.Options)).ConfigureAwait(false);
+        await host.Out.WriteAsync('\n').ConfigureAwait(false);
+        await host.Out.FlushAsync(CancellationToken.None).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Built as a <see cref="JsonObject"/> so that <c>schema_path: null</c> is written (the serializer options omit
     /// null properties of typed objects).
     /// </summary>
@@ -140,12 +180,41 @@ internal static class CliOutput
 
     private static string Severity(IssueSeverity severity) => severity == IssueSeverity.Error ? "error" : "warning";
 
-    /// <summary>One JSON object and one LF; never <c>WriteLine</c>, whose newline is CRLF on Windows.</summary>
-    public static void WriteJson(JsonNode node)
+    private Task WriteLineAsync(TextWriter writer, string line) => writer.WriteLineAsync(host.Redactor.Redact(line));
+
+    private void Redact(JsonNode? node)
     {
-        Console.Out.Write(node.ToJsonString(WorkLensJson.Options));
-        Console.Out.Write('\n');
-        Console.Out.Flush();
+        switch (node)
+        {
+            case JsonObject obj:
+                foreach (var name in obj.Select(p => p.Key).ToList())
+                {
+                    if (obj[name] is JsonValue value && value.TryGetValue<string>(out var text))
+                    {
+                        obj[name] = host.Redactor.Redact(text);
+                    }
+                    else
+                    {
+                        Redact(obj[name]);
+                    }
+                }
+
+                break;
+            case JsonArray array:
+                for (var i = 0; i < array.Count; i++)
+                {
+                    if (array[i] is JsonValue value && value.TryGetValue<string>(out var text))
+                    {
+                        array[i] = host.Redactor.Redact(text);
+                    }
+                    else
+                    {
+                        Redact(array[i]);
+                    }
+                }
+
+                break;
+        }
     }
 }
 

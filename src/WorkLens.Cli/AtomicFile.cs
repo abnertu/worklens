@@ -21,10 +21,18 @@ internal static class AtomicFile
         }
     }
 
-    /// <summary>A unique temporary path next to <paramref name="path"/>; the caller writes it, then calls <see cref="Commit"/>.</summary>
+    /// <summary>
+    /// A unique temporary path next to <paramref name="path"/>; the caller writes it, then calls <see cref="Commit"/>.
+    /// The path must be absolute (resolved with <see cref="CliHost.FullPath"/>), so the process directory never matters.
+    /// </summary>
     public static string TempPathFor(string path)
     {
-        var directory = Path.GetDirectoryName(Path.GetFullPath(path))!;
+        if (!Path.IsPathFullyQualified(path))
+        {
+            throw new ArgumentException($"Output path must be absolute: {path}", nameof(path));
+        }
+
+        var directory = Path.GetDirectoryName(path)!;
         if (!Directory.Exists(directory))
         {
             throw new CliException(

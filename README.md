@@ -11,7 +11,8 @@ WorkLens 負責月報中確定性的步驟:
 3. `report validate` 依 schema 與證據檢查 `report.json`。
 4. `present` 以模板 manifest 排版報告, `render` 寫出 `.pptx` 檔。
 
-狀態: v0.1 開發中。`report validate`、`present` 與 `render` 已可使用。GitHub 的 `collect` 開發中。`evidence digest` 尚未提供。
+狀態: v0.1 開發中。GitHub 的 `collect`、`report validate`、`present` 與 `render` 已可使用。
+GitHub 真實 repo 驗收尚未完成。GitLab 的 `collect` 與 `evidence digest` 尚未提供。
 
 ## 安裝
 

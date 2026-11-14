@@ -14,7 +14,7 @@ internal static class RenderCommand
     /// <c>render</c>: validate presentation.json (JSON, schema, consistency with the manifest; exit 2), then render it
     /// into a .pptx with the manifest's template. Template problems are exit 3 (D14).
     /// </summary>
-    public static Command Create()
+    public static Command Create(CliHost host)
     {
         var command = new Command("render", "Render presentation.json into a .pptx file.");
         var workspace = Program.WorkspaceOption();
@@ -31,17 +31,17 @@ internal static class RenderCommand
             command.Options.Add(option);
         }
 
-        command.SetAction(parse => CliOutput.Run("render", parse.GetValue(json), result =>
+        command.SetAction(parse => new CliOutput(host).Run("render", parse.GetValue(json), result =>
         {
             var manifestPath = parse.GetValue(manifest) is { } m
-                ? Path.GetFullPath(m)
+                ? host.FullPath(m)
                 : throw new CliException(
                     ExitCodes.Configuration,
                     "config.missing_manifest",
                     "No template manifest: pass --manifest <manifest.json>.");
             var ws = parse.GetValue(workspace);
-            var presentationPath = InputFiles.Resolve(parse.GetValue(presentation), ws, InputFiles.PresentationFileName);
-            var outputPath = InputFiles.Resolve(parse.GetValue(output), ws, InputFiles.PptxFileName);
+            var presentationPath = InputFiles.Resolve(host, parse.GetValue(presentation), ws, InputFiles.PresentationFileName);
+            var outputPath = InputFiles.Resolve(host, parse.GetValue(output), ws, InputFiles.PptxFileName);
 
             var presentationFile = InputFiles.Read(presentationPath);
             var manifestDocument = InputFiles.LoadUpstream<TemplateManifest>(InputFiles.Read(manifestPath), TemplateManifest.SchemaId);
@@ -50,8 +50,8 @@ internal static class RenderCommand
                 throw CliException.FromErrors(idErrors, "manifest.invalid", manifestPath);
             }
             var templatePath = parse.GetValue(template) is { } t
-                ? Path.GetFullPath(t)
-                : Path.GetFullPath(Path.Combine(Path.GetDirectoryName(manifestPath)!, manifestDocument.Template.File));
+                ? host.FullPath(t)
+                : host.FullPath(Path.Combine(Path.GetDirectoryName(manifestPath)!, manifestDocument.Template.File));
             var files = new JsonObject
             {
                 ["presentation"] = presentationPath,

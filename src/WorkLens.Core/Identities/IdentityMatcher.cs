@@ -50,6 +50,9 @@ public sealed partial class IdentityMatcher
         RegexOptions.IgnoreCase | RegexOptions.Multiline | RegexOptions.CultureInvariant)]
     private static partial Regex CoAuthorTrailer();
 
+    [GeneratedRegex(@"\A[A-Za-z0-9-]+[ \t]*:", RegexOptions.CultureInvariant)]
+    private static partial Regex TrailerKey();
+
     /// <summary>The login encoded in a GitHub noreply email, or null for any other email.</summary>
     public static string? LoginFromNoreplyEmail(string? email)
     {
@@ -70,7 +73,44 @@ public sealed partial class IdentityMatcher
             return [];
         }
 
-        return CoAuthorTrailer().Matches(message)
+        var lines = message.Replace("\r\n", "\n", StringComparison.Ordinal).Split('\n');
+        var end = lines.Length;
+        while (end > 0 && string.IsNullOrWhiteSpace(lines[end - 1]))
+        {
+            end--;
+        }
+
+        var start = end;
+        while (start > 0 && !string.IsNullOrWhiteSpace(lines[start - 1]))
+        {
+            start--;
+        }
+
+        // A conventional trailer block ends the message and is separated from its body by a blank line.
+        if (start == 0)
+        {
+            return [];
+        }
+
+        var trailers = new List<string>();
+        for (var i = start; i < end; i++)
+        {
+            var line = lines[i];
+            if (line[0] is ' ' or '\t' && trailers.Count > 0)
+            {
+                trailers[^1] += " " + line.Trim();
+            }
+            else if (TrailerKey().IsMatch(line))
+            {
+                trailers.Add(line);
+            }
+            else
+            {
+                return [];
+            }
+        }
+
+        return trailers.Select(line => CoAuthorTrailer().Match(line)).Where(m => m.Success)
             .Select(m => new SourcePerson(
                 Name: m.Groups["name"].Value.Length > 0 ? m.Groups["name"].Value : null,
                 Email: m.Groups["email"].Value.Trim()))

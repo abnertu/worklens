@@ -107,6 +107,17 @@ public sealed class IdentityMatcherTests
         Assert.Equal(new EvidenceAuthor(AuthorRole.CoAuthor, "Me Myself", null, "ME@example.com"), author);
     }
 
+    [Theory]
+    [InlineData("Document syntax\n\nCo-authored-by: Me <me@example.com>\n\nThis line explains the example above.")]
+    [InlineData("Document syntax\n\nCo-authored-by: Me <me@example.com>\nThis is body text, not a trailer.")]
+    [InlineData("Document syntax\nCo-authored-by: Me <me@example.com>")]
+    public void Co_author_examples_outside_a_trailer_block_do_not_attribute_the_commit(string message)
+    {
+        var matcher = Matcher(new Identity(Email: "me@example.com"));
+
+        Assert.Null(matcher.MatchCommit(Stranger, Stranger, message));
+    }
+
     [Fact]
     public void Role_priority_is_author_then_co_author_then_committer()
     {

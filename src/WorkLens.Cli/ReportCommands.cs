@@ -14,7 +14,7 @@ namespace WorkLens.Cli;
 internal static class ReportCommands
 {
     /// <summary><c>report validate</c>: schema, reference and rule validation of report.json against evidence.json.</summary>
-    public static Command Validate()
+    public static Command Validate(CliHost host)
     {
         var command = new Command("validate", "Validate report.json against schema and evidence.");
         var workspace = Program.WorkspaceOption();
@@ -27,11 +27,11 @@ internal static class ReportCommands
         command.Options.Add(evidence);
         command.Options.Add(strict);
         command.Options.Add(json);
-        command.SetAction(parse => CliOutput.Run("report validate", parse.GetValue(json), output =>
+        command.SetAction(parse => new CliOutput(host).Run("report validate", parse.GetValue(json), output =>
         {
             var ws = parse.GetValue(workspace);
-            var reportPath = InputFiles.Resolve(parse.GetValue(report), ws, InputFiles.ReportFileName);
-            var evidencePath = InputFiles.Resolve(parse.GetValue(evidence), ws, InputFiles.EvidenceFileName);
+            var reportPath = InputFiles.Resolve(host, parse.GetValue(report), ws, InputFiles.ReportFileName);
+            var evidencePath = InputFiles.Resolve(host, parse.GetValue(evidence), ws, InputFiles.EvidenceFileName);
 
             var checkedReport = ValidateReport(reportPath, evidencePath, parse.GetValue(strict), output);
             output.Lines.Insert(0, Summary(reportPath, checkedReport.Issues));
@@ -92,7 +92,7 @@ internal sealed record CheckedReport(
 internal static class PresentCommand
 {
     /// <summary><c>present</c>: validate report.json, then resolve it into presentation.json with a manifest.</summary>
-    public static Command Create()
+    public static Command Create(CliHost host)
     {
         var command = new Command("present", "Resolve report.json into presentation.json using a template manifest.");
         var workspace = Program.WorkspaceOption();
@@ -107,18 +107,18 @@ internal static class PresentCommand
             command.Options.Add(option);
         }
 
-        command.SetAction(parse => CliOutput.Run("present", parse.GetValue(json), result =>
+        command.SetAction(parse => new CliOutput(host).Run("present", parse.GetValue(json), result =>
         {
             var manifestPath = parse.GetValue(manifest) is { } m
-                ? Path.GetFullPath(m)
+                ? host.FullPath(m)
                 : throw new CliException(
                     ExitCodes.Configuration,
                     "config.missing_manifest",
                     "No template manifest: pass --manifest <manifest.json>.");
             var ws = parse.GetValue(workspace);
-            var reportPath = InputFiles.Resolve(parse.GetValue(report), ws, InputFiles.ReportFileName);
-            var evidencePath = InputFiles.Resolve(parse.GetValue(evidence), ws, InputFiles.EvidenceFileName);
-            var outputPath = InputFiles.Resolve(parse.GetValue(output), ws, InputFiles.PresentationFileName);
+            var reportPath = InputFiles.Resolve(host, parse.GetValue(report), ws, InputFiles.ReportFileName);
+            var evidencePath = InputFiles.Resolve(host, parse.GetValue(evidence), ws, InputFiles.EvidenceFileName);
+            var outputPath = InputFiles.Resolve(host, parse.GetValue(output), ws, InputFiles.PresentationFileName);
 
             var checkedReport = ReportCommands.ValidateReport(reportPath, evidencePath, parse.GetValue(strict), result);
             var files = (JsonObject)result.Result!["files"]!;

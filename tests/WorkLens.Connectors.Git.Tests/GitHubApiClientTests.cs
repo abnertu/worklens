@@ -409,8 +409,3 @@ public sealed class LinkHeaderTests
         Assert.Equal(expected, LinkHeader.FindNext([header]));
     }
 }
-
-internal sealed class FixedTimeProvider(DateTimeOffset now) : TimeProvider
-{
-    public override DateTimeOffset GetUtcNow() => now;
-}

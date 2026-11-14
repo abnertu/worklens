@@ -7,10 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="WorkLens.Cli.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="System.CommandLine" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\WorkLens.Connectors.Git\WorkLens.Connectors.Git.csproj" />
     <ProjectReference Include="..\WorkLens.Core\WorkLens.Core.csproj" />
     <ProjectReference Include="..\WorkLens.Rendering.Pptx\WorkLens.Rendering.Pptx.csproj" />
   </ItemGroup>
