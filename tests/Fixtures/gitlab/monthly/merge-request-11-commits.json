@@ -1,0 +1,13 @@
+{
+  "method": "GET",
+  "path": "/api/v4/projects/7/merge_requests/11/commits",
+  "query": {
+    "per_page": "100"
+  },
+  "responses": [
+    {
+      "status": 200,
+      "body": []
+    }
+  ]
+}

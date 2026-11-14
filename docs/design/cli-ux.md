@@ -20,7 +20,7 @@
 | `worklens report generate --period <yyyy-MM> ...` | — | 依序執行 present + render (不含 agent 步驟) | M3 |
 | `worklens status` | 工作目錄 | 各檔案存在 / 過期 (stale) 狀態與建議的下一步 | M3 |
 
-M1a 現況: `collect` 支援 GitHub。GitLab 蒐集於 M1b 提供。M0 命令維持可用。
+M1 現況: `collect` 支援 GitHub 與 GitLab。M0 命令維持可用。
 `evidence digest` 仍為 stub, 回 exit code **10** (`command.not_implemented`)。
 
 交接文件 §5.4 的概念命令 `worklens report generate --period ... --author ... --template ... --output ...` 對應到 M3 的便利命令; 由於分析由 agent 執行, 它只負責 agent 完成 `report.json` 之後的步驟。
@@ -38,7 +38,7 @@ M1a 現況: `collect` 支援 GitHub。GitLab 蒐集於 M1b 提供。M0 命令維
 
 ### 2.1 M0 實際提供的選項
 
-M0 命令提供下列選項。M1a 的 `collect` 另提供 `--config`、`--dry-run`、`--verbose` 與 `worklens.json`。
+M0 命令提供下列選項。M1 的 `collect` 另提供 `--config`、`--dry-run`、`--verbose` 與 `worklens.json`。
 `--no-color` 仍為後續規劃。
 
 | 命令 | 選項 |
@@ -54,7 +54,7 @@ M0 命令提供下列選項。M1a 的 `collect` 另提供 `--config`、`--dry-ru
 - 輸出一律原子寫入 (同目錄暫存檔 + rename); 失敗時不留下暫存檔, 也不覆寫既有輸出。
 - 讀檔以位元組讀入: SHA-256 對原始位元組計算, 解析前去除 UTF-8 BOM。JSON 輸出為 UTF-8 無 BOM、LF、結尾換行。
 
-### 2.2 M1a 的 `collect`
+### 2.2 M1 的 `collect`
 
 ```bash
 worklens collect --period 2026-10 --source gh-auth --config worklens.json --workspace .worklens/reports/2026-10 --json
@@ -63,12 +63,12 @@ worklens collect --period 2026-10 --source gh-auth --config worklens.json --work
 - `--period` 必填, 格式為 `yyyy-MM`。缺少或格式錯誤回 exit 1 `command.usage_error`。
 - 月份與下一個月的 UTC 邊界必須可表示。年份 `0000`、`9999-12` 或時區換算溢位也回 exit 1。
 - `--source <id>` 可重複。未指定時選取全部 sources, 選取結果維持設定順序。
-- 選取的 source 只要含 GitLab, 即在網路請求前回 `config.unsupported_platform`。混合設定可用 `--source` 只選 GitHub。
+- 選取的 sources 依設定順序逐一蒐集。GitHub 與 GitLab sources 可混用。
 - `--workspace` 預設為目前目錄。`--output` 預設為 workspace 中的 `evidence.json`; 明確指定的相對路徑以目前目錄解析。
 - `collect` 在 HTTP 請求前建立缺少的輸出目錄。任一 source 失敗即停止, 回 exit 4, 並保留既有輸出。
 - `collect` 只標記 bot、merge 與 revert。`exclude` 由 M2 的 digest 套用。
 
-蒐集範圍與限制:
+GitHub 蒐集範圍與限制:
 
 - 讀取 default branch commits 與本人的 PR, 並收錄這些 PR 中身分相符的 commits。
 - Commit 以 author date 歸屬期間。PR 以 merged_at 歸屬期間, 未合併時用 created_at。
@@ -77,6 +77,22 @@ worklens collect --period 2026-10 --source gh-auth --config worklens.json --work
 - PR 依更新時間分頁。翻頁期間的 PR 更新可能造成漏收。
 - PR commits 最多取得 250 筆。單一 commit 的檔案最多取得 3000 筆。
 - 達截斷條件時輸出 `source.truncated` warning, exit 0。
+
+GitLab 蒐集範圍與限制 (驗證目標為 GitLab 16.9.1):
+
+- `repository` 為 project 路徑, 例如 `group/sub/app`。WorkLens 先解析 project, 之後以數字 ID 請求。
+- 讀取 default branch commits 與本人的 merge requests (MR), 並收錄這些 MR 中身分相符的 commits。
+- Commit 回應不含可靠的帳號名稱。Commit 以 author email、committer email 與 co-author trailer 比對, 所以 `identities` 必須列出 commit email。
+- MR 以 API username 比對作者。MR 以 merged_at 歸屬期間, 未合併時用 created_at。
+- Project 停用 MR 時 (`merge_requests_access_level` 為 `disabled`), 不查詢 MR, 只蒐集 commits。
+- MR 的 `external_id` 為 project 內的 `iid`。`opened` 與 `locked` 對應為 `open`。
+- MR commits 不設筆數上限。MR 不輸出 `stats` 與 `paths`, 因為 commit 統計的加總不是 MR 的淨變更。
+- Commit 的檔案路徑取自 diff 分頁, 最多 3000 筆。達上限時輸出 `source.truncated` warning, exit 0。
+- GitLab 伺服器的 diff 上限可能省略路徑, 且 16.9 不提供可偵測的截斷 metadata。
+- 只有 API 明確標示時才標記 bot。舊版回應沒有 bot 欄位時, 不從顯示名稱推測。
+- Default branch 查詢窗與 GitHub 相同, 結束於期間結束後 30 天。MR 以 `updated_after` 查詢並依更新時間分頁。
+- 沒有分頁 header 的滿頁回應以 offset 分頁續讀, 每次最多 1000 頁。超過上限或內容重複時回 `source.invalid_response`。
+- `Link` header 沒有任何含 `rel` 的連結時, 視為格式錯誤, 回 `source.invalid_response`。
 
 ## 3. 設定
 
@@ -130,7 +146,7 @@ M1a 提供 `urn:worklens:schema:config:1.0`。`worklens schema show config` 輸�
 | 變數 | 用途 |
 |---|---|
 | `WORKLENS_GITHUB_TOKEN` | 僅限 `https://api.github.com`; 未設定時嘗試 `GITHUB_TOKEN` |
-| `WORKLENS_GITLAB_TOKEN` | GitLab token 預設值 (M1b) |
+| `WORKLENS_GITLAB_TOKEN` | 僅限 `https://gitlab.com/api/v4` |
 | 自訂 (`token_env`) | 每個 source 可指定讀取哪個環境變數, 支援多個 GitLab 實例 |
 | `WORKLENS_CONFIG` | 設定檔路徑 (優先於預設搜尋) |
 | `WORKLENS_WORKSPACE_ROOT` | 工作目錄根 (M3 規劃; 目前未讀取) |
@@ -139,7 +155,8 @@ M1a 提供 `urn:worklens:schema:config:1.0`。`worklens schema show config` 輸�
 **Token 只能從環境變數 (或 M4 評估的 OS credential store) 讀取; 不提供 `--token` 命令列選項**, 避免 token 進入 shell history 與 agent 的命令紀錄 (交接文件 §5.4)。
 
 Source 指定 `token_env` 時只讀該變數, 不 fallback。空字串或只有空白視為未設定。
-GitHub Enterprise 必須指定 `token_env`。一般蒐集缺少 token 時回 `config.missing_token`; dry-run 不要求 token。
+預設變數不會送往其他主機或其他平台。GitHub Enterprise 與自架 GitLab 必須指定 `token_env`。
+一般蒐集缺少 token 時回 `config.missing_token`; dry-run 不要求 token。
 
 ## 4. 工作目錄布局
 
@@ -232,7 +249,7 @@ stdout 恰好一個 JSON 物件, 結尾換行:
 { "schemas": [ { "id": "urn:worklens:schema:evidence-ir:1.0", "name": "evidence-ir", "version": "1.0" } ] }
 ```
 
-### 5.4 M1a 的 code 與結果
+### 5.4 M1 的 code 與結果
 
 | Code | 原因 | Exit |
 |---|---|---|
@@ -240,18 +257,18 @@ stdout 恰好一個 JSON 物件, 結尾換行:
 | `config.invalid` | 設定無法讀取、schema 不符或語意規則失敗 | 3 |
 | `config.secret_in_file` | 設定含 secret 欄位或完整 token 值 | 3 |
 | `config.unknown_source` | `--source` 指定未知 id | 3 |
-| `config.unsupported_platform` | 選取的 source 尚無 connector | 3 |
+| `config.unsupported_platform` | 選取的 source 尚無 connector (保留給未來的平台) | 3 |
 | `config.missing_token` | 所需 token 變數未設定 | 3 |
 | `source.unauthorized` | HTTP 401 | 4 |
-| `source.forbidden` | HTTP 403, 且不是可重試的 rate limit | 4 |
+| `source.forbidden` | HTTP 403, 且不是 GitHub 可重試的 rate limit; GitLab 的 403 一律使用此 code | 4 |
 | `source.not_found` | HTTP 404 | 4 |
 | `source.moved` | HTTP 3xx; 不自動跟隨重新導向 | 4 |
 | `source.request_failed` | 其他不可重試的 4xx | 4 |
 | `source.rate_limited` | Rate limit 重試用盡或等待超過上限 | 4 |
 | `source.server_error` | 5xx 重試用盡或等待超過上限 | 4 |
 | `source.unreachable` | 網路錯誤或逾時重試用盡 | 4 |
-| `source.invalid_response` | 回應無效或分頁連結離開 API 主機 | 4 |
-| `source.truncated` | PR commits 或 commit files 截斷 (warning) | 0 |
+| `source.invalid_response` | 回應無效、分頁連結離開 API 主機, 或 GitLab 分頁無效或用盡 | 4 |
+| `source.truncated` | GitHub PR commits 或 commit files 截斷, 或 GitLab commit files 達上限 (warning) | 0 |
 | `output.not_ignored` | 輸出位於 Git work tree 且未被忽略 (warning) | 0 |
 | `command.cancelled` | 使用者取消 | 130 |
 
@@ -274,7 +291,9 @@ stdout 恰好一個 JSON 物件, 結尾換行:
 
 Dry-run 的 `result` 包含 `dry_run: true`、`files.evidence`、`period` 與 `sources`。
 每個 source 包含 `id`、`platform`、`base_url`、`repository`、`endpoints`、`token` 與 `scopes`。
-`token` 只含 `variable` 與 `set`。Enterprise 未指定變數時, `variable` 為 `null`。
+`token` 只含 `variable` 與 `set`。GitHub Enterprise 或自架 GitLab 未指定變數時, `variable` 為 `null`。
+GitHub 的 `scopes` 列出 fine-grained PAT 權限。GitLab 的 `scopes` 為 `read_api`。
+GitLab 端點以 `projects/<id>` 表示解析後的 project ID。
 
 ## 6. Exit codes
 
@@ -292,8 +311,9 @@ Dry-run 的 `result` 包含 `dry_run: true`、`files.evidence`、`period` 與 `s
 
 ## 7. Dry-run 與錯誤處理
 
-- M1a 的 `collect --dry-run` 列出 repo、UTC 範圍、端點、token 變數名稱與設定狀態、所需權限。
-- Dry-run 不要求 token、不建立目錄、不寫檔, 也不發出網路請求。平台檢查仍會執行。
+- `collect --dry-run` 列出 repo、UTC 範圍、端點、token 變數名稱與設定狀態、所需權限。
+- Dry-run 不要求 token、不建立目錄、不寫檔, 也不發出網路請求。設定與平台檢查仍會執行。
+- `--verbose` 的 `remaining=` 取自 GitHub 的 `X-RateLimit-Remaining` 或 GitLab 的 `RateLimit-Remaining`。缺少時輸出 `-`。
 - Dry-run 不估算分頁數, 因為分頁需要伺服器回應。`present` 與 `render` 的 dry-run 留待後續提供。
 - 錯誤訊息包含: 發生什麼、哪個檔案 / 欄位、建議動作。範例: `config.missing_token: Source 'gl-billing' requires environment variable WORKLENS_GITLAB_TOKEN_CORP.`
 - 所有日誌與錯誤訊息都經過脫敏 (token、Authorization header、URL 中的 `private_token=` 等), 見 [security-privacy.md](../security/security-privacy.md)。

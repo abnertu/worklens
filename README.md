@@ -6,13 +6,13 @@ WorkLens 從 GitHub 與 GitLab 蒐集可追溯的工作證據, 並把驗證過�
 
 WorkLens 負責月報中確定性的步驟:
 
-1. `collect` 把你一個月內的 commits 與 pull requests 寫入 `evidence.json`。
+1. `collect` 把你一個月內的 commits、pull requests 與 merge requests 寫入 `evidence.json`。
 2. 你或 AI agent 依據這些證據撰寫 `report.json`。WorkLens 不呼叫任何 LLM。
 3. `report validate` 依 schema 與證據檢查 `report.json`。
 4. `present` 以模板 manifest 排版報告, `render` 寫出 `.pptx` 檔。
 
-狀態: v0.1 開發中。GitHub 的 `collect`、`report validate`、`present` 與 `render` 已可使用。
-GitHub 真實 repo 驗收尚未完成。GitLab 的 `collect` 與 `evidence digest` 尚未提供。
+狀態: v0.1 開發中。GitHub 與 GitLab 的 `collect`、`report validate`、`present` 與 `render` 已可使用。
+GitLab `collect` 已在 self-managed GitLab 16.9.1 完成真實 project 驗收。GitHub 真實 repo 驗收尚未完成。`evidence digest` 尚未提供。
 
 ## 安裝
 

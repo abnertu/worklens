@@ -1,0 +1,95 @@
+{
+  "method": "GET",
+  "path": "/api/v4/projects/7/repository/commits",
+  "query": {
+    "ref_name": "main",
+    "since": "2026-09-30T16:00:00Z",
+    "until": "2026-11-30T16:00:00Z",
+    "per_page": "100",
+    "page": "2"
+  },
+  "responses": [
+    {
+      "status": 200,
+      "headers": {
+        "X-Page": "2",
+        "X-Next-Page": ""
+      },
+      "body": [
+        {
+          "id": "c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4",
+          "short_id": "c4c4c4c4",
+          "created_at": "2026-10-04T00:00:00.000Z",
+          "parent_ids": [
+            "0000000000000000000000000000000000000000",
+            "0101010101010101010101010101010101010101"
+          ],
+          "title": "Merge branch 'feature' into 'main'",
+          "message": "Merge branch 'feature' into 'main'",
+          "author_name": "Alice",
+          "author_email": "alice@example.com",
+          "authored_date": "2026-10-04T00:00:00.000Z",
+          "committer_name": "Alice",
+          "committer_email": "alice@example.com",
+          "committed_date": "2026-10-04T00:00:00.000Z",
+          "trailers": {},
+          "web_url": "https://gitlab.example.com/group/sub/app/-/commit/c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4"
+        },
+        {
+          "id": "c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3",
+          "short_id": "c3c3c3c3",
+          "created_at": "2026-10-02T00:00:00.000Z",
+          "parent_ids": [
+            "0000000000000000000000000000000000000000"
+          ],
+          "title": "Bump dependencies",
+          "message": "Bump dependencies\n\nCo-authored-by: Alice <ALICE@example.com>",
+          "author_name": "ci-bot",
+          "author_email": "ci-bot@example.com",
+          "authored_date": "2026-10-02T00:00:00.000Z",
+          "committer_name": "ci-bot",
+          "committer_email": "ci-bot@example.com",
+          "committed_date": "2026-10-02T00:00:00.000Z",
+          "trailers": {},
+          "web_url": "https://gitlab.example.com/group/sub/app/-/commit/c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3"
+        },
+        {
+          "id": "c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2",
+          "short_id": "c2c2c2c2",
+          "created_at": "2026-09-30T15:59:59.000Z",
+          "parent_ids": [
+            "0000000000000000000000000000000000000000"
+          ],
+          "title": "Prepare release",
+          "message": "Prepare release",
+          "author_name": "Alice",
+          "author_email": "alice@example.com",
+          "authored_date": "2026-09-30T15:59:59.000Z",
+          "committer_name": "Alice",
+          "committer_email": "alice@example.com",
+          "committed_date": "2026-09-30T15:59:59.000Z",
+          "trailers": {},
+          "web_url": "https://gitlab.example.com/group/sub/app/-/commit/c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2"
+        },
+        {
+          "id": "c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1",
+          "short_id": "c1c1c1c1",
+          "created_at": "2026-10-01T00:00:00.000+08:00",
+          "parent_ids": [
+            "0000000000000000000000000000000000000000"
+          ],
+          "title": "Add token refresh",
+          "message": "Add token refresh\n\nRefresh tokens before expiry.\n",
+          "author_name": "Alice",
+          "author_email": "alice@example.com",
+          "authored_date": "2026-10-01T00:00:00.000+08:00",
+          "committer_name": "Alice",
+          "committer_email": "alice@example.com",
+          "committed_date": "2026-10-01T00:00:00.000+08:00",
+          "trailers": {},
+          "web_url": "https://gitlab.example.com/group/sub/app/-/commit/c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1"
+        }
+      ]
+    }
+  ]
+}

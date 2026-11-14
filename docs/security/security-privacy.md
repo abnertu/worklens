@@ -18,15 +18,20 @@
 ## 2. Secret management
 
 - Token 只從環境變數讀取。不提供 `--token` 選項。
-- Source 指定 `token_env` 時只讀該變數。未指定時, 僅 `https://api.github.com` 使用 `WORKLENS_GITHUB_TOKEN` → `GITHUB_TOKEN`。
-- GitHub Enterprise 必須指定 `token_env`。空字串或只有空白視為未設定。
+- Source 指定 `token_env` 時只讀該變數。指定的變數未設定時, 不改讀預設變數。
+- 未指定 `token_env` 時, 僅 `https://api.github.com` 使用 `WORKLENS_GITHUB_TOKEN` → `GITHUB_TOKEN`。
+- 未指定 `token_env` 時, 僅 `https://gitlab.com/api/v4` 使用 `WORKLENS_GITLAB_TOKEN`。
+- GitHub Enterprise 與 self-managed GitLab 必須指定 `token_env`。空字串或只有空白視為未設定。
 - 設定任意深度含 `token`、`access_token`、`private_token`、`password`、`secret` 或 `api_key` 欄位時, 回 `config.secret_in_file`。
 - 字串值整段符合 §3 的完整 token pattern 時也拒絕。`digest.redaction.patterns` 的 `match` 與 `replace` 值除外。
 - 拒絕訊息只列 JSON Pointer, 不列 secret 值。`token_env` 可存環境變數名稱。
 - GitHub fine-grained PAT 只授權目標 repository 的 `Contents: read`、`Pull requests: read`、`Metadata: read`。
 - GitHub HTTP 請求已有 fixture 測試。上述最小權限的真實驗證待 S10 完成。
-- GitLab 的 `read_api` 權限於 M1b 驗證。`collect --dry-run` 顯示所需權限與 token 變數狀態。
-- Token 只放在 `HttpClient` 的 `Authorization` header, 不放 URL query (GitLab 的 `private_token=` 參數不使用)。
+- GitLab token 需要 `read_api` 權限。M1b 在 self-managed GitLab 16.9.1 完成真實驗收。
+- 該驗收使用的 token 權限多於 `read_api`。只有 `read_api` 的 token 尚未實測。
+- `collect --dry-run` 顯示所需權限與 token 變數狀態。
+- GitHub token 只放在 `Authorization` header。GitLab token 只放在 `PRIVATE-TOKEN` header。
+- Token 不放在 URL query。WorkLens 不使用 GitLab 的 `private_token=` 參數。
 - M4 評估 OS credential store (Windows Credential Manager / macOS Keychain / libsecret)。
 
 ## 3. 日誌脫敏
@@ -37,7 +42,8 @@
   - Pattern: `gh[pousr]_[A-Za-z0-9]{36,}`、`github_pat_[A-Za-z0-9_]{22,}`、`glpat-[A-Za-z0-9_-]{20,}`。
   - URL 中的 `token=`、`private_token=`、`access_token=` 參數值。
 - 預設不記錄 HTTP body; `--verbose` 只記錄 method、URL (脫敏後)、status、rate limit header。
-- M1a 以假 token 測試失敗路徑。測試斷言 stdout、stderr 與 workspace 檔案不含該值。
+- M1a 與 M1b 以假 token 測試失敗路徑。測試斷言 stdout、stderr 與 workspace 檔案不含該值。
+- 啟動時先把預設 token 變數 (`WORKLENS_GITHUB_TOKEN`、`GITHUB_TOKEN`、`WORKLENS_GITLAB_TOKEN`) 的值註冊到 Redactor。
 - CLI 在解析參數前註冊預設 token 值。人類可讀與 JSON 的用法錯誤也經過 Redactor。
 - 用法錯誤省略參數值。設定載入會先註冊 `token_env` 的值, 再驗證設定與來源選取。
 
@@ -85,7 +91,7 @@
 
 ## 8. 檢查清單 (各 Milestone 驗收時)
 
-- [x] GitHub 失敗路徑的輸出不含 token (`TokenLeakTests`, M1a; GitLab 於 M1b 驗證)。
+- [x] GitHub 與 GitLab 失敗路徑的輸出不含 token (`TokenLeakTests`, M1a、M1b)。
 - [x] 設定檔含 token 欄位時拒絕執行 (`ConfigParserTests`、`CollectCommandTests`, M1a)。
 - [ ] Digest 預設不含 email、diff、URL query (M2)。
 - [ ] Secret pattern redaction 有單元測試 (M2)。

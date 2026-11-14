@@ -43,7 +43,7 @@ public static class Program
         try
         {
             // Usage errors can echo arguments before the collect action resolves its tokens.
-            foreach (var name in CollectCommand.DefaultGitHubTokenVariables)
+            foreach (var name in CollectCommand.DefaultTokenVariables)
             {
                 host.Redactor.AddSecret(host.GetEnvironmentVariable(name));
             }

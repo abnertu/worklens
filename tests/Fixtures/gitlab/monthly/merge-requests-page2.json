@@ -1,0 +1,95 @@
+{
+  "method": "GET",
+  "path": "/api/v4/projects/7/merge_requests",
+  "query": {
+    "state": "all",
+    "scope": "all",
+    "order_by": "updated_at",
+    "sort": "desc",
+    "updated_after": "2026-09-30T16:00:00Z",
+    "per_page": "100",
+    "page": "2"
+  },
+  "responses": [
+    {
+      "status": 200,
+      "headers": {
+        "Link": "<https://gitlab.example.com/api/v4/projects/7/merge_requests?order_by=updated_at&page=1&per_page=100&scope=all&sort=desc&state=all&updated_after=2026-09-30T16%3A00%3A00Z>; rel=\"prev\", <https://gitlab.example.com/api/v4/projects/7/merge_requests?order_by=updated_at&page=1&per_page=100&scope=all&sort=desc&state=all&updated_after=2026-09-30T16%3A00%3A00Z>; rel=\"first\", <https://gitlab.example.com/api/v4/projects/7/merge_requests?order_by=updated_at&page=2&per_page=100&scope=all&sort=desc&state=all&updated_after=2026-09-30T16%3A00%3A00Z>; rel=\"last\""
+      },
+      "body": [
+        {
+          "id": 9009,
+          "iid": 9,
+          "project_id": 7,
+          "title": "Parser fix",
+          "description": "",
+          "state": "opened",
+          "created_at": "2026-10-10T00:00:00.000Z",
+          "updated_at": "2026-10-11T00:00:00.000Z",
+          "merged_at": null,
+          "closed_at": null,
+          "author": {
+            "id": 1,
+            "username": "Alice",
+            "name": "Alice",
+            "state": "active",
+            "avatar_url": null,
+            "web_url": "https://gitlab.example.com/Alice"
+          },
+          "draft": false,
+          "source_branch": "b9",
+          "target_branch": "main",
+          "web_url": "https://gitlab.example.com/group/sub/app/-/merge_requests/9"
+        },
+        {
+          "id": 9010,
+          "iid": 10,
+          "project_id": 7,
+          "title": "Token refresh",
+          "description": "Refresh tokens before expiry.",
+          "state": "merged",
+          "created_at": "2026-09-20T00:00:00.000Z",
+          "updated_at": "2026-10-03T00:00:00.000Z",
+          "merged_at": "2026-10-03T00:00:00.000Z",
+          "closed_at": null,
+          "author": {
+            "id": 1,
+            "username": "Alice",
+            "name": "Alice",
+            "state": "active",
+            "avatar_url": null,
+            "web_url": "https://gitlab.example.com/Alice"
+          },
+          "draft": false,
+          "source_branch": "b10",
+          "target_branch": "main",
+          "web_url": "https://gitlab.example.com/group/sub/app/-/merge_requests/10"
+        },
+        {
+          "id": 9007,
+          "iid": 7,
+          "project_id": 7,
+          "title": "Old draft",
+          "description": "",
+          "state": "opened",
+          "created_at": "2026-09-25T00:00:00.000Z",
+          "updated_at": "2026-10-01T00:00:00.000Z",
+          "merged_at": null,
+          "closed_at": null,
+          "author": {
+            "id": 1,
+            "username": "Alice",
+            "name": "Alice",
+            "state": "active",
+            "avatar_url": null,
+            "web_url": "https://gitlab.example.com/Alice"
+          },
+          "draft": false,
+          "source_branch": "b7",
+          "target_branch": "main",
+          "web_url": "https://gitlab.example.com/group/sub/app/-/merge_requests/7"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "method": "GET",
+  "path": "/api/v4/projects/7/repository/commits/c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8",
+  "query": {},
+  "responses": [
+    {
+      "status": 200,
+      "body": {
+        "id": "c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8",
+        "short_id": "c8c8c8c8",
+        "created_at": "2026-11-03T00:00:00.000Z",
+        "parent_ids": [
+          "0000000000000000000000000000000000000000"
+        ],
+        "title": "Tune cache",
+        "message": "Tune cache",
+        "author_name": "Alice",
+        "author_email": "alice@example.com",
+        "authored_date": "2026-10-30T00:00:00.000Z",
+        "committer_name": "Alice",
+        "committer_email": "alice@example.com",
+        "committed_date": "2026-11-03T00:00:00.000Z",
+        "trailers": {},
+        "web_url": "https://gitlab.example.com/group/sub/app/-/commit/c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8",
+        "stats": {
+          "additions": 7,
+          "deletions": 0,
+          "total": 7
+        },
+        "status": null,
+        "last_pipeline": null
+      }
+    }
+  ]
+}

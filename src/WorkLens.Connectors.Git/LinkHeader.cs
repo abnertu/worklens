@@ -11,6 +11,10 @@ public static partial class LinkHeader
     [GeneratedRegex(@";\s*rel\s*=\s*""?(?<rel>[^"";]*)""?", RegexOptions.CultureInvariant)]
     private static partial Regex Rel();
 
+    /// <summary>True when the header holds at least one link with a <c>rel</c> parameter.</summary>
+    public static bool HasRelation(IEnumerable<string> values) =>
+        values.Any(value => Link().Matches(value).Any(link => Rel().IsMatch(link.Groups["params"].Value)));
+
     /// <summary>
     /// The raw <c>rel="next"</c> target, or <c>null</c> when there is none. The caller validates it (it must be an
     /// absolute URL on the source host).

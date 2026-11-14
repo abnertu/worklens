@@ -1,0 +1,119 @@
+{
+  "method": "GET",
+  "path": "/api/v4/projects/7/merge_requests",
+  "query": {
+    "state": "all",
+    "scope": "all",
+    "order_by": "updated_at",
+    "sort": "desc",
+    "updated_after": "2026-09-30T16:00:00Z",
+    "per_page": "100"
+  },
+  "responses": [
+    {
+      "status": 200,
+      "headers": {
+        "Link": "<https://gitlab.example.com/api/v4/projects/7/merge_requests?order_by=updated_at&page=2&per_page=100&scope=all&sort=desc&state=all&updated_after=2026-09-30T16%3A00%3A00Z>; rel=\"next\", <https://gitlab.example.com/api/v4/projects/7/merge_requests?order_by=updated_at&page=1&per_page=100&scope=all&sort=desc&state=all&updated_after=2026-09-30T16%3A00%3A00Z>; rel=\"first\", <https://gitlab.example.com/api/v4/projects/7/merge_requests?order_by=updated_at&page=2&per_page=100&scope=all&sort=desc&state=all&updated_after=2026-09-30T16%3A00%3A00Z>; rel=\"last\""
+      },
+      "body": [
+        {
+          "id": 9008,
+          "iid": 8,
+          "project_id": 7,
+          "title": "Late merge",
+          "description": "",
+          "state": "merged",
+          "created_at": "2026-10-20T00:00:00.000Z",
+          "updated_at": "2026-11-02T00:00:00.000Z",
+          "merged_at": "2026-11-02T00:00:00.000Z",
+          "closed_at": null,
+          "author": {
+            "id": 1,
+            "username": "Alice",
+            "name": "Alice",
+            "state": "active",
+            "avatar_url": null,
+            "web_url": "https://gitlab.example.com/Alice"
+          },
+          "draft": false,
+          "source_branch": "b8",
+          "target_branch": "main",
+          "web_url": "https://gitlab.example.com/group/sub/app/-/merge_requests/8"
+        },
+        {
+          "id": 9013,
+          "iid": 13,
+          "project_id": 7,
+          "title": "Unrelated change",
+          "description": "",
+          "state": "merged",
+          "created_at": "2026-10-05T00:00:00.000Z",
+          "updated_at": "2026-10-06T00:00:00.000Z",
+          "merged_at": "2026-10-06T00:00:00.000Z",
+          "closed_at": null,
+          "author": {
+            "id": 2,
+            "username": "bob",
+            "name": "Bob",
+            "state": "active",
+            "avatar_url": null,
+            "web_url": "https://gitlab.example.com/bob"
+          },
+          "draft": false,
+          "source_branch": "b13",
+          "target_branch": "main",
+          "web_url": "https://gitlab.example.com/group/sub/app/-/merge_requests/13"
+        },
+        {
+          "id": 9012,
+          "iid": 12,
+          "project_id": 7,
+          "title": "Dependency bump",
+          "description": "",
+          "state": "closed",
+          "created_at": "2026-10-15T00:00:00.000Z",
+          "updated_at": "2026-10-16T00:00:00.000Z",
+          "merged_at": null,
+          "closed_at": "2026-10-16T00:00:00.000Z",
+          "author": {
+            "id": 1,
+            "username": "Alice",
+            "name": "Alice",
+            "state": "active",
+            "avatar_url": null,
+            "web_url": "https://gitlab.example.com/Alice"
+          },
+          "draft": false,
+          "source_branch": "b12",
+          "target_branch": "main",
+          "web_url": "https://gitlab.example.com/group/sub/app/-/merge_requests/12"
+        },
+        {
+          "id": 9011,
+          "iid": 11,
+          "project_id": 7,
+          "title": "Revert \"Add flag\"",
+          "description": "",
+          "state": "locked",
+          "created_at": "2026-10-12T00:00:00.000Z",
+          "updated_at": "2026-10-12T00:00:00.000Z",
+          "merged_at": null,
+          "closed_at": null,
+          "author": {
+            "id": 1,
+            "username": "alice",
+            "name": "Alice",
+            "state": "active",
+            "avatar_url": null,
+            "web_url": "https://gitlab.example.com/alice",
+            "bot": true
+          },
+          "draft": false,
+          "source_branch": "b11",
+          "target_branch": "main",
+          "web_url": "https://gitlab.example.com/group/sub/app/-/merge_requests/11"
+        }
+      ]
+    }
+  ]
+}

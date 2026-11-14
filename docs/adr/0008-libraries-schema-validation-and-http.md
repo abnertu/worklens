@@ -19,8 +19,13 @@ Accepted (JsonSchema.Net 9.x: 使用者決策) / Proposed (其餘) — 2026-11-1
    - 注意: 未知的 `format` 名稱不會報錯, 因此以測試檢查 schema 中的 format 值與 keyword 拼字。
 2. **CLI: System.CommandLine 3.x** (MIT)。
 3. **HTTP: BCL `HttpClient`, 不使用 `IHttpClientFactory` / DI 容器 / `Microsoft.Extensions.Http`** (M1 修訂)。`worklens` 是短命 CLI 程序, 沒有 factory 要解決的 socket 耗盡與 DNS 更新問題:
-   - Cli 為每個 source 建立一個 `HttpClient` (`SocketsHttpHandler { AllowAutoRedirect = false }`, 以 `GitHubHttp.CreateClient` 設定 `BaseAddress`、`User-Agent`、API 版本 header 與 `Authorization`), 注入 connector; 測試注入 fixture `HttpMessageHandler`。
-   - 自行實作分頁 (GitHub `Link` header、GitLab `x-next-page`) 與 retry / backoff (尊重 `Retry-After`、`x-ratelimit-reset`、secondary rate limit; 等待上限與次數見 [domain-model.md](../design/domain-model.md) 與 cli-ux), 延遲與時間以注入的函式與 `TimeProvider` 執行, 測試不真的等待。
+   - Cli 為每個 source 建立一個 `HttpClient`, 注入 connector。全部 source 共用一個 `SocketsHttpHandler { AllowAutoRedirect = false }`。測試注入 fixture `HttpMessageHandler`。
+   - `GitHubHttp.CreateClient` 設定 `BaseAddress`、`User-Agent`、API 版本 header 與 `Authorization`。
+   - `GitLabHttp.CreateClient` 設定 `BaseAddress`、`User-Agent`、JSON `Accept` 與 `PRIVATE-TOKEN`。
+   - 自行實作分頁: GitHub 用 `Link` header。GitLab 先用 `Link`, 沒有時用 `X-Next-Page`, 都沒有時以有上限的 offset 分頁續讀滿頁。
+   - 自行實作 retry / backoff。`RetryPolicy` 的 GitHub 模式處理 `Retry-After`、`x-ratelimit-reset` 與 secondary rate limit。
+   - `RetryPolicy` 的 GitLab 模式把 403 視為 `source.forbidden`。429 依序使用 `Retry-After`、reset metadata、指數 backoff。
+   - 兩種模式共用等待次數與上限 (見 cli-ux)。延遲與時間以注入的函式與 `TimeProvider` 執行, 測試不真的等待。
    - `Connectors.Git` 只相依 Core 與 BCL。
 
 ## Alternatives

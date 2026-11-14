@@ -1,0 +1,38 @@
+{
+  "method": "GET",
+  "path": "/api/v4/projects/7/repository/commits/c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1/diff",
+  "query": {
+    "per_page": "100"
+  },
+  "responses": [
+    {
+      "status": 200,
+      "headers": {
+        "X-Page": "1",
+        "X-Next-Page": "2"
+      },
+      "body": [
+        {
+          "diff": "@@ -1 +1 @@\n-old synthetic line\n+new synthetic line\n",
+          "new_path": "src/auth.cs",
+          "old_path": "src/auth.cs",
+          "a_mode": "100644",
+          "b_mode": "100644",
+          "new_file": false,
+          "renamed_file": false,
+          "deleted_file": false
+        },
+        {
+          "diff": "@@ -1 +1 @@\n-old synthetic line\n+new synthetic line\n",
+          "new_path": "docs/old.md",
+          "old_path": "docs/old.md",
+          "a_mode": "100644",
+          "b_mode": "0",
+          "new_file": false,
+          "renamed_file": false,
+          "deleted_file": true
+        }
+      ]
+    }
+  ]
+}

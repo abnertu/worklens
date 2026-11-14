@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json.Nodes;
 using WorkLens.Connectors.Git;
 using WorkLens.Connectors.Git.GitHub;
+using WorkLens.Connectors.Git.GitLab;
 using WorkLens.Core.Common;
 using WorkLens.Core.Config;
 using WorkLens.Core.Contracts;
@@ -24,13 +25,21 @@ internal static class CollectCommand
 {
     public const string DefaultGitHubApi = "https://api.github.com";
     public static readonly string[] DefaultGitHubTokenVariables = ["WORKLENS_GITHUB_TOKEN", "GITHUB_TOKEN"];
+    public const string DefaultGitLabApi = "https://gitlab.com/api/v4";
+    public static readonly string[] DefaultGitLabTokenVariables = ["WORKLENS_GITLAB_TOKEN"];
+
+    /// <summary>Every default token variable, registered with the redactor before arguments are parsed.</summary>
+    public static readonly string[] DefaultTokenVariables = [.. DefaultGitHubTokenVariables, .. DefaultGitLabTokenVariables];
 
     /// <summary>Fine-grained PAT permissions that the GitHub connector needs (security-privacy section 2).</summary>
     public static readonly string[] GitHubScopes = ["Metadata: read", "Contents: read", "Pull requests: read"];
 
+    /// <summary>The GitLab token scope that the GitLab connector needs (security-privacy section 2).</summary>
+    public static readonly string[] GitLabScopes = ["read_api"];
+
     public static Command Create(CliHost host)
     {
-        var command = new Command("collect", "Collect evidence from GitHub into evidence.json.");
+        var command = new Command("collect", "Collect evidence from GitHub and GitLab into evidence.json.");
         var period = new Option<string>("--period")
         {
             Description = "Report month, yyyy-MM (for example 2026-10).",
@@ -82,7 +91,7 @@ internal static class CollectCommand
     {
         var (configPath, config) = ConfigFiles.Load(host, options.ConfigPath);
         var sources = SelectSources(config, options.SourceIds);
-        if (sources.FirstOrDefault(s => s.Platform != SourcePlatform.Github) is { } unsupported)
+        if (sources.FirstOrDefault(s => s.Platform is not (SourcePlatform.Github or SourcePlatform.Gitlab)) is { } unsupported)
         {
             throw new CliException(
                 ExitCodes.Configuration,
@@ -121,9 +130,10 @@ internal static class CollectCommand
             {
                 var s = sources[i];
                 var counter = new RequestCounter(inner, host.Redactor, options.Verbose ? log : null);
-                using var http = GitHubHttp.CreateClient(counter, new Uri(s.BaseUrl), tokens[i], Program.Version);
-                var api = new GitHubApiClient(http, new RetryPolicy(host.TimeProvider, host.Delay), host.Redactor);
-                var collected = await new GitHubConnector(api, host.TimeProvider)
+                using var http = s.Platform == SourcePlatform.Gitlab
+                    ? GitLabHttp.CreateClient(counter, new Uri(s.BaseUrl), tokens[i], Program.Version)
+                    : GitHubHttp.CreateClient(counter, new Uri(s.BaseUrl), tokens[i], Program.Version);
+                var collected = await Connector(host, s.Platform, http)
                     .CollectAsync(new SourceQuery(period, config.Identities, Spec(s)), cancellationToken)
                     .ConfigureAwait(false);
                 requests += counter.Count;
@@ -191,6 +201,16 @@ internal static class CollectCommand
         return ExitCodes.Success;
     }
 
+    private static ISourceConnector Connector(CliHost host, SourcePlatform platform, HttpClient http) => platform switch
+    {
+        SourcePlatform.Gitlab => new GitLabConnector(
+            new GitLabApiClient(http, new RetryPolicy(host.TimeProvider, host.Delay, RetryPlatform.GitLab), host.Redactor),
+            host.TimeProvider),
+        _ => new GitHubConnector(
+            new GitHubApiClient(http, new RetryPolicy(host.TimeProvider, host.Delay), host.Redactor),
+            host.TimeProvider),
+    };
+
     private static List<ConfigSource> SelectSources(WorkLensConfig config, IReadOnlyList<string> ids)
     {
         if (ids.Count == 0)
@@ -238,11 +258,25 @@ internal static class CollectCommand
             $"The local time zone '{local.Id}' has no IANA name. Set \"timezone\" in {ConfigFiles.FileName}, for example \"Asia/Taipei\".");
     }
 
-    /// <summary>The variable that holds the source's token, or <c>null</c> when no default applies (D14).</summary>
-    private static IReadOnlyList<string> TokenVariables(ConfigSource source) =>
-        source.TokenEnv is { } named
-            ? [named]
-            : EvidenceIds.NormalizeBaseUrl(source.BaseUrl) == DefaultGitHubApi ? DefaultGitHubTokenVariables : [];
+    /// <summary>
+    /// The variables that can hold the source's token, in order. A configured <c>token_env</c> is the only one.
+    /// Otherwise the default variables apply only to the public API of the source's platform (D14), so a
+    /// default token never goes to a self-hosted instance.
+    /// </summary>
+    private static IReadOnlyList<string> TokenVariables(ConfigSource source)
+    {
+        if (source.TokenEnv is { } named)
+        {
+            return [named];
+        }
+
+        var (api, variables) = Defaults(source.Platform);
+        return EvidenceIds.NormalizeBaseUrl(source.BaseUrl) == api ? variables : [];
+    }
+
+    private static (string Api, string[] Variables) Defaults(SourcePlatform platform) => platform == SourcePlatform.Gitlab
+        ? (DefaultGitLabApi, DefaultGitLabTokenVariables)
+        : (DefaultGitHubApi, DefaultGitHubTokenVariables);
 
     private static string? ReadVariable(CliHost host, string name) =>
         host.GetEnvironmentVariable(name) is { } value && !string.IsNullOrWhiteSpace(value) ? value : null;
@@ -260,7 +294,7 @@ internal static class CollectCommand
         }
 
         var message = variables.Count == 0
-            ? $"Source '{source.Id}' needs \"token_env\" in {ConfigFiles.FileName}: the default token variables are sent only to {DefaultGitHubApi}."
+            ? $"Source '{source.Id}' needs \"token_env\" in {ConfigFiles.FileName}: the default token variables are sent only to {Defaults(source.Platform).Api}."
             : $"Source '{source.Id}' requires environment variable {string.Join(" or ", variables)}.";
         throw new CliException(ExitCodes.Configuration, "config.missing_token", message, new JsonObject { ["source"] = source.Id });
     }
@@ -284,22 +318,14 @@ internal static class CollectCommand
 
     private static void DryRun(CliHost host, CollectOptions options, Period period, List<ConfigSource> sources, CommandResultBuilder result)
     {
-        var until = period.End + GitHubConnector.CommitWindowSlack;
         var nodes = new JsonArray();
         result.Lines.Add($"Dry run: {period.Label} = {FormatUtc(period.Start)} to {FormatUtc(period.End)} ({period.Timezone}); nothing is requested or written.");
         foreach (var s in sources)
         {
             var baseUrl = EvidenceIds.NormalizeBaseUrl(s.BaseUrl);
-            var repo = $"repos/{s.Repository}";
-            string[] endpoints =
-            [
-                $"GET {baseUrl}/{repo}",
-                $"GET {baseUrl}/{repo}/commits?sha=<default branch>&since={GitHubApiClient.FormatTime(period.Start)}&until={GitHubApiClient.FormatTime(until)}&per_page=100",
-                $"GET {baseUrl}/{repo}/commits/<sha>",
-                $"GET {baseUrl}/{repo}/pulls?state=all&sort=updated&direction=desc&per_page=100",
-                $"GET {baseUrl}/{repo}/pulls/<number>",
-                $"GET {baseUrl}/{repo}/pulls/<number>/commits?per_page=100",
-            ];
+            var (endpoints, scopes) = s.Platform == SourcePlatform.Gitlab
+                ? (GitLabEndpoints(baseUrl, s.Repository, period), GitLabScopes)
+                : (GitHubEndpoints(baseUrl, s.Repository, period), GitHubScopes);
 
             var variables = TokenVariables(s);
             var variable = variables.FirstOrDefault(name => ReadVariable(host, name) is not null) ?? variables.FirstOrDefault();
@@ -312,10 +338,10 @@ internal static class CollectCommand
                 ["repository"] = s.Repository,
                 ["endpoints"] = new JsonArray([.. endpoints.Select(e => (JsonNode)e)]),
                 ["token"] = new JsonObject { ["variable"] = variable, ["set"] = set },
-                ["scopes"] = new JsonArray([.. GitHubScopes.Select(e => (JsonNode)e)]),
+                ["scopes"] = new JsonArray([.. scopes.Select(e => (JsonNode)e)]),
             });
 
-            result.Lines.Add($"{s.Id}: {baseUrl} {s.Repository}; token {variable ?? "(none: set token_env)"} {(set ? "set" : "not set")}; needs {string.Join(", ", GitHubScopes)}");
+            result.Lines.Add($"{s.Id}: {baseUrl} {s.Repository}; token {variable ?? "(none: set token_env)"} {(set ? "set" : "not set")}; needs {string.Join(", ", scopes)}");
             result.Lines.AddRange(endpoints.Select(e => "  " + e));
         }
 
@@ -327,6 +353,38 @@ internal static class CollectCommand
             ["period"] = PeriodNode(period),
             ["sources"] = nodes,
         };
+    }
+
+    private static string[] GitHubEndpoints(string baseUrl, string repository, Period period)
+    {
+        var repo = $"{baseUrl}/repos/{repository}";
+        var until = period.End + GitHubConnector.CommitWindowSlack;
+        return
+        [
+            $"GET {repo}",
+            $"GET {repo}/commits?sha=<default branch>&since={GitHubApiClient.FormatTime(period.Start)}&until={GitHubApiClient.FormatTime(until)}&per_page=100",
+            $"GET {repo}/commits/<sha>",
+            $"GET {repo}/pulls?state=all&sort=updated&direction=desc&per_page=100",
+            $"GET {repo}/pulls/<number>",
+            $"GET {repo}/pulls/<number>/commits?per_page=100",
+        ];
+    }
+
+    /// <summary>The project path is resolved once; later requests address the project by its numeric ID.</summary>
+    private static string[] GitLabEndpoints(string baseUrl, string repository, Period period)
+    {
+        var project = $"{baseUrl}/projects/<id>";
+        var until = period.End + GitLabConnector.CommitWindowSlack;
+        return
+        [
+            $"GET {baseUrl}/{GitLabApiClient.ProjectPath(repository)}",
+            $"GET {project}/repository/commits?ref_name=<default branch>&since={GitLabApiClient.FormatTime(period.Start)}&until={GitLabApiClient.FormatTime(until)}&per_page=100",
+            $"GET {project}/repository/commits/<sha>",
+            $"GET {project}/repository/commits/<sha>/diff?per_page=100",
+            $"GET {project}/merge_requests?state=all&scope=all&order_by=updated_at&sort=desc&updated_after={GitLabApiClient.FormatTime(period.Start)}&per_page=100",
+            $"GET {project}/merge_requests/<iid>",
+            $"GET {project}/merge_requests/<iid>/commits?per_page=100",
+        ];
     }
 
     private static CliException SourceFailure(ConfigSource source, WorkLensError error)
@@ -374,7 +432,8 @@ internal static class CollectCommand
 
 /// <summary>
 /// Counts every HTTP attempt of one source (retries included) for <c>result.requests</c>, and with
-/// <c>--verbose</c> logs one redacted line per attempt: method, URL, status and remaining rate limit. Never logs a
+/// <c>--verbose</c> logs one redacted line per attempt: method, URL, status and remaining rate limit (GitHub
+/// <c>X-RateLimit-Remaining</c>, GitLab <c>RateLimit-Remaining</c>). Never logs a
 /// body or a header other than the rate limit. It is never disposed: the inner handler is shared by every source
 /// and disposed once by the command.
 /// </summary>
@@ -393,7 +452,7 @@ internal sealed class RequestCounter(HttpMessageHandler inner, Redactor redactor
             var response = await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
             if (log is not null)
             {
-                var remaining = response.Headers.TryGetValues("x-ratelimit-remaining", out var values) ? values.First() : "-";
+                var remaining = Remaining(response, "x-ratelimit-remaining") ?? Remaining(response, "ratelimit-remaining") ?? "-";
                 await log.LogAsync($"http: {target} {(int)response.StatusCode} remaining={remaining}").ConfigureAwait(false);
             }
 
@@ -405,4 +464,7 @@ internal sealed class RequestCounter(HttpMessageHandler inner, Redactor redactor
             throw;
         }
     }
+
+    private static string? Remaining(HttpResponseMessage response, string header) =>
+        response.Headers.TryGetValues(header, out var values) ? values.FirstOrDefault() : null;
 }

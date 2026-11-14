@@ -133,6 +133,97 @@ public sealed class TokenLeakTests : IDisposable
         }
     }
 
+    public static TheoryData<string, bool, string> GitLabCases()
+    {
+        var data = new TheoryData<string, bool, string>();
+        foreach (var defaultVariable in new[] { true, false })
+        {
+            foreach (var flags in new[] { "--verbose", "--json --verbose" })
+            {
+                foreach (var scenario in new[] { "unauthorized_echo", "forbidden_echo", "server_error", "http_exception", "rate_limit_header", "invalid_config", "cancelled", "usage_error" })
+                {
+                    data.Add(scenario, defaultVariable, flags);
+                }
+            }
+        }
+
+        return data;
+    }
+
+    /// <summary>
+    /// DC7: a GitLab token that matches no pattern stays masked, both from <c>WORKLENS_GITLAB_TOKEN</c> on
+    /// gitlab.com and from a custom <c>token_env</c> on a self-managed instance.
+    /// </summary>
+    [Theory]
+    [MemberData(nameof(GitLabCases))]
+    public async Task GitLab_token_never_leaks(string scenario, bool defaultVariable, string flags)
+    {
+        const string project = "/api/v4/projects/group%2Fsub%2Fapp";
+        var token = PlainToken;
+        JsonObject source;
+        if (defaultVariable)
+        {
+            _cli.Environment["WORKLENS_GITLAB_TOKEN"] = token;
+            source = GitLabCollectTests.Source(baseUrl: "https://gitlab.com/api/v4", tokenEnv: null);
+        }
+        else
+        {
+            _cli.Environment["CORP_GITLAB"] = token;
+            source = GitLabCollectTests.Source();
+        }
+
+        var config = GitLabCollectTests.Config(source);
+        using var cancel = new CancellationTokenSource();
+        var expectedExit = ExitCodes.Source;
+        var period = "2026-10";
+        switch (scenario)
+        {
+            case "unauthorized_echo":
+                _cli.Http = new FixtureHandler().Add("GET", project, Respond(401, new JsonObject { ["message"] = $"401 {token}" }, ("X-Echo", token)));
+                break;
+            case "forbidden_echo":
+                _cli.Http = new FixtureHandler().Add("GET", project, Respond(403, new JsonObject { ["message"] = $"403 {token}" }));
+                break;
+            case "server_error":
+                _cli.Http = new FixtureHandler().Add("GET", project, Respond(500, new JsonObject { ["private_token"] = token }));
+                break;
+            case "http_exception":
+                _cli.Http = new FixtureHandler().Add("GET", project, new JsonObject { ["throw"] = "http", ["message"] = $"connect failed for PRIVATE-TOKEN {token}" });
+                break;
+            case "rate_limit_header":
+                _cli.Http = new FixtureHandler().Add("GET", project, Respond(404, null, ("RateLimit-Remaining", token)));
+                break;
+            case "invalid_config":
+                config["identities"]![0]!["username"] = token;
+                config["timezone"] = $"Zone/{token}";
+                expectedExit = ExitCodes.Configuration;
+                break;
+            case "cancelled":
+                _cli.Http = GitLabCollectTests.Monthly().CancelOnRequest(2, cancel);
+                expectedExit = ExitCodes.Cancelled;
+                break;
+            case "usage_error":
+                period = token;
+                expectedExit = ExitCodes.Usage;
+                break;
+        }
+
+        CollectCommandTests.WriteConfig(Path.Combine(_cli.Workspace, "worklens.json"), config);
+
+        var run = await _cli.RunAsync(cancel.Token, ["collect", "--period", period, .. flags.Split(' ')]);
+
+        Assert.Equal(expectedExit, run.ExitCode);
+        Assert.DoesNotContain(token, run.Stdout, StringComparison.Ordinal);
+        Assert.DoesNotContain(token, run.Stderr, StringComparison.Ordinal);
+        foreach (var file in Directory.EnumerateFiles(_cli.Workspace, "*", SearchOption.AllDirectories))
+        {
+            if (Path.GetFileName(file) != "worklens.json")
+            {
+                Assert.DoesNotContain(token, await File.ReadAllTextAsync(file, TestContext.Current.CancellationToken), StringComparison.Ordinal);
+            }
+        }
+    }
+
     private sealed class ThrowingHandler(string message) : HttpMessageHandler
     {
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken) =>

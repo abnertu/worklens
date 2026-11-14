@@ -146,19 +146,6 @@ public sealed class CollectCommandTests : IDisposable
     }
 
     [Fact]
-    public async Task GitLab_source_is_unsupported_and_checked_before_tokens()
-    {
-        WriteConfig(Source(), Source("gl", "https://gitlab.example.com/api/v4", "group/project", "gitlab"));
-        _cli.Environment.Clear();
-
-        var run = await _cli.RunAsync("collect", "--period", "2026-10", "--json");
-
-        Assert.Equal(ExitCodes.Configuration, run.ExitCode);
-        Assert.Equal("config.unsupported_platform", ErrorCode(run));
-        AssertNothingRequested();
-    }
-
-    [Fact]
     public async Task Token_env_is_read_without_falling_back_to_the_default_variable()
     {
         var source = Source();

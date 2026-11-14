@@ -1,0 +1,28 @@
+{
+  "method": "GET",
+  "path": "/api/v4/projects/7/repository/commits/c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9/diff",
+  "query": {
+    "per_page": "100"
+  },
+  "responses": [
+    {
+      "status": 200,
+      "headers": {
+        "X-Page": "1",
+        "X-Next-Page": ""
+      },
+      "body": [
+        {
+          "diff": "@@ -1 +1 @@\n-old synthetic line\n+new synthetic line\n",
+          "new_path": "src/refresh.cs",
+          "old_path": "src/refresh.cs",
+          "a_mode": "100644",
+          "b_mode": "100644",
+          "new_file": true,
+          "renamed_file": false,
+          "deleted_file": false
+        }
+      ]
+    }
+  ]
+}

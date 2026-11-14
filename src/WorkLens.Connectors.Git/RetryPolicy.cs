@@ -20,6 +20,13 @@ public readonly record struct RetryDecision(RetryAction Action, TimeSpan Delay, 
     public static RetryDecision Stop(string code, string reason) => new(RetryAction.Fail, TimeSpan.Zero, code, reason);
 }
 
+/// <summary>The platform whose rate-limit rules <see cref="RetryPolicy"/> applies.</summary>
+public enum RetryPlatform
+{
+    GitHub,
+    GitLab,
+}
+
 /// <summary>Attempt counters of one logical request; <see cref="RetryPolicy"/> updates them.</summary>
 public sealed class RetryState
 {
@@ -36,6 +43,11 @@ public sealed class RetryState
 /// <see cref="MaxRateLimitWaits"/> times, otherwise <c>source.rate_limited</c>. 5xx and transport failures
 /// (connection errors, timeouts) back off 1 / 2 / 4 seconds (5xx honours <c>Retry-After</c>) for at most
 /// <see cref="MaxRetries"/> retries. 2xx responses never reach this policy.
+/// <para>
+/// <see cref="RetryPlatform.GitLab"/> replaces the 403 / 429 rules: 403 is always <c>source.forbidden</c>; 429 waits
+/// for <c>Retry-After</c>, else until <c>RateLimit-Reset</c>, else 60 seconds doubling per wait. The wait limits
+/// and the 5xx / transport rules are shared.
+/// </para>
 /// </summary>
 public sealed class RetryPolicy
 {
@@ -46,13 +58,19 @@ public sealed class RetryPolicy
 
     private readonly TimeProvider _time;
     private readonly Func<TimeSpan, CancellationToken, Task> _delay;
+    private readonly RetryPlatform _platform;
 
     /// <param name="delay">Performs a wait; tests record it and return at once.</param>
-    public RetryPolicy(TimeProvider time, Func<TimeSpan, CancellationToken, Task> delay)
+    /// <param name="platform">Selects the 403 / 429 rules; GitHub by default.</param>
+    public RetryPolicy(
+        TimeProvider time, Func<TimeSpan, CancellationToken, Task> delay, RetryPlatform platform = RetryPlatform.GitHub)
     {
         _time = time ?? throw new ArgumentNullException(nameof(time));
         _delay = delay ?? throw new ArgumentNullException(nameof(delay));
+        _platform = Enum.IsDefined(platform) ? platform : throw new ArgumentOutOfRangeException(nameof(platform));
     }
+
+    public RetryPlatform Platform => _platform;
 
     public Task DelayAsync(TimeSpan delay, CancellationToken cancellationToken) => _delay(delay, cancellationToken);
 
@@ -66,7 +84,9 @@ public sealed class RetryPolicy
 
         if (code is 403 or 429)
         {
-            return ForRateLimit(code, headers, body, state);
+            return _platform == RetryPlatform.GitLab
+                ? ForGitLabRateLimit(code, headers, state)
+                : ForRateLimit(code, headers, body, state);
         }
 
         if (code is >= 500 and <= 599)
@@ -107,7 +127,7 @@ public sealed class RetryPolicy
     {
         TimeSpan wait;
         string reason;
-        if (Header(headers, "x-ratelimit-remaining") == "0" && ResetWait(headers) is { } reset)
+        if (Header(headers, "x-ratelimit-remaining") == "0" && ResetWait(headers, "x-ratelimit-reset") is { } reset)
         {
             (wait, reason) = (reset, "primary rate limit");
         }
@@ -124,6 +144,26 @@ public sealed class RetryPolicy
             return RetryDecision.Stop(SourceErrors.Forbidden, "access denied");
         }
 
+        return LimitedWait(wait, reason, state);
+    }
+
+    private RetryDecision ForGitLabRateLimit(int code, HttpResponseHeaders headers, RetryState state)
+    {
+        if (code == 403)
+        {
+            return RetryDecision.Stop(SourceErrors.Forbidden, "access denied; check the token scope and project access");
+        }
+
+        var (wait, reason) = RetryAfter(headers) is { } retryAfter
+            ? (retryAfter, "rate limited (Retry-After)")
+            : ResetWait(headers, "ratelimit-reset") is { } reset
+                ? (reset, "rate limited (RateLimit-Reset)")
+                : (SecondaryLimitWait * Math.Pow(2, state.RateLimitWaits), "rate limited");
+        return LimitedWait(wait, reason, state);
+    }
+
+    private static RetryDecision LimitedWait(TimeSpan wait, string reason, RetryState state)
+    {
         if (state.RateLimitWaits >= MaxRateLimitWaits)
         {
             return RetryDecision.Stop(SourceErrors.RateLimited, $"{reason}; still limited after {MaxRateLimitWaits} waits");
@@ -139,9 +179,9 @@ public sealed class RetryPolicy
         return RetryDecision.Wait(wait, reason);
     }
 
-    private TimeSpan? ResetWait(HttpResponseHeaders headers)
+    private TimeSpan? ResetWait(HttpResponseHeaders headers, string name)
     {
-        if (!long.TryParse(Header(headers, "x-ratelimit-reset"), NumberStyles.None, CultureInfo.InvariantCulture, out var epoch)
+        if (!long.TryParse(Header(headers, name), NumberStyles.None, CultureInfo.InvariantCulture, out var epoch)
             || epoch > DateTimeOffset.MaxValue.ToUnixTimeSeconds())
         {
             return null;

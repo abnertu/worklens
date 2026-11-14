@@ -91,7 +91,7 @@ v0.1 的關鍵架構決策 (Decided, [ADR-0004](../adr/0004-agent-as-analyzer.md
 | `src/WorkLens.Cli` | `worklens` 執行檔、命令解析、輸出格式、exit codes | Core、Rendering.Pptx、Connectors.Git (M1)、`System.CommandLine` |
 | `tests/WorkLens.Core.Tests` | Schema / 範例 / 模型一致性、Core 相依規則、Validator / Layout Resolver | Core、xUnit v3 |
 | `tests/WorkLens.Rendering.Pptx.Tests` | Renderer 結構斷言、`OpenXmlValidator`、正規化 snapshot (不需 Office) | Core、Rendering.Pptx、`DocumentFormat.OpenXml`、xUnit v3 |
-| `src/WorkLens.Connectors.Git` (M1) | GitHub connector (M1a; GitLab 於 M1b)、HTTP 分頁 / retry / rate limit | Core、BCL (無 NuGet 直接相依) |
+| `src/WorkLens.Connectors.Git` (M1) | GitHub connector (M1a)、GitLab connector (M1b)、HTTP 分頁 / retry / rate limit | Core、BCL (無 NuGet 直接相依) |
 | `tests/WorkLens.Connectors.Git.Tests` (M1) | HTTP client 與 connector 的 fixture 測試、Connectors 相依規則 | Core、Connectors.Git、xUnit v3 |
 | `tests/WorkLens.Cli.Tests` (M1) | 以 `CliHost` in-process 執行命令 (collect、token 不外洩、M0 命令 smoke) | Core、Connectors.Git、Cli、xUnit v3 |
 

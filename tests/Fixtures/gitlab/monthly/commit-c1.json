@@ -1,0 +1,35 @@
+{
+  "method": "GET",
+  "path": "/api/v4/projects/7/repository/commits/c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1",
+  "query": {},
+  "responses": [
+    {
+      "status": 200,
+      "body": {
+        "id": "c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1",
+        "short_id": "c1c1c1c1",
+        "created_at": "2026-10-01T00:00:00.000+08:00",
+        "parent_ids": [
+          "0000000000000000000000000000000000000000"
+        ],
+        "title": "Add token refresh",
+        "message": "Add token refresh\n\nRefresh tokens before expiry.\n",
+        "author_name": "Alice",
+        "author_email": "alice@example.com",
+        "authored_date": "2026-10-01T00:00:00.000+08:00",
+        "committer_name": "Alice",
+        "committer_email": "alice@example.com",
+        "committed_date": "2026-10-01T00:00:00.000+08:00",
+        "trailers": {},
+        "web_url": "https://gitlab.example.com/group/sub/app/-/commit/c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1",
+        "stats": {
+          "additions": 40,
+          "deletions": 2,
+          "total": 42
+        },
+        "status": null,
+        "last_pipeline": null
+      }
+    }
+  ]
+}

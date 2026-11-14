@@ -51,15 +51,20 @@ internal sealed class FixtureHandler : HttpMessageHandler
     }
 
     /// <summary>Loads every <c>*.json</c> file in <paramref name="directory"/> (not recursive).</summary>
-    public static FixtureHandler FromDirectory(string directory)
+    public static FixtureHandler FromDirectory(string directory) => new FixtureHandler().AddDirectory(directory);
+
+    /// <summary>
+    /// Adds every <c>*.json</c> file in <paramref name="directory"/> (not recursive). Earlier routes win, so a
+    /// route added before this call overrides the directory's route for the same request.
+    /// </summary>
+    public FixtureHandler AddDirectory(string directory)
     {
-        var handler = new FixtureHandler();
         foreach (var file in Directory.EnumerateFiles(directory, "*.json").Order(StringComparer.Ordinal))
         {
-            handler.Add(JsonNode.Parse(File.ReadAllText(file))!.AsObject());
+            Add(JsonNode.Parse(File.ReadAllText(file))!.AsObject());
         }
 
-        return handler;
+        return this;
     }
 
     /// <summary>Adds a fixture in the file format.</summary>

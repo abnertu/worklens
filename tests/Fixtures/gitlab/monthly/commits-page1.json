@@ -1,0 +1,111 @@
+{
+  "method": "GET",
+  "path": "/api/v4/projects/7/repository/commits",
+  "query": {
+    "ref_name": "main",
+    "since": "2026-09-30T16:00:00Z",
+    "until": "2026-11-30T16:00:00Z",
+    "per_page": "100"
+  },
+  "responses": [
+    {
+      "status": 200,
+      "headers": {
+        "X-Page": "1",
+        "X-Next-Page": "2"
+      },
+      "body": [
+        {
+          "id": "cbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcb",
+          "short_id": "cbcbcbcb",
+          "created_at": "2026-11-05T00:00:00.000Z",
+          "parent_ids": [
+            "0000000000000000000000000000000000000000"
+          ],
+          "title": "Later work",
+          "message": "Later work",
+          "author_name": "Alice",
+          "author_email": "alice@example.com",
+          "authored_date": "2026-11-05T00:00:00.000Z",
+          "committer_name": "Alice",
+          "committer_email": "alice@example.com",
+          "committed_date": "2026-11-05T00:00:00.000Z",
+          "trailers": {},
+          "web_url": "https://gitlab.example.com/group/sub/app/-/commit/cbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcb"
+        },
+        {
+          "id": "c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8",
+          "short_id": "c8c8c8c8",
+          "created_at": "2026-11-03T00:00:00.000Z",
+          "parent_ids": [
+            "0000000000000000000000000000000000000000"
+          ],
+          "title": "Tune cache",
+          "message": "Tune cache",
+          "author_name": "Alice",
+          "author_email": "alice@example.com",
+          "authored_date": "2026-10-30T00:00:00.000Z",
+          "committer_name": "Alice",
+          "committer_email": "alice@example.com",
+          "committed_date": "2026-11-03T00:00:00.000Z",
+          "trailers": {},
+          "web_url": "https://gitlab.example.com/group/sub/app/-/commit/c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8"
+        },
+        {
+          "id": "c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7",
+          "short_id": "c7c7c7c7",
+          "created_at": "2026-10-08T00:00:00.000Z",
+          "parent_ids": [
+            "0000000000000000000000000000000000000000"
+          ],
+          "title": "Fix parser",
+          "message": "Fix parser",
+          "author_name": "Bob",
+          "author_email": "bob@example.com",
+          "authored_date": "2026-10-07T00:00:00.000Z",
+          "committer_name": "Alice",
+          "committer_email": "alice@users.example.org",
+          "committed_date": "2026-10-08T00:00:00.000Z",
+          "trailers": {},
+          "web_url": "https://gitlab.example.com/group/sub/app/-/commit/c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7"
+        },
+        {
+          "id": "c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6",
+          "short_id": "c6c6c6c6",
+          "created_at": "2026-10-06T00:00:00.000Z",
+          "parent_ids": [
+            "0000000000000000000000000000000000000000"
+          ],
+          "title": "Unrelated work",
+          "message": "Unrelated work",
+          "author_name": "Bob",
+          "author_email": "bob@example.com",
+          "authored_date": "2026-10-06T00:00:00.000Z",
+          "committer_name": "Bob",
+          "committer_email": "bob@example.com",
+          "committed_date": "2026-10-06T00:00:00.000Z",
+          "trailers": {},
+          "web_url": "https://gitlab.example.com/group/sub/app/-/commit/c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6"
+        },
+        {
+          "id": "c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5",
+          "short_id": "c5c5c5c5",
+          "created_at": "2026-10-05T00:00:00.000Z",
+          "parent_ids": [
+            "0000000000000000000000000000000000000000"
+          ],
+          "title": "Revert \"Add flag\"",
+          "message": "Revert \"Add flag\"\n\nThis reverts commit 1234.",
+          "author_name": "Alice",
+          "author_email": "alice@example.com",
+          "authored_date": "2026-10-05T00:00:00.000Z",
+          "committer_name": "Alice",
+          "committer_email": "alice@example.com",
+          "committed_date": "2026-10-05T00:00:00.000Z",
+          "trailers": {},
+          "web_url": "https://gitlab.example.com/group/sub/app/-/commit/c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5"
+        }
+      ]
+    }
+  ]
+}
