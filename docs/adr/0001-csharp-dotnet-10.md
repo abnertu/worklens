@@ -6,7 +6,7 @@ Accepted (語言: 使用者確認; .NET 10 版本: Proposed) — 2026-11-11
 
 ## Context
 
-- 交接文件 §2 已確認主要語言為 C#, 且不需為 AI 功能引入 Python。
+- 交接文件 §2 已確認 C# 為主要語言。AI 功能不需要引入 Python。
 - v0.1 的 AI 分析由 agent CLI 執行 ([ADR-0004](0004-agent-as-analyzer.md)), WorkLens 本身只做確定性處理: HTTP API、JSON、Schema 驗證、Open XML。這些在 .NET 生態都有成熟的函式庫。
 - 開發機已安裝 .NET SDK 10.0.1xx 與 10.0.4xx。.NET 10 是 LTS (支援至 2028-11)。
 

@@ -20,8 +20,8 @@
 | `worklens report generate --period <yyyy-MM> ...` | — | 依序執行 present + render (不含 agent 步驟) | M3 |
 | `worklens status` | 工作目錄 | 各檔案存在 / 過期 (stale) 狀態與建議的下一步 | M3 |
 
-M1 現況: `collect` 支援 GitHub 與 GitLab。M0 命令維持可用。
-`evidence digest` 仍為 stub, 回 exit code **10** (`command.not_implemented`)。
+`collect` 支援 GitHub 與 GitLab。報告驗證、排版與渲染命令均已可用。
+`evidence digest` 仍為 stub。它回傳 exit code **10** 與 `command.not_implemented`。
 
 交接文件 §5.4 的概念命令 `worklens report generate --period ... --author ... --template ... --output ...` 對應到 M3 的便利命令; 由於分析由 agent 執行, 它只負責 agent 完成 `report.json` 之後的步驟。
 

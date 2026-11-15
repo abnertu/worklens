@@ -32,7 +32,7 @@
 - `Two Content` 的 content placeholder (summary 的 activity 表格, `monthly-02-summary.png`)。
 - `Title and Table` 的 `tbl` placeholder (achievements 表格, `monthly-03-achievements.png`)。
 
-PowerPoint 中修改儲存格 (2, 1)、存檔、重開後內容保留 (P8)。
+在 PowerPoint 修改儲存格 (2, 1) 後，存檔並重新開啟仍保留修改內容 (P8)。
 
 ![summary: bullets 與 content placeholder 中的表格](pptx-poc-report/monthly-02-summary.png)
 

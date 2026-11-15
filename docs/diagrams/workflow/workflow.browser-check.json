@@ -1,0 +1,1034 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "browser-check",
+  "evidenceKind": "automated-browser",
+  "status": "pass",
+  "visualReview": "not-requested",
+  "provenance": "current",
+  "deliveryReceiptId": "0f3cf462-ce78-4d65-91dc-34df40a0b981",
+  "artifact": {
+    "path": "C:\\Users\\WKE\\Desktop\\codebase\\worklens\\docs\\diagrams\\workflow\\workflow.html",
+    "sha256": "d6bab291b6170b15c0b1512f35423a4f899564bc93df8262c4a7b092a0fa83e2",
+    "bytes": 833923
+  },
+  "state": {
+    "detail": "read",
+    "motion": "still"
+  },
+  "chrome": {
+    "status": "available",
+    "executable": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe"
+  },
+  "diagnostics": [],
+  "containment": {
+    "status": "pass",
+    "policy": "fit-or-reader-declared-readable-vertical-scroll",
+    "viewports": [
+      {
+        "width": 1440,
+        "height": 900,
+        "theme": "light",
+        "innerWidth": 1440,
+        "innerHeight": 900,
+        "scrollWidth": 1440,
+        "scrollHeight": 900,
+        "overflowX": false,
+        "overflowY": false,
+        "verticalScrollAccepted": false,
+        "overflowDisposition": "contained",
+        "readerLayout": "adaptive",
+        "readerOverflow": null,
+        "readerFit": null,
+        "ok": true,
+        "readerWidth": 1376,
+        "diagramWidth": 1346,
+        "pageComposition": {
+          "bodyPaddingPx": 12,
+          "headerPx": 52,
+          "diagramChromePx": 78,
+          "svgPx": 704,
+          "cardsPx": 0,
+          "viewBoxHeight": 404
+        },
+        "viewBoxWidth": 772,
+        "workflowLanes": [
+          {
+            "frameId": "lane-0",
+            "heightPx": 181,
+            "nodeCount": 4,
+            "nodeIds": [
+              "collect",
+              "validate",
+              "present",
+              "render"
+            ],
+            "nodeSpanPx": 91,
+            "spaceAboveNodesPx": 71,
+            "spaceBelowNodesPx": 19
+          },
+          {
+            "frameId": "lane-1",
+            "heightPx": 181,
+            "nodeCount": 2,
+            "nodeIds": [
+              "author",
+              "review"
+            ],
+            "nodeSpanPx": 91,
+            "spaceAboveNodesPx": 71,
+            "spaceBelowNodesPx": 19
+          }
+        ],
+        "minimumProjectedNodeTextPx": 6.3,
+        "minimumProjectedNonEdgeTextPx": 6.3,
+        "minimumProjectedEdgeTextPx": 8,
+        "minimumProjectedNodeText": "Report IR → 投影片結構",
+        "minimumProjectedNodeTextDetail": "context",
+        "minimumProjectedNodeTextOwner": {
+          "kind": "node",
+          "id": "present"
+        },
+        "minimumRequiredNodeTextPx": 6,
+        "readabilityOk": true,
+        "hasLegend": true,
+        "hasNavigationDock": true,
+        "legendDockIntersectionArea": 0,
+        "dockStageIntersectionArea": 0,
+        "dockStageGap": 10,
+        "requiredDockStageGap": 10,
+        "viewerChromeStageOk": true,
+        "viewerChromeReserve": 54,
+        "viewerChromeActive": true,
+        "viewerChromeOk": true,
+        "resolvedTheme": "light"
+      },
+      {
+        "width": 1600,
+        "height": 1000,
+        "theme": "light",
+        "innerWidth": 1600,
+        "innerHeight": 1000,
+        "scrollWidth": 1600,
+        "scrollHeight": 1000,
+        "overflowX": false,
+        "overflowY": false,
+        "verticalScrollAccepted": false,
+        "overflowDisposition": "contained",
+        "readerLayout": "adaptive",
+        "readerOverflow": null,
+        "readerFit": null,
+        "ok": true,
+        "readerWidth": 1520,
+        "diagramWidth": 1490,
+        "pageComposition": {
+          "bodyPaddingPx": 64,
+          "headerPx": 60,
+          "diagramChromePx": 84,
+          "svgPx": 780,
+          "cardsPx": 0,
+          "viewBoxHeight": 404
+        },
+        "viewBoxWidth": 772,
+        "workflowLanes": [
+          {
+            "frameId": "lane-0",
+            "heightPx": 201,
+            "nodeCount": 4,
+            "nodeIds": [
+              "collect",
+              "validate",
+              "present",
+              "render"
+            ],
+            "nodeSpanPx": 100,
+            "spaceAboveNodesPx": 79,
+            "spaceBelowNodesPx": 21
+          },
+          {
+            "frameId": "lane-1",
+            "heightPx": 201,
+            "nodeCount": 2,
+            "nodeIds": [
+              "author",
+              "review"
+            ],
+            "nodeSpanPx": 100,
+            "spaceAboveNodesPx": 79,
+            "spaceBelowNodesPx": 21
+          }
+        ],
+        "minimumProjectedNodeTextPx": 6.3,
+        "minimumProjectedNonEdgeTextPx": 6.3,
+        "minimumProjectedEdgeTextPx": 8,
+        "minimumProjectedNodeText": "Report IR → 投影片結構",
+        "minimumProjectedNodeTextDetail": "context",
+        "minimumProjectedNodeTextOwner": {
+          "kind": "node",
+          "id": "present"
+        },
+        "minimumRequiredNodeTextPx": 6,
+        "readabilityOk": true,
+        "hasLegend": true,
+        "hasNavigationDock": true,
+        "legendDockIntersectionArea": 0,
+        "dockStageIntersectionArea": 0,
+        "dockStageGap": 10,
+        "requiredDockStageGap": 10,
+        "viewerChromeStageOk": true,
+        "viewerChromeReserve": 54,
+        "viewerChromeActive": true,
+        "viewerChromeOk": true,
+        "resolvedTheme": "light"
+      },
+      {
+        "width": 1920,
+        "height": 1080,
+        "theme": "light",
+        "innerWidth": 1920,
+        "innerHeight": 1080,
+        "scrollWidth": 1920,
+        "scrollHeight": 1080,
+        "overflowX": false,
+        "overflowY": false,
+        "verticalScrollAccepted": false,
+        "overflowDisposition": "contained",
+        "readerLayout": "adaptive",
+        "readerOverflow": null,
+        "readerFit": null,
+        "ok": true,
+        "readerWidth": 1673,
+        "diagramWidth": 1643,
+        "pageComposition": {
+          "bodyPaddingPx": 64,
+          "headerPx": 60,
+          "diagramChromePx": 84,
+          "svgPx": 860,
+          "cardsPx": 0,
+          "viewBoxHeight": 404
+        },
+        "viewBoxWidth": 772,
+        "workflowLanes": [
+          {
+            "frameId": "lane-0",
+            "heightPx": 221,
+            "nodeCount": 4,
+            "nodeIds": [
+              "collect",
+              "validate",
+              "present",
+              "render"
+            ],
+            "nodeSpanPx": 111,
+            "spaceAboveNodesPx": 87,
+            "spaceBelowNodesPx": 23
+          },
+          {
+            "frameId": "lane-1",
+            "heightPx": 221,
+            "nodeCount": 2,
+            "nodeIds": [
+              "author",
+              "review"
+            ],
+            "nodeSpanPx": 111,
+            "spaceAboveNodesPx": 87,
+            "spaceBelowNodesPx": 23
+          }
+        ],
+        "minimumProjectedNodeTextPx": 6.3,
+        "minimumProjectedNonEdgeTextPx": 6.3,
+        "minimumProjectedEdgeTextPx": 8,
+        "minimumProjectedNodeText": "Report IR → 投影片結構",
+        "minimumProjectedNodeTextDetail": "context",
+        "minimumProjectedNodeTextOwner": {
+          "kind": "node",
+          "id": "present"
+        },
+        "minimumRequiredNodeTextPx": 6,
+        "readabilityOk": true,
+        "hasLegend": true,
+        "hasNavigationDock": true,
+        "legendDockIntersectionArea": 0,
+        "dockStageIntersectionArea": 0,
+        "dockStageGap": 10,
+        "requiredDockStageGap": 10,
+        "viewerChromeStageOk": true,
+        "viewerChromeReserve": 54,
+        "viewerChromeActive": true,
+        "viewerChromeOk": true,
+        "resolvedTheme": "light"
+      },
+      {
+        "width": 2048,
+        "height": 1320,
+        "theme": "light",
+        "innerWidth": 2048,
+        "innerHeight": 1320,
+        "scrollWidth": 2048,
+        "scrollHeight": 1320,
+        "overflowX": false,
+        "overflowY": false,
+        "verticalScrollAccepted": false,
+        "overflowDisposition": "contained",
+        "readerLayout": "adaptive",
+        "readerOverflow": null,
+        "readerFit": null,
+        "ok": true,
+        "readerWidth": 1920,
+        "diagramWidth": 1870,
+        "pageComposition": {
+          "bodyPaddingPx": 64,
+          "headerPx": 68,
+          "diagramChromePx": 94,
+          "svgPx": 979,
+          "cardsPx": 0,
+          "viewBoxHeight": 404
+        },
+        "viewBoxWidth": 772,
+        "workflowLanes": [
+          {
+            "frameId": "lane-0",
+            "heightPx": 252,
+            "nodeCount": 4,
+            "nodeIds": [
+              "collect",
+              "validate",
+              "present",
+              "render"
+            ],
+            "nodeSpanPx": 126,
+            "spaceAboveNodesPx": 99,
+            "spaceBelowNodesPx": 27
+          },
+          {
+            "frameId": "lane-1",
+            "heightPx": 252,
+            "nodeCount": 2,
+            "nodeIds": [
+              "author",
+              "review"
+            ],
+            "nodeSpanPx": 126,
+            "spaceAboveNodesPx": 99,
+            "spaceBelowNodesPx": 27
+          }
+        ],
+        "minimumProjectedNodeTextPx": 6.3,
+        "minimumProjectedNonEdgeTextPx": 6.3,
+        "minimumProjectedEdgeTextPx": 8,
+        "minimumProjectedNodeText": "Report IR → 投影片結構",
+        "minimumProjectedNodeTextDetail": "context",
+        "minimumProjectedNodeTextOwner": {
+          "kind": "node",
+          "id": "present"
+        },
+        "minimumRequiredNodeTextPx": 6,
+        "readabilityOk": true,
+        "hasLegend": true,
+        "hasNavigationDock": true,
+        "legendDockIntersectionArea": 0,
+        "dockStageIntersectionArea": 0,
+        "dockStageGap": 10,
+        "requiredDockStageGap": 10,
+        "viewerChromeStageOk": true,
+        "viewerChromeReserve": 44,
+        "viewerChromeActive": true,
+        "viewerChromeOk": true,
+        "resolvedTheme": "light"
+      }
+    ]
+  },
+  "themeStates": {
+    "status": "pass",
+    "viewports": [
+      {
+        "width": 1440,
+        "height": 900,
+        "requestedTheme": "light",
+        "resolvedTheme": "light",
+        "ok": true
+      },
+      {
+        "width": 1600,
+        "height": 1000,
+        "requestedTheme": "light",
+        "resolvedTheme": "light",
+        "ok": true
+      },
+      {
+        "width": 1920,
+        "height": 1080,
+        "requestedTheme": "light",
+        "resolvedTheme": "light",
+        "ok": true
+      },
+      {
+        "width": 2048,
+        "height": 1320,
+        "requestedTheme": "light",
+        "resolvedTheme": "light",
+        "ok": true
+      },
+      {
+        "width": 1440,
+        "height": 900,
+        "requestedTheme": "dark",
+        "resolvedTheme": "dark",
+        "ok": true
+      },
+      {
+        "width": 2048,
+        "height": 1320,
+        "requestedTheme": "dark",
+        "resolvedTheme": "dark",
+        "ok": true
+      }
+    ]
+  },
+  "readability": {
+    "status": "pass",
+    "minimumProjectedNodeTextPx": 6,
+    "viewports": [
+      {
+        "width": 1440,
+        "height": 900,
+        "theme": "light",
+        "innerWidth": 1440,
+        "innerHeight": 900,
+        "scrollWidth": 1440,
+        "scrollHeight": 900,
+        "overflowX": false,
+        "overflowY": false,
+        "verticalScrollAccepted": false,
+        "overflowDisposition": "contained",
+        "readerLayout": "adaptive",
+        "readerOverflow": null,
+        "readerFit": null,
+        "ok": true,
+        "readerWidth": 1376,
+        "diagramWidth": 1346,
+        "pageComposition": {
+          "bodyPaddingPx": 12,
+          "headerPx": 52,
+          "diagramChromePx": 78,
+          "svgPx": 704,
+          "cardsPx": 0,
+          "viewBoxHeight": 404
+        },
+        "viewBoxWidth": 772,
+        "workflowLanes": [
+          {
+            "frameId": "lane-0",
+            "heightPx": 181,
+            "nodeCount": 4,
+            "nodeIds": [
+              "collect",
+              "validate",
+              "present",
+              "render"
+            ],
+            "nodeSpanPx": 91,
+            "spaceAboveNodesPx": 71,
+            "spaceBelowNodesPx": 19
+          },
+          {
+            "frameId": "lane-1",
+            "heightPx": 181,
+            "nodeCount": 2,
+            "nodeIds": [
+              "author",
+              "review"
+            ],
+            "nodeSpanPx": 91,
+            "spaceAboveNodesPx": 71,
+            "spaceBelowNodesPx": 19
+          }
+        ],
+        "minimumProjectedNodeTextPx": 6.3,
+        "minimumProjectedNonEdgeTextPx": 6.3,
+        "minimumProjectedEdgeTextPx": 8,
+        "minimumProjectedNodeText": "Report IR → 投影片結構",
+        "minimumProjectedNodeTextDetail": "context",
+        "minimumProjectedNodeTextOwner": {
+          "kind": "node",
+          "id": "present"
+        },
+        "minimumRequiredNodeTextPx": 6,
+        "readabilityOk": true,
+        "hasLegend": true,
+        "hasNavigationDock": true,
+        "legendDockIntersectionArea": 0,
+        "dockStageIntersectionArea": 0,
+        "dockStageGap": 10,
+        "requiredDockStageGap": 10,
+        "viewerChromeStageOk": true,
+        "viewerChromeReserve": 54,
+        "viewerChromeActive": true,
+        "viewerChromeOk": true,
+        "resolvedTheme": "light"
+      },
+      {
+        "width": 1600,
+        "height": 1000,
+        "theme": "light",
+        "innerWidth": 1600,
+        "innerHeight": 1000,
+        "scrollWidth": 1600,
+        "scrollHeight": 1000,
+        "overflowX": false,
+        "overflowY": false,
+        "verticalScrollAccepted": false,
+        "overflowDisposition": "contained",
+        "readerLayout": "adaptive",
+        "readerOverflow": null,
+        "readerFit": null,
+        "ok": true,
+        "readerWidth": 1520,
+        "diagramWidth": 1490,
+        "pageComposition": {
+          "bodyPaddingPx": 64,
+          "headerPx": 60,
+          "diagramChromePx": 84,
+          "svgPx": 780,
+          "cardsPx": 0,
+          "viewBoxHeight": 404
+        },
+        "viewBoxWidth": 772,
+        "workflowLanes": [
+          {
+            "frameId": "lane-0",
+            "heightPx": 201,
+            "nodeCount": 4,
+            "nodeIds": [
+              "collect",
+              "validate",
+              "present",
+              "render"
+            ],
+            "nodeSpanPx": 100,
+            "spaceAboveNodesPx": 79,
+            "spaceBelowNodesPx": 21
+          },
+          {
+            "frameId": "lane-1",
+            "heightPx": 201,
+            "nodeCount": 2,
+            "nodeIds": [
+              "author",
+              "review"
+            ],
+            "nodeSpanPx": 100,
+            "spaceAboveNodesPx": 79,
+            "spaceBelowNodesPx": 21
+          }
+        ],
+        "minimumProjectedNodeTextPx": 6.3,
+        "minimumProjectedNonEdgeTextPx": 6.3,
+        "minimumProjectedEdgeTextPx": 8,
+        "minimumProjectedNodeText": "Report IR → 投影片結構",
+        "minimumProjectedNodeTextDetail": "context",
+        "minimumProjectedNodeTextOwner": {
+          "kind": "node",
+          "id": "present"
+        },
+        "minimumRequiredNodeTextPx": 6,
+        "readabilityOk": true,
+        "hasLegend": true,
+        "hasNavigationDock": true,
+        "legendDockIntersectionArea": 0,
+        "dockStageIntersectionArea": 0,
+        "dockStageGap": 10,
+        "requiredDockStageGap": 10,
+        "viewerChromeStageOk": true,
+        "viewerChromeReserve": 54,
+        "viewerChromeActive": true,
+        "viewerChromeOk": true,
+        "resolvedTheme": "light"
+      },
+      {
+        "width": 1920,
+        "height": 1080,
+        "theme": "light",
+        "innerWidth": 1920,
+        "innerHeight": 1080,
+        "scrollWidth": 1920,
+        "scrollHeight": 1080,
+        "overflowX": false,
+        "overflowY": false,
+        "verticalScrollAccepted": false,
+        "overflowDisposition": "contained",
+        "readerLayout": "adaptive",
+        "readerOverflow": null,
+        "readerFit": null,
+        "ok": true,
+        "readerWidth": 1673,
+        "diagramWidth": 1643,
+        "pageComposition": {
+          "bodyPaddingPx": 64,
+          "headerPx": 60,
+          "diagramChromePx": 84,
+          "svgPx": 860,
+          "cardsPx": 0,
+          "viewBoxHeight": 404
+        },
+        "viewBoxWidth": 772,
+        "workflowLanes": [
+          {
+            "frameId": "lane-0",
+            "heightPx": 221,
+            "nodeCount": 4,
+            "nodeIds": [
+              "collect",
+              "validate",
+              "present",
+              "render"
+            ],
+            "nodeSpanPx": 111,
+            "spaceAboveNodesPx": 87,
+            "spaceBelowNodesPx": 23
+          },
+          {
+            "frameId": "lane-1",
+            "heightPx": 221,
+            "nodeCount": 2,
+            "nodeIds": [
+              "author",
+              "review"
+            ],
+            "nodeSpanPx": 111,
+            "spaceAboveNodesPx": 87,
+            "spaceBelowNodesPx": 23
+          }
+        ],
+        "minimumProjectedNodeTextPx": 6.3,
+        "minimumProjectedNonEdgeTextPx": 6.3,
+        "minimumProjectedEdgeTextPx": 8,
+        "minimumProjectedNodeText": "Report IR → 投影片結構",
+        "minimumProjectedNodeTextDetail": "context",
+        "minimumProjectedNodeTextOwner": {
+          "kind": "node",
+          "id": "present"
+        },
+        "minimumRequiredNodeTextPx": 6,
+        "readabilityOk": true,
+        "hasLegend": true,
+        "hasNavigationDock": true,
+        "legendDockIntersectionArea": 0,
+        "dockStageIntersectionArea": 0,
+        "dockStageGap": 10,
+        "requiredDockStageGap": 10,
+        "viewerChromeStageOk": true,
+        "viewerChromeReserve": 54,
+        "viewerChromeActive": true,
+        "viewerChromeOk": true,
+        "resolvedTheme": "light"
+      },
+      {
+        "width": 2048,
+        "height": 1320,
+        "theme": "light",
+        "innerWidth": 2048,
+        "innerHeight": 1320,
+        "scrollWidth": 2048,
+        "scrollHeight": 1320,
+        "overflowX": false,
+        "overflowY": false,
+        "verticalScrollAccepted": false,
+        "overflowDisposition": "contained",
+        "readerLayout": "adaptive",
+        "readerOverflow": null,
+        "readerFit": null,
+        "ok": true,
+        "readerWidth": 1920,
+        "diagramWidth": 1870,
+        "pageComposition": {
+          "bodyPaddingPx": 64,
+          "headerPx": 68,
+          "diagramChromePx": 94,
+          "svgPx": 979,
+          "cardsPx": 0,
+          "viewBoxHeight": 404
+        },
+        "viewBoxWidth": 772,
+        "workflowLanes": [
+          {
+            "frameId": "lane-0",
+            "heightPx": 252,
+            "nodeCount": 4,
+            "nodeIds": [
+              "collect",
+              "validate",
+              "present",
+              "render"
+            ],
+            "nodeSpanPx": 126,
+            "spaceAboveNodesPx": 99,
+            "spaceBelowNodesPx": 27
+          },
+          {
+            "frameId": "lane-1",
+            "heightPx": 252,
+            "nodeCount": 2,
+            "nodeIds": [
+              "author",
+              "review"
+            ],
+            "nodeSpanPx": 126,
+            "spaceAboveNodesPx": 99,
+            "spaceBelowNodesPx": 27
+          }
+        ],
+        "minimumProjectedNodeTextPx": 6.3,
+        "minimumProjectedNonEdgeTextPx": 6.3,
+        "minimumProjectedEdgeTextPx": 8,
+        "minimumProjectedNodeText": "Report IR → 投影片結構",
+        "minimumProjectedNodeTextDetail": "context",
+        "minimumProjectedNodeTextOwner": {
+          "kind": "node",
+          "id": "present"
+        },
+        "minimumRequiredNodeTextPx": 6,
+        "readabilityOk": true,
+        "hasLegend": true,
+        "hasNavigationDock": true,
+        "legendDockIntersectionArea": 0,
+        "dockStageIntersectionArea": 0,
+        "dockStageGap": 10,
+        "requiredDockStageGap": 10,
+        "viewerChromeStageOk": true,
+        "viewerChromeReserve": 44,
+        "viewerChromeActive": true,
+        "viewerChromeOk": true,
+        "resolvedTheme": "light"
+      }
+    ]
+  },
+  "viewerChrome": {
+    "status": "pass",
+    "viewports": [
+      {
+        "width": 1440,
+        "height": 900,
+        "theme": "light",
+        "innerWidth": 1440,
+        "innerHeight": 900,
+        "scrollWidth": 1440,
+        "scrollHeight": 900,
+        "overflowX": false,
+        "overflowY": false,
+        "verticalScrollAccepted": false,
+        "overflowDisposition": "contained",
+        "readerLayout": "adaptive",
+        "readerOverflow": null,
+        "readerFit": null,
+        "ok": true,
+        "readerWidth": 1376,
+        "diagramWidth": 1346,
+        "pageComposition": {
+          "bodyPaddingPx": 12,
+          "headerPx": 52,
+          "diagramChromePx": 78,
+          "svgPx": 704,
+          "cardsPx": 0,
+          "viewBoxHeight": 404
+        },
+        "viewBoxWidth": 772,
+        "workflowLanes": [
+          {
+            "frameId": "lane-0",
+            "heightPx": 181,
+            "nodeCount": 4,
+            "nodeIds": [
+              "collect",
+              "validate",
+              "present",
+              "render"
+            ],
+            "nodeSpanPx": 91,
+            "spaceAboveNodesPx": 71,
+            "spaceBelowNodesPx": 19
+          },
+          {
+            "frameId": "lane-1",
+            "heightPx": 181,
+            "nodeCount": 2,
+            "nodeIds": [
+              "author",
+              "review"
+            ],
+            "nodeSpanPx": 91,
+            "spaceAboveNodesPx": 71,
+            "spaceBelowNodesPx": 19
+          }
+        ],
+        "minimumProjectedNodeTextPx": 6.3,
+        "minimumProjectedNonEdgeTextPx": 6.3,
+        "minimumProjectedEdgeTextPx": 8,
+        "minimumProjectedNodeText": "Report IR → 投影片結構",
+        "minimumProjectedNodeTextDetail": "context",
+        "minimumProjectedNodeTextOwner": {
+          "kind": "node",
+          "id": "present"
+        },
+        "minimumRequiredNodeTextPx": 6,
+        "readabilityOk": true,
+        "hasLegend": true,
+        "hasNavigationDock": true,
+        "legendDockIntersectionArea": 0,
+        "dockStageIntersectionArea": 0,
+        "dockStageGap": 10,
+        "requiredDockStageGap": 10,
+        "viewerChromeStageOk": true,
+        "viewerChromeReserve": 54,
+        "viewerChromeActive": true,
+        "viewerChromeOk": true,
+        "resolvedTheme": "light"
+      },
+      {
+        "width": 1600,
+        "height": 1000,
+        "theme": "light",
+        "innerWidth": 1600,
+        "innerHeight": 1000,
+        "scrollWidth": 1600,
+        "scrollHeight": 1000,
+        "overflowX": false,
+        "overflowY": false,
+        "verticalScrollAccepted": false,
+        "overflowDisposition": "contained",
+        "readerLayout": "adaptive",
+        "readerOverflow": null,
+        "readerFit": null,
+        "ok": true,
+        "readerWidth": 1520,
+        "diagramWidth": 1490,
+        "pageComposition": {
+          "bodyPaddingPx": 64,
+          "headerPx": 60,
+          "diagramChromePx": 84,
+          "svgPx": 780,
+          "cardsPx": 0,
+          "viewBoxHeight": 404
+        },
+        "viewBoxWidth": 772,
+        "workflowLanes": [
+          {
+            "frameId": "lane-0",
+            "heightPx": 201,
+            "nodeCount": 4,
+            "nodeIds": [
+              "collect",
+              "validate",
+              "present",
+              "render"
+            ],
+            "nodeSpanPx": 100,
+            "spaceAboveNodesPx": 79,
+            "spaceBelowNodesPx": 21
+          },
+          {
+            "frameId": "lane-1",
+            "heightPx": 201,
+            "nodeCount": 2,
+            "nodeIds": [
+              "author",
+              "review"
+            ],
+            "nodeSpanPx": 100,
+            "spaceAboveNodesPx": 79,
+            "spaceBelowNodesPx": 21
+          }
+        ],
+        "minimumProjectedNodeTextPx": 6.3,
+        "minimumProjectedNonEdgeTextPx": 6.3,
+        "minimumProjectedEdgeTextPx": 8,
+        "minimumProjectedNodeText": "Report IR → 投影片結構",
+        "minimumProjectedNodeTextDetail": "context",
+        "minimumProjectedNodeTextOwner": {
+          "kind": "node",
+          "id": "present"
+        },
+        "minimumRequiredNodeTextPx": 6,
+        "readabilityOk": true,
+        "hasLegend": true,
+        "hasNavigationDock": true,
+        "legendDockIntersectionArea": 0,
+        "dockStageIntersectionArea": 0,
+        "dockStageGap": 10,
+        "requiredDockStageGap": 10,
+        "viewerChromeStageOk": true,
+        "viewerChromeReserve": 54,
+        "viewerChromeActive": true,
+        "viewerChromeOk": true,
+        "resolvedTheme": "light"
+      },
+      {
+        "width": 1920,
+        "height": 1080,
+        "theme": "light",
+        "innerWidth": 1920,
+        "innerHeight": 1080,
+        "scrollWidth": 1920,
+        "scrollHeight": 1080,
+        "overflowX": false,
+        "overflowY": false,
+        "verticalScrollAccepted": false,
+        "overflowDisposition": "contained",
+        "readerLayout": "adaptive",
+        "readerOverflow": null,
+        "readerFit": null,
+        "ok": true,
+        "readerWidth": 1673,
+        "diagramWidth": 1643,
+        "pageComposition": {
+          "bodyPaddingPx": 64,
+          "headerPx": 60,
+          "diagramChromePx": 84,
+          "svgPx": 860,
+          "cardsPx": 0,
+          "viewBoxHeight": 404
+        },
+        "viewBoxWidth": 772,
+        "workflowLanes": [
+          {
+            "frameId": "lane-0",
+            "heightPx": 221,
+            "nodeCount": 4,
+            "nodeIds": [
+              "collect",
+              "validate",
+              "present",
+              "render"
+            ],
+            "nodeSpanPx": 111,
+            "spaceAboveNodesPx": 87,
+            "spaceBelowNodesPx": 23
+          },
+          {
+            "frameId": "lane-1",
+            "heightPx": 221,
+            "nodeCount": 2,
+            "nodeIds": [
+              "author",
+              "review"
+            ],
+            "nodeSpanPx": 111,
+            "spaceAboveNodesPx": 87,
+            "spaceBelowNodesPx": 23
+          }
+        ],
+        "minimumProjectedNodeTextPx": 6.3,
+        "minimumProjectedNonEdgeTextPx": 6.3,
+        "minimumProjectedEdgeTextPx": 8,
+        "minimumProjectedNodeText": "Report IR → 投影片結構",
+        "minimumProjectedNodeTextDetail": "context",
+        "minimumProjectedNodeTextOwner": {
+          "kind": "node",
+          "id": "present"
+        },
+        "minimumRequiredNodeTextPx": 6,
+        "readabilityOk": true,
+        "hasLegend": true,
+        "hasNavigationDock": true,
+        "legendDockIntersectionArea": 0,
+        "dockStageIntersectionArea": 0,
+        "dockStageGap": 10,
+        "requiredDockStageGap": 10,
+        "viewerChromeStageOk": true,
+        "viewerChromeReserve": 54,
+        "viewerChromeActive": true,
+        "viewerChromeOk": true,
+        "resolvedTheme": "light"
+      },
+      {
+        "width": 2048,
+        "height": 1320,
+        "theme": "light",
+        "innerWidth": 2048,
+        "innerHeight": 1320,
+        "scrollWidth": 2048,
+        "scrollHeight": 1320,
+        "overflowX": false,
+        "overflowY": false,
+        "verticalScrollAccepted": false,
+        "overflowDisposition": "contained",
+        "readerLayout": "adaptive",
+        "readerOverflow": null,
+        "readerFit": null,
+        "ok": true,
+        "readerWidth": 1920,
+        "diagramWidth": 1870,
+        "pageComposition": {
+          "bodyPaddingPx": 64,
+          "headerPx": 68,
+          "diagramChromePx": 94,
+          "svgPx": 979,
+          "cardsPx": 0,
+          "viewBoxHeight": 404
+        },
+        "viewBoxWidth": 772,
+        "workflowLanes": [
+          {
+            "frameId": "lane-0",
+            "heightPx": 252,
+            "nodeCount": 4,
+            "nodeIds": [
+              "collect",
+              "validate",
+              "present",
+              "render"
+            ],
+            "nodeSpanPx": 126,
+            "spaceAboveNodesPx": 99,
+            "spaceBelowNodesPx": 27
+          },
+          {
+            "frameId": "lane-1",
+            "heightPx": 252,
+            "nodeCount": 2,
+            "nodeIds": [
+              "author",
+              "review"
+            ],
+            "nodeSpanPx": 126,
+            "spaceAboveNodesPx": 99,
+            "spaceBelowNodesPx": 27
+          }
+        ],
+        "minimumProjectedNodeTextPx": 6.3,
+        "minimumProjectedNonEdgeTextPx": 6.3,
+        "minimumProjectedEdgeTextPx": 8,
+        "minimumProjectedNodeText": "Report IR → 投影片結構",
+        "minimumProjectedNodeTextDetail": "context",
+        "minimumProjectedNodeTextOwner": {
+          "kind": "node",
+          "id": "present"
+        },
+        "minimumRequiredNodeTextPx": 6,
+        "readabilityOk": true,
+        "hasLegend": true,
+        "hasNavigationDock": true,
+        "legendDockIntersectionArea": 0,
+        "dockStageIntersectionArea": 0,
+        "dockStageGap": 10,
+        "requiredDockStageGap": 10,
+        "viewerChromeStageOk": true,
+        "viewerChromeReserve": 44,
+        "viewerChromeActive": true,
+        "viewerChromeOk": true,
+        "resolvedTheme": "light"
+      }
+    ]
+  },
+  "captures": {
+    "status": "not-requested",
+    "screenshots": [],
+    "contactSheet": null
+  },
+  "sidecars": {
+    "directory": "C:\\Users\\WKE\\Desktop\\codebase\\worklens\\.plans\\handoff-workflow-review-2",
+    "receipt": "workflow.browser-check.json",
+    "files": []
+  }
+}

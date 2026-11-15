@@ -8,7 +8,7 @@ Accepted (方向: 使用者確認; 細節: Proposed) — 2026-11-11
 
 - 交接文件 §3.1 定義三層 IR: Evidence IR (來源證據)、Report IR (語意成果)、Presentation IR (投影片結構), 並要求 Versioned Schema。
 - v0.1 的 Report IR 由 agent 撰寫 ([ADR-0004](0004-agent-as-analyzer.md)), Schema 是限制 agent 輸出的主要手段, 必須嚴格 (不允許未定義欄位) 且錯誤可被機器讀取。
-- Template Manifest 描述模板的 layout 與 slot, 也是 Layout Resolver 的輸入, 同樣需要 Schema。
+- Template Manifest 描述模板的 layout 與 slot。它是 Layout Resolver 的輸入，也需要 schema。
 
 ## Decision
 

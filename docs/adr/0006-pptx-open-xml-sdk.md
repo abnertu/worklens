@@ -4,22 +4,55 @@
 
 Accepted — 2026-11-12 (使用者依 M0 PoC 結果決定; Proposed 2026-11-11)
 
-「run 不寫格式覆寫」只適用 1.0 manifest。1.1 manifest 改依 [ADR-0010](0010-manifest-style-roles.md)。
+「run 不寫格式覆寫」只適用 1.0 manifest。
+1.1 manifest 改依 [ADR-0010](0010-manifest-style-roles.md)。
 
 ## Context
 
-- 輸出必須是可編輯的 `.pptx`, 套用既有模板的 Master / Layout / Placeholder; 版面由模板與 Template Manifest 決定, 不由 AI 決定 (交接文件 §3.1、§4.3)。
-- 目前沒有企業模板; PoC 使用自製樣本模板 ([pptx-poc-plan.md](../plans/pptx-poc-plan.md))。
-- 渲染需在無 Office 的環境執行; 交接文件 §2.1 不建議 Office Interop。
-- 授權預算未定 (OQ-11), 預設只用 OSS。
+- 輸出必須是可編輯的 `.pptx`，並套用既有模板的 Master、Layout 與 Placeholder。
+- 模板與 Template Manifest 決定版面，依據為交接文件 §3.1、§4.3。
+- AI 不決定版面。
+- 目前沒有企業模板。
+- PoC 使用 [pptx-poc-plan.md](../plans/pptx-poc-plan.md) 所述的樣本模板。
+- 渲染必須能在沒有 Office 的環境執行。
+- 交接文件 §2.1 不建議 Office Interop。
+- 授權預算仍未決，記錄於 OQ-11。
+- 預設使用 OSS。
 
 ## Decision
 
-- 以 **DocumentFormat.OpenXml** (Open XML SDK, MIT) 實作 `IOutputRenderer` 的 PPTX 版本, 放在 `WorkLens.Rendering.Pptx`。
-- 渲染策略: 開啟模板 → 移除模板中的範例 slides (含 notes) 與個人資訊 parts → 依 Presentation IR 的 `layout_id` 找到 Template Manifest 指定的 slide layout → 以該 layout 建立新 slide (不複製 prototype slide) → 依 slot 的 placeholder 識別 (`idx` / name) 填入文字、項目符號、表格, run 不寫格式覆寫 → 複製 layout 的頁尾 / 頁碼 placeholder, 並在 manifest 宣告的位置寫入頁尾文字與品牌值 (單位名稱、logo) → 重寫文件屬性 → 存檔。
-- Overflow 由 Layout Resolver 依 manifest 的容量 (`max_items`、`max_chars`) 事先處理 (拆頁 / 截斷 + 標記), Renderer 不做文字量測。容量以 PowerPoint 實測校正; 模板的 `normAutofit` 不能當作後備 (PowerPoint 開檔時不計算 `fontScale`)。
-- 驗證: 自動測試以 Open XML 結構斷言、`OpenXmlValidator` 與正規化 snapshot 為主 (不需 Office); 可編輯性與視覺以 PowerPoint 開啟 / 編輯 / 另存與人工檢視 PNG 驗證 (`tools/poc/run-poc-checks.ps1`)。不做跨檢視器 (LibreOffice 等) 驗證 (OQ-10)。
-- PoC 結果與證據: [pptx-poc-report.md](../plans/pptx-poc-report.md)。
+以 **DocumentFormat.OpenXml** 在 `WorkLens.Rendering.Pptx` 實作 `IOutputRenderer` 的 PPTX 版本。
+Open XML SDK 採 MIT 授權。
+
+依下列順序渲染簡報：
+
+1. 開啟模板。
+2. 移除範例 slide、其 notes 與個人資訊 parts。
+3. 依 Presentation IR 的 `layout_id` 找到 manifest 指定的 slide layout。
+4. 從該 layout 建立 slide，不複製 prototype slide。
+5. 透過 placeholder 的 `idx` 或 name，填入 slot 的文字、項目符號與表格。
+   不寫入 run 格式覆寫。
+6. 複製 layout 的頁尾與頁碼 placeholder。
+   在 manifest 指定的位置寫入頁尾文字與品牌。
+   品牌包含單位名稱與 logo。
+7. 重寫文件屬性。
+8. 存檔。
+
+- Layout Resolver 依 manifest 容量 `max_items`、`max_chars`，在渲染前處理 overflow。
+- 它會拆頁，或截斷文字並加上標記。
+- Renderer 不量測文字。
+- 以 PowerPoint 實測校正容量。
+- 不以模板的 `normAutofit` 作為後備。
+- PowerPoint 開啟檔案時不計算 `fontScale`。
+- 自動驗證使用 Open XML 結構斷言、`OpenXmlValidator` 與正規化 snapshot。
+- 這些檢查不需要安裝 Office。
+- 透過 `tools/poc/run-poc-checks.ps1`，以 PowerPoint 驗證外觀與可編輯性。
+  1. 開啟簡報。
+  2. 編輯簡報。
+  3. 另存簡報。
+  4. 檢視匯出的 PNG。
+- 依 OQ-10，不進行 LibreOffice 等跨檢視器驗證。
+- PoC 結果與證據見 [pptx-poc-report.md](../plans/pptx-poc-report.md)。
 
 ## Alternatives
 
@@ -34,7 +67,12 @@ Accepted — 2026-11-12 (使用者依 M0 PoC 結果決定; Proposed 2026-11-11)
 
 ## Consequences
 
-- 中文換行與字型替代取決於檢視端與字型安裝, 無法由 Renderer 保證; 以 manifest 的保守容量 (全形字最壞情況) 與 PowerPoint 實測降低風險。非 PowerPoint 檢視器未驗證 (已知風險)。
-- 容量以全形字計, 英文為主的文字會提早截斷 (backlog: 寬度意識的 `max_chars`)。
-- 不使用 PPTX 二進位雜湊判斷一致性 (交接文件 §4.3); 一致性測試比較抽取出的 slide 結構與文字。
-- 若換成企業模板後失敗, 依 PoC 計畫的重驗清單重新評估本 ADR。
+- 中文換行與字型替代取決於檢視端與已安裝字型。
+- Renderer 無法保證這些結果。
+- 以全形字為基準設定保守的 manifest 容量，並以 PowerPoint 實測降低風險。
+- 其他檢視器仍未驗證。
+- 容量以全形字計算，英文為主的內容可能提早截斷。
+- 能感知寬度的 `max_chars` 仍列於 backlog。
+- 依交接文件 §4.3，不以 PPTX 二進位雜湊判斷一致性。
+- 一致性測試比較抽取出的 slide 結構與文字。
+- 企業模板若失敗，依 PoC 計畫的重驗清單重新評估本 ADR。

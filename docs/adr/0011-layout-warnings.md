@@ -22,7 +22,7 @@ Accepted — 2026-11-14 (使用者於 2026-11-14 決定 1.0 manifest 回報 `sup
 
 - 1.0 輸入的 issues 與輸出不變, 因為 1.0 report 沒有 `support`。
 - 被 `max_items` 捨去的項目不算 warning。投影片的 `source_refs` 仍列出它。
-- `--strict` 現在也涵蓋 Layout, 不只 report 的規則。
+- `--strict` 同時涵蓋 Layout 警告與 report 規則。
 
 ## Alternatives
 

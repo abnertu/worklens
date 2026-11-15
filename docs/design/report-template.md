@@ -2,7 +2,7 @@
 
 > Status: Accepted — 2026-11-14
 
-本文件描述研發工作月報模板的目標設計。
+本文件定義研發工作月報模板的設計。
 `rd-monthly` 模板 (`templates/rd-monthly/`) 實作這個設計。
 它的 manifest 容量來自 PowerPoint 校正。
 
@@ -10,7 +10,7 @@
 
 報告的對象是一位同時開發軟體與維護伺服器的工程師。
 讀者是主管與專案經理。
-開發工作來自 GitLab 證據。
+本設計以 GitLab 證據示範開發工作。實作也接受 GitHub 證據。
 伺服器工作來自 `category: ops` 的 work item, 多半由人工輸入。
 
 ## 2. 單位與字型

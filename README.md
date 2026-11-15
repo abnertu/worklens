@@ -1,24 +1,16 @@
 # WorkLens
 
-WorkLens 從 GitHub 與 GitLab 蒐集可追溯的工作證據, 並把驗證過的工作報告渲染成可編輯的 PPTX。
+WorkLens 從 GitHub 與 GitLab 蒐集可追溯的證據，並將驗證過的報告渲染成可編輯的 PPTX。
 
-[![.NET](https://img.shields.io/badge/.NET-10-512BD4?logo=dotnet&logoColor=white)](https://dot.net)
-
-WorkLens 負責月報中確定性的步驟:
-
-1. `collect` 把你一個月內的 commits、pull requests 與 merge requests 寫入 `evidence.json`。
-2. 你或 AI agent 依據這些證據撰寫 `report.json`。WorkLens 不呼叫任何 LLM。
-3. `report validate` 依 schema 與證據檢查 `report.json`。
-4. `present` 以模板 manifest 排版報告, `render` 寫出 `.pptx` 檔。
-
-狀態: v0.1 開發中。GitHub 與 GitLab 的 `collect`、`report validate`、`present` 與 `render` 已可使用。
-GitLab `collect` 已在 self-managed GitLab 16.9.1 完成真實 project 驗收。GitHub 真實 repo 驗收尚未完成。`evidence digest` 尚未提供。
+[![.NET SDK](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fabnertu%2Fworklens%2Fmain%2Fglobal.json&query=%24.sdk.version&label=.NET%20SDK&logo=dotnet&color=512BD4&logoColor=white)](https://dot.net)
 
 ## 安裝
 
-需求: [.NET 10 SDK](https://dot.net)。渲染不需要 PowerPoint。
+安裝 `global.json` 指定的 .NET 10 SDK。
+渲染不需要 PowerPoint。
+只有呼叫端使用 Archify 產生圖表時，才需要 Node.js 與瀏覽器。
 
-```bash
+```powershell
 git clone https://github.com/abnertu/worklens.git
 cd worklens
 dotnet build WorkLens.slnx -c Release
@@ -26,46 +18,56 @@ dotnet build WorkLens.slnx -c Release
 
 ## 使用
 
-以研發工作月報模板 (`rd-monthly`) 渲染範例報告, 並加上 `templates/rd-monthly/demo/` 的單位名稱與 logo:
+先執行不需要來源憑證的範例報告。
+下列 PowerShell 命令使用內附月報模板與示範品牌。
+Fixture 刻意包含三項驗證警告。
+輸出檔為 `.worklens/demo/report.pptx`。
 
-```bash
-mkdir demo
-cp tests/Fixtures/rd-monthly/full/report.json tests/Fixtures/rd-monthly/full/evidence.json demo/
-dotnet run --project src/WorkLens.Cli -c Release -- report validate --workspace demo
-dotnet run --project src/WorkLens.Cli -c Release -- present --workspace demo --manifest templates/rd-monthly/manifest.json
-dotnet run --project src/WorkLens.Cli -c Release -- render --workspace demo --manifest templates/rd-monthly/manifest.json --config templates/rd-monthly/demo/worklens.json
+```powershell
+New-Item -ItemType Directory -Force .worklens/demo | Out-Null
+Copy-Item tests/Fixtures/rd-monthly/full/report.json, tests/Fixtures/rd-monthly/full/evidence.json .worklens/demo/
+dotnet run --project src/WorkLens.Cli -c Release -- report validate --workspace .worklens/demo
+dotnet run --project src/WorkLens.Cli -c Release -- present --workspace .worklens/demo --manifest templates/rd-monthly/manifest.json
+dotnet run --project src/WorkLens.Cli -c Release -- render --workspace .worklens/demo --manifest templates/rd-monthly/manifest.json --config templates/rd-monthly/demo/worklens.json
 ```
 
-範例報告刻意包含 3 個 warning, 示範驗證規則:
+產生真實報告時，先設定身分與來源，再以環境變數提供 Token。
+單月使用 `collect --period`，包含兩端的月份區間使用 `--from` 與 `--to`。
+呼叫端先撰寫並審核 `report.json`，再執行驗證、排版與渲染。
+設定與命令見 [CLI 使用規格](docs/design/cli-ux.md)。
 
-```text
-/path/to/worklens/demo/report.json: 0 error(s), 3 warning(s)
-Wrote /path/to/worklens/demo/presentation.json (15 slides).
-Wrote /path/to/worklens/demo/report.pptx (15 slides).
-```
+## 月報流程
 
-在命令加上 `--json`, stdout 會輸出單一 JSON 物件, 供 agent 解析。Exit code 表示結果的類別。
+此圖呈現目前可用命令，以及呼叫端的審核步驟。
+WorkLens 不呼叫 LLM，也不產生圖表內容。
+呼叫端可在 Codex 或 Claude Code 使用已安裝的 Archify 技能。
+已宣告的圖片預設納入報告。
+在 `present` 或 `render` 加上 `--no-archify`，即可略過 Archify 圖片頁。
 
-補齊過去月份的證據時, 使用區間蒐集:
+![WorkLens 月報流程](docs/diagrams/workflow/workflow.svg)
 
-```bash
-dotnet run --project src/WorkLens.Cli -c Release -- collect --from 2026-08 --to 2026-10 --config worklens.json --workspace .worklens/reports --json
-```
+## 執行架構
 
-每月分別寫入 `.worklens/reports/<yyyy-MM>/evidence.json`。某個月停止時, 已完成月份會保留。
-每個月的 `present` 與 `render` 請在該月子目錄分別執行。
+CLI 負責設定、環境變數與檔案存取。
+Core 負責 IR、驗證與確定性排版。
+Connectors 蒐集來源證據，Renderer 以 Open XML 寫出 PPTX。
+呼叫端負責報告內容、圖表產生與人工審核。
+下載圖表的獨立 HTML 檔後，可互動檢視。
 
-## Archify 流程圖
+![WorkLens 執行架構](docs/diagrams/architecture/architecture.svg)
 
-專案已安裝 Codex 與 Claude Code 可用的 Archify。
-代理先產生 PNG，並在 `report.json` 的工作項目宣告圖片參照與 SHA-256。
-`present` 與 `render` 預設納入這些圖片，可加上 `--no-archify` 略過 Archify 圖片頁。
-WorkLens 不執行 Archify 或呼叫 LLM。
-流程與範例見 [Archify 整合指南](docs/integrations/archify.md)。
+[流程圖 HTML](docs/diagrams/workflow/workflow.html) · [架構圖 HTML](docs/diagrams/architecture/architecture.html) · [Archify 整合指南](docs/integrations/archify.md)
 
-## 文件
+## 狀態與文件
 
-- 命令、選項、輸出與 exit code: [docs/design/cli-ux.md](docs/design/cli-ux.md)
-- 架構: [docs/architecture/overview.md](docs/architecture/overview.md)
-- 決策紀錄: [docs/adr/](docs/adr/)
-- JSON Schemas: [schemas/](schemas/)
+核心流程、來源蒐集與 Archify 圖片附件已可使用。
+GitHub 與 self-managed GitLab 蒐集均已通過真實驗收。
+M2 digest、M3 端到端編排與 M4 發佈強化留待後續。
+目前沒有已發布版本或 CI workflow。
+最近一次完整本機檢查通過 Release 建置與 888 項測試。
+
+- [架構與相依規則](docs/architecture/overview.md)
+- [資料模型與模組契約](docs/design/domain-model.md)
+- [安全與隱私](docs/security/security-privacy.md)
+- [後續里程碑](docs/plans/implementation-backlog.md)
+- [架構決策](docs/adr/)

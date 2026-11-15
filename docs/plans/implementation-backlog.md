@@ -7,6 +7,8 @@
 
 ## 依賴總覽
 
+2026-11-16 的收尾涵蓋目前的核心交付。M0、M1 與月報模板工作已完成。M2–M4 留待後續。收尾完成不代表整份 v0.1 路線圖已完成。
+
 ```text
 M0 (Report IR → PPTX, 手寫輸入)
  └─> M1 (Git collectors → Evidence IR)
@@ -57,9 +59,11 @@ M2 digest 與 M3 編排的範圍不變。
 - `m1b-gitlab-connector`: 在 m1a 的接縫 (`ISourceConnector`、HTTP 基礎、`collect`) 上加入 GitLab 與 self-managed GitLab 實測。
 
 狀態: m1a 已完成 GitHub `collect` 實作與 fixture 測試。
-最終差異審查已通過。真實 GitHub repo 驗收尚未完成。
+最終差異審查已通過。GitHub 真實驗收已於 2026-11-16 完成。
+該次取得 48 筆 commit、0 筆 PR，使用 51 次請求且沒有警告。
+三筆網址與作者時間抽查通過；PR 路徑仍由 fixture 測試驗證。
 m1b 已完成 GitLab `collect` 實作、fixture 測試與 self-managed GitLab 16.9.1 真實驗收。
-使用者決定暫緩 GitHub 驗收 (2026-11-13)。m1a 維持 verifying, DC10 不勾選。
+GitHub 驗收使用既有 `gh` OAuth 憑證。最小權限 PAT 尚未實測。
 
 目標: 從 GitHub / GitLab 取得期間內的活動, 產生 Evidence IR。
 
@@ -220,15 +224,15 @@ rt-3 已修正程序與模板的風險。腳本只結束 COM 啟動的 PowerPoin
 | Token 來源備援 | M4 評估 `gh` / `glab` / OS credential store; 保留環境變數並評估權限差異 |
 | 離線 NuGet audit | 可重現 NU1900 被 warnaserror 升為錯誤; 目前只有未驗證疑慮 |
 
-### GitHub 暫緩項目
+### GitHub 後續項目
 
 | 項目 | 恢復後的驗收方向 |
 |---|---|
-| M1a DC10 真實 repo 驗收 | `collect` 成功、schema 通過、記錄計數, 並抽查三筆 URL 與時間 |
+| 最小權限 PAT | 僅授權 `Metadata: read`、`Contents: read` 與 `Pull requests: read` 後，重跑真實蒐集 |
 | PR 分頁期間更新 | 重現 `sort=updated` 位移造成漏項, 再驗證補抓策略 |
 | 超過 250 commits 的 PR | 以 list commits 端點補齊, 並驗證完整性與去重 |
 
-本次不執行 GitHub 真實驗收或擴充。共用快取與 token 備援保留於前表。
+GitHub 基本蒐集已通過真實驗收。後續擴充、共用快取與 token 備援另立計畫。
 
 ### 已完成或撤銷
 
@@ -242,7 +246,7 @@ rt-3 已修正程序與模板的風險。腳本只結束 COM 啟動的 PowerPoin
 | 內建 LLM provider | 不納入目前 backlog; 與 AGENTS.md 的無 LLM 呼叫及 SDK 邊界衝突 |
 
 建議先處理 PowerPoint 腳本風險與 CLI 路徑錯誤, 再推進 M2 digest 主流程。
-M2 可用已驗收的 GitLab 證據規劃; GitHub DC10 仍保持未完成。
+M2 可用已驗收的 GitHub 與 GitLab 證據規劃。
 其他 renderer 與模板改善依實際模板需求安排。
 
 ## 未排入 Milestone 的擴充

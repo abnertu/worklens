@@ -8,7 +8,7 @@ Accepted — 2026-11-14
 
 - 細節投影片顯示 change request 與 issue 的標題。這些標題是平台上的原文。
 - 標題可能含有內部 URL、SSH remote、email、commit SHA 或 token。
-- 投影片會離開本機。報告的讀者不需要連結。
+- 投影片可能離開本機。報告讀者不需要來源連結。
 
 ## Decision
 

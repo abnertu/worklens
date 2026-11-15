@@ -1,0 +1,190 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "WorkLens 月報流程",
+    "locale": "zh-TW",
+    "quality_profile": "showcase",
+    "output": "docs/diagrams/workflow/workflow.html",
+    "repository": {
+      "url": "git@github.com:abnertu/worklens.git",
+      "revision": "f63164ca39866996f43c9ae4feb433df6b2bf687",
+      "link_mode": "local-only"
+    },
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "WorkLens 命令"
+        },
+        "external": {
+          "label": "呼叫端作業"
+        }
+      }
+    }
+  },
+  "lanes": [
+    {
+      "id": "cli",
+      "label": "WorkLens：確定性處理"
+    },
+    {
+      "id": "caller",
+      "label": "呼叫端：使用者與代理"
+    }
+  ],
+  "mainPath": [
+    "collect",
+    "author",
+    "validate",
+    "review",
+    "present",
+    "render"
+  ],
+  "nodes": [
+    {
+      "id": "collect",
+      "lane": "cli",
+      "col": 0,
+      "type": "backend",
+      "label": "collect",
+      "sublabel": "API → evidence.json",
+      "sources": [
+        {
+          "path": "src/WorkLens.Cli/CollectCommand.cs",
+          "line": 271,
+          "end_line": 344
+        }
+      ]
+    },
+    {
+      "id": "author",
+      "lane": "caller",
+      "col": 1,
+      "type": "external",
+      "label": "撰寫報告",
+      "sublabel": "report.json＋可選圖片",
+      "sources": [
+        {
+          "path": "AGENTS.md",
+          "line": 73,
+          "end_line": 77
+        },
+        {
+          "path": "src/WorkLens.Core/Report/ReportDocument.cs",
+          "line": 76,
+          "end_line": 92
+        }
+      ]
+    },
+    {
+      "id": "validate",
+      "lane": "cli",
+      "col": 2,
+      "type": "backend",
+      "label": "report validate",
+      "sublabel": "schema、參照與警告",
+      "sources": [
+        {
+          "path": "src/WorkLens.Cli/ReportCommands.cs",
+          "line": 47,
+          "end_line": 74
+        },
+        {
+          "path": "src/WorkLens.Core/Validation/ReportValidator.cs",
+          "line": 32,
+          "end_line": 93
+        }
+      ]
+    },
+    {
+      "id": "review",
+      "lane": "caller",
+      "col": 3,
+      "type": "external",
+      "label": "人工審核",
+      "sublabel": "確認內容與警告",
+      "sources": [
+        {
+          "path": "src/WorkLens.Core/Report/ReportDocument.cs",
+          "line": 5,
+          "end_line": 8
+        }
+      ]
+    },
+    {
+      "id": "present",
+      "lane": "cli",
+      "col": 4,
+      "type": "backend",
+      "label": "present",
+      "sublabel": "Report IR → 投影片結構",
+      "sources": [
+        {
+          "path": "src/WorkLens.Cli/ReportCommands.cs",
+          "line": 124,
+          "end_line": 136
+        },
+        {
+          "path": "src/WorkLens.Core/Layout/LayoutResolver.cs",
+          "line": 158,
+          "end_line": 164
+        }
+      ]
+    },
+    {
+      "id": "render",
+      "lane": "cli",
+      "col": 5,
+      "type": "backend",
+      "label": "render",
+      "sublabel": "模板＋圖片 → PPTX",
+      "sources": [
+        {
+          "path": "src/WorkLens.Cli/RenderCommand.cs",
+          "line": 97,
+          "end_line": 116
+        }
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "from": "collect",
+      "to": "author"
+    },
+    {
+      "from": "author",
+      "to": "validate"
+    },
+    {
+      "from": "validate",
+      "to": "review"
+    },
+    {
+      "from": "review",
+      "to": "present"
+    },
+    {
+      "from": "present",
+      "to": "render"
+    },
+    {
+      "from": "validate",
+      "to": "author",
+      "label": "有錯誤：修正",
+      "role": "error",
+      "variant": "security"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "slate",
+      "title": "目前範圍",
+      "items": [
+        "呼叫端負責撰稿、Archify 圖片與人工審核。",
+        "WorkLens 不啟動 LLM 或 Archify。",
+        "digest、端到端編排與發佈強化留待 M2–M4。"
+      ]
+    }
+  ]
+}

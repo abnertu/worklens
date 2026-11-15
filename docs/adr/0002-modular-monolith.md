@@ -7,7 +7,7 @@ Proposed — 2026-11-11
 ## Context
 
 - 交接文件 §7 列出 8 個邏輯模組 (Domain、Application、Contracts、Infrastructure、Connectors、Analysis、Rendering、Cli), 並註明不代表每個都要拆成 `.csproj`。
-- v0.1 只有一個入口 (CLI)、一位使用者、一條 pipeline; AI 分析不在 WorkLens 內 ([ADR-0004](0004-agent-as-analyzer.md))。
+- v0.1 設計只有一個 CLI 入口、一位使用者與一條流程。AI 分析在 WorkLens 外執行 ([ADR-0004](0004-agent-as-analyzer.md))。
 - 主要的隔離需求是**套件相依**: IR / 驗證 / Layout 不該被 Open XML、HTTP、CLI 函式庫汙染, 這樣它們才能被未來的 MCP server 或 API 重用。
 
 ## Decision

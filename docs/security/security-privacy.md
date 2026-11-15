@@ -5,6 +5,8 @@
 
 ## 1. 資產與威脅
 
+digest 的資料最小化與脫敏要求屬於 M2。正式 digest 命令尚未提供。目前的蒐集器與渲染器驗收不代表這些要求已完成。
+
 | 資產 | 所在 | 主要威脅 |
 |---|---|---|
 | GitHub / GitLab token | 環境變數 | 寫入日誌、shell history、agent 對話紀錄; 權限過大 |
@@ -26,7 +28,9 @@
 - 字串值整段符合 §3 的完整 token pattern 時也拒絕。`digest.redaction.patterns` 的 `match` 與 `replace` 值除外。
 - 拒絕訊息只列 JSON Pointer, 不列 secret 值。`token_env` 可存環境變數名稱。
 - GitHub fine-grained PAT 只授權目標 repository 的 `Contents: read`、`Pull requests: read`、`Metadata: read`。
-- GitHub HTTP 請求已有 fixture 測試。上述最小權限的真實驗證待 S10 完成。
+- GitHub 真實蒐集已於 2026-11-16 驗收，取得 48 筆 commit，使用 51 次請求且沒有警告。
+- 本次使用經使用者授權的既有 `gh` OAuth 憑證，僅暫存於程序環境變數。
+- 該憑證權限多於上述最小權限。只有最小權限的 fine-grained PAT 尚未實測。
 - GitLab token 需要 `read_api` 權限。M1b 在 self-managed GitLab 16.9.1 完成真實驗收。
 - 該驗收使用的 token 權限多於 `read_api`。只有 `read_api` 的 token 尚未實測。
 - `collect --dry-run` 顯示所需權限與 token 變數狀態。

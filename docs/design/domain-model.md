@@ -18,7 +18,7 @@
 
 ## 2. Evidence IR (`urn:worklens:schema:evidence-ir:1.0`、`1.1`)
 
-跨來源的標準證據。由 `worklens collect` 產生, agent 與人不應修改。
+`worklens collect` 產生跨來源的標準證據。撰寫報告時保留這些證據的原始內容。
 
 ```text
 EvidenceDocument

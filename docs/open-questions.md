@@ -3,7 +3,7 @@
 > Date: 2026-11-11
 > OQ-01..OQ-12 依[交接文件](handoff/worklens-initial-discussion.md) §9 原順序; OQ-13 起為規劃過程新增。
 > `Decided` 項目記錄決策與決策者; `Open` 項目記錄在決定前採用的**預設假設**與最晚需決定的 Milestone ([implementation-backlog.md](plans/implementation-backlog.md))。
-> 預設假設不代表已解決。
+> 預設假設不代表問題已解決。
 
 ### OQ-01 首個目標環境: Windows/Linux/macOS? 本地 CLI 或 CI Runner?
 - Status: Open

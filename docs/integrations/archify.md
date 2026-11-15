@@ -2,7 +2,7 @@
 
 Codex 與 Claude Code 都能使用專案內的 Archify 3.2.0。
 安裝位置分別是 `.agents/skills/archify` 與 `.claude/skills/archify`。
-WorkLens 預設納入已宣告的圖片，不會自行產生流程圖。
+WorkLens 預設納入已宣告的圖片。流程圖由呼叫端產生。
 WorkLens 執行時不需要 Node.js、瀏覽器或 LLM SDK。
 
 ## 準備與渲染
@@ -23,6 +23,15 @@ node .agents/skills/archify/bin/archify.mjs finalize workflow .worklens/reports/
 
 `candidate.json` 的 `meta.output` 須與 HTML 輸出路徑相同。
 非程式碼圖表可省略 `--repo-root`。
+將流程圖嵌入簡報時，只顯示一個標題。
+
+1. 保留投影片標題。
+2. 在匯出工作階段，只清空 HTML 的 `h1`。
+3. 選擇「匯出 → PNG」。
+4. 保留原始 HTML 與 SVG 的無障礙標題。
+5. 記錄匯出處理與 PNG hash。
+6. 不要以裁切點陣圖片的方式移除標題。
+
 PNG 匯出包含完整圖表，瀏覽器視窗截圖不能代替它。
 
 在 `work_items[]` 的所屬項目加入：

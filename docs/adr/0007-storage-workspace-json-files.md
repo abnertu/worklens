@@ -9,7 +9,7 @@ Proposed — 2026-11-11
 - 交接文件 §2 把儲存列為 Open (JSON files / SQLite)。
 - v0.1 pipeline 的每個階段由不同角色執行 (WorkLens、agent、人), 需要一個彼此都能讀寫的交換媒介。Agent 與人都擅長讀寫檔案。
 - 需要記錄 provenance: source snapshot hash、schema 版本、template 版本、renderer 版本 (交接文件 §4.3、§6)。
-- 歷史比較、跨期間查詢、保留期限尚未決定 (OQ-09)。
+- 歷史比較、跨期間查詢與保留期限仍未決定 (OQ-09)。
 
 ## Decision
 

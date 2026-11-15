@@ -22,7 +22,7 @@
 - **major** (`1.x` → `2.0`): 任何讓既有有效文件變成無效、或改變既有欄位意義的變更。
   - 新增必填欄位、移除或改名欄位、改變型別、收緊限制、改變 enum 值的意義。
 
-注意: 因為所有物件都是 `additionalProperties: false`, **舊版 reader 讀不了新版 minor 新增的欄位**。相容方向是「新 reader 讀舊文件」, 不是「舊 reader 讀新文件」。新增 enum 值也屬此類 — 對 reader 是 minor, 但舊 reader 會拒絕。
+所有物件都使用 `additionalProperties: false`。舊版 reader 會拒絕新版 minor 新增的欄位。相容表示新版 reader 可以讀取舊文件。新增 enum 值也屬 minor 變更，但舊版 reader 會拒絕該值。
 
 ## 3. 支援政策
 

@@ -24,7 +24,7 @@
 | 主題字型 | 拉丁: Calibri; 東亞: Microsoft JhengHei (微軟正黑體) | 中文字型套用與替代 |
 | 範例 slides | 每個 layout 一頁「示範」 | 渲染後必須移除, 不留在輸出 |
 
-模板與 manifest 一起放在 `templates/sample-monthly/`, manifest 記錄模板 `sha256`, Renderer 開檔前比對。
+將模板與 manifest 放在 `templates/sample-monthly/`。在 manifest 記錄模板的 `sha256`。Renderer 開啟模板前先比對該 hash。
 
 ## 3. 驗證項目與驗收條件
 

@@ -4,7 +4,7 @@
 > Date: 2026-11-11
 > 來源: [交接文件](../handoff/worklens-initial-discussion.md)、[ADR](../adr/)、[Open Questions](../open-questions.md)
 
-本文件描述 WorkLens v0.1 的目標架構、Project 劃分與相依規則。標記規則:
+本文件定義 WorkLens v0.1 的目標架構、專案邊界與相依規則。下列標記區分決策狀態：
 
 - **Decided** — 使用者已確認, 變更需重新決策。
 - **Proposed** — 規劃建議, 實作子計畫可在不違反 Decided 項目的前提下調整, 調整時更新對應 ADR。
@@ -12,7 +12,7 @@
 
 ## 1. 定位
 
-WorkLens 從工作相關資料來源 (v0.1: GitHub / GitLab) 提取**可追溯的證據**, 由 **agent CLI** (Claude Code / Codex CLI) 歸納成工作成果, 再以**確定性規則**產生可人工補充的報告 (v0.1: 可編輯 PPTX 月報)。
+WorkLens 從 GitHub 與 GitLab 蒐集可追溯的工作證據。Claude Code、Codex 等呼叫端撰寫報告內容。確定性排版與渲染產生可編輯的 PPTX 報告。使用者可以審核並補充內容。
 
 v0.1 的關鍵架構決策 (Decided, [ADR-0004](../adr/0004-agent-as-analyzer.md)):
 **WorkLens 本身不呼叫 LLM。** 它是 agent 使用的 tool:
@@ -49,6 +49,8 @@ v0.1 的關鍵架構決策 (Decided, [ADR-0004](../adr/0004-agent-as-analyzer.md
 其餘待決事項見 [open-questions.md](../open-questions.md)。
 
 ## 3. Pipeline
+
+下圖保留目標流程。digest 命令與自動 provenance 仍屬規劃工作。[README](../../README.md) 的圖表呈現目前可用流程與執行架構。
 
 ```text
                   ┌──────────────────────── Agent CLI (Claude Code / Codex) ───────────────────────┐

@@ -1,0 +1,242 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "WorkLens 執行架構",
+    "locale": "zh-TW",
+    "quality_profile": "showcase",
+    "output": "docs/diagrams/architecture/architecture.html",
+    "repository": {
+      "url": "git@github.com:abnertu/worklens.git",
+      "revision": "f63164ca39866996f43c9ae4feb433df6b2bf687",
+      "link_mode": "local-only"
+    },
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "WorkLens 模組"
+        },
+        "external": {
+          "label": "呼叫端"
+        },
+        "cloud": {
+          "label": "來源平台"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "caller",
+      "type": "external",
+      "label": "使用者／代理",
+      "sublabel": "JSON＋Archify 圖片",
+      "pos": [
+        40,
+        70
+      ],
+      "size": [
+        170,
+        76
+      ],
+      "sources": [
+        {
+          "path": "AGENTS.md",
+          "line": 73,
+          "end_line": 77
+        },
+        {
+          "path": "docs/integrations/archify.md",
+          "line": 3,
+          "end_line": 8
+        }
+      ]
+    },
+    {
+      "id": "cli",
+      "type": "backend",
+      "label": "WorkLens.Cli",
+      "sublabel": "命令、設定與檔案 I/O",
+      "pos": [
+        390,
+        70
+      ],
+      "size": [
+        180,
+        86
+      ],
+      "sources": [
+        {
+          "path": "src/WorkLens.Cli/CollectCommand.cs",
+          "line": 271,
+          "end_line": 344
+        },
+        {
+          "path": "src/WorkLens.Cli/ReportCommands.cs",
+          "line": 124,
+          "end_line": 136
+        },
+        {
+          "path": "src/WorkLens.Cli/RenderCommand.cs",
+          "line": 97,
+          "end_line": 116
+        }
+      ]
+    },
+    {
+      "id": "core",
+      "type": "backend",
+      "label": "WorkLens.Core",
+      "sublabel": "IR、驗證與確定性排版",
+      "pos": [
+        790,
+        70
+      ],
+      "size": [
+        190,
+        76
+      ],
+      "sources": [
+        {
+          "path": "src/WorkLens.Core/Validation/ReportValidator.cs",
+          "line": 32,
+          "end_line": 93
+        },
+        {
+          "path": "src/WorkLens.Core/Layout/LayoutResolver.cs",
+          "line": 84,
+          "end_line": 121
+        },
+        {
+          "path": "docs/architecture/overview.md",
+          "line": 108,
+          "end_line": 115
+        }
+      ]
+    },
+    {
+      "id": "api",
+      "type": "cloud",
+      "label": "GitHub／GitLab",
+      "sublabel": "REST API",
+      "pos": [
+        40,
+        330
+      ],
+      "size": [
+        170,
+        76
+      ],
+      "sources": [
+        {
+          "path": "src/WorkLens.Connectors.Git/GitHubHttp.cs",
+          "line": 20,
+          "end_line": 38
+        },
+        {
+          "path": "src/WorkLens.Connectors.Git/GitLabHttp.cs",
+          "line": 20,
+          "end_line": 37
+        }
+      ]
+    },
+    {
+      "id": "connectors",
+      "type": "backend",
+      "label": "Connectors.Git",
+      "sublabel": "蒐集、分頁與重試",
+      "pos": [
+        390,
+        330
+      ],
+      "size": [
+        180,
+        76
+      ],
+      "sources": [
+        {
+          "path": "src/WorkLens.Cli/CollectCommand.cs",
+          "line": 367,
+          "end_line": 374
+        },
+        {
+          "path": "src/WorkLens.Connectors.Git/GitHubApiClient.cs",
+          "line": 32,
+          "end_line": 63
+        }
+      ]
+    },
+    {
+      "id": "renderer",
+      "type": "backend",
+      "label": "Rendering.Pptx",
+      "sublabel": "Open XML → 可編輯 PPTX",
+      "pos": [
+        790,
+        330
+      ],
+      "size": [
+        190,
+        76
+      ],
+      "sources": [
+        {
+          "path": "src/WorkLens.Rendering.Pptx/PptxRenderer.cs",
+          "line": 41,
+          "end_line": 125
+        }
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "WorkLens 本機程序",
+      "wraps": [
+        "cli",
+        "core",
+        "connectors",
+        "renderer"
+      ],
+      "pad": 30
+    }
+  ],
+  "connections": [
+    {
+      "from": "caller",
+      "to": "cli",
+      "label": "子命令與檔案"
+    },
+    {
+      "from": "cli",
+      "to": "core",
+      "label": "驗證與排版"
+    },
+    {
+      "from": "cli",
+      "to": "connectors",
+      "label": "蒐集查詢"
+    },
+    {
+      "from": "connectors",
+      "to": "api",
+      "label": "HTTPS API"
+    },
+    {
+      "from": "cli",
+      "to": "renderer",
+      "label": "投影片與圖片"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "slate",
+      "title": "責任邊界",
+      "items": [
+        "Core 只處理資料與純函式，不讀取工作檔或環境變數。",
+        "CLI 驗證圖片並提交輸出；Renderer 讀取模板並產生 PPTX。",
+        "Archify 位於呼叫端，WorkLens 不啟動 LLM、Node.js 或瀏覽器。"
+      ]
+    }
+  ]
+}

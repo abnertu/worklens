@@ -13,7 +13,7 @@ Accepted (使用者決策) — 2026-11-11
 ## Decision
 
 - 主要介面是 `worklens` CLI 子命令 (`collect`、`evidence digest`、`report validate`、`present`、`render`、`schema list` / `schema show`), 規格見 [cli-ux.md](../design/cli-ux.md)。
-- 資料以**檔案路徑**傳遞, 不以 stdout 傳大型 JSON; stdout 只輸出結果摘要。
+- 以檔案路徑傳遞資料。stdout 用於結果摘要，不傳遞大型資料文件。
 - 每個命令支援 `--json`: stdout 輸出單一 JSON 物件 (成功結果或結構化錯誤), 供 agent 解析。
 - Exit code 有固定語意 (0 成功、2 驗證失敗、10 未實作等), agent 可依 exit code 決定下一步。
 - stdout / stderr 一律 UTF-8。

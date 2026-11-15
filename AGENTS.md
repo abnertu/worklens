@@ -33,7 +33,7 @@
 - Before each commit, run these commands and make sure that both pass:
   1. `dotnet build WorkLens.slnx -c Release -warnaserror`
   2. `dotnet test --solution WorkLens.slnx -c Release`
-- The test platform sometimes crashes with `Releasing the double mapped memory failed` or an MSBuild node failure. Run the tests again once before you debug it.
+- Retry the tests once after `Releasing the double mapped memory failed` or an MSBuild node failure. Investigate if the retry fails.
 
 ## CI
 
@@ -72,7 +72,8 @@
 
 ## Boundaries
 
-- WorkLens calls no LLM and depends on no LLM SDK. The caller writes `report.json`. WorkLens validates it, then lays it out and renders it.
+- WorkLens calls no LLM and depends on no LLM SDK.
+- The caller writes `report.json`. WorkLens validates it, then lays it out and renders it.
 - Only the entry project `src/WorkLens.Cli` reads environment variables and config files. Other projects get values as arguments.
 - The user supplies the source tokens in environment variables. Never write a token to a file, a log or a test fixture.
 
@@ -105,8 +106,14 @@
 - Read `docs/design/schema-versioning.md` before you change a file under `schemas/`.
 - Read `docs/design/cli-ux.md` before you change a command, an option, an error code or an exit code. Update it in the same change.
 - Read `docs/security/security-privacy.md` before you change token handling, logging or the collected content.
-- Record each architecture decision as an ADR in `docs/adr/`.
+- Record each architecture decision as an ADR in `docs/adr/`. Read existing ADRs before you revise a decision.
 - Read `docs/plans/implementation-backlog.md` for the scope of each milestone.
+- Read `docs/design/report-template.md` before you change monthly report layouts or styles.
+- Read `docs/integrations/archify.md` before you change diagram generation or report image attachments.
+- Read `docs/open-questions.md` before you resolve a recorded open decision.
+- Read `docs/plans/pptx-poc-plan.md` and `docs/plans/pptx-poc-report.md` before you change template acceptance checks.
+- Read `docs/design/pipeline-sequence.md` before you change pipeline orchestration.
+- Use `docs/handoff/worklens-initial-discussion.md` for historical context. Use current ADRs and design documents for implementation decisions.
 
 <!-- CODEGRAPH_START -->
 ## CodeGraph

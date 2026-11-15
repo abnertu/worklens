@@ -4,6 +4,8 @@
 > 對應交接文件 §10 交付物 4: Git API → Normalization → Analysis → Validation → Layout Resolution → Rendering。
 > 在 v0.1 中 Analysis 由 agent CLI 執行 ([ADR-0004](../adr/0004-agent-as-analyzer.md))。命令與 exit codes 見 [cli-ux.md](cli-ux.md)。
 
+此時序圖保留目標流程。digest 與自動 provenance 步驟尚未實作。M2–M4 留待後續。[README](../../README.md) 的圖表呈現目前可用流程。
+
 ```mermaid
 sequenceDiagram
     autonumber

@@ -35,5 +35,5 @@ Accepted (使用者決策) — 2026-11-11
 
 - WorkLens 的測試完全確定性, 不需 mock LLM。
 - 「Prompt version / model ID」(交接文件 §4.3) 無法由 WorkLens 取得; `manifest.json` 以 agent 自報欄位 (`analysis.agent`、`analysis.model`, 選填) 記錄, 並標記為未驗證。
-- 可重現性靠凍結已審核的 `report.json`, 而不是重跑 agent。
+- 凍結已審核的 `report.json` 以保留可重現性。渲染不需要再次執行代理分析。
 - 資料最小化的責任落在 digest: WorkLens 控制「交給 agent 什麼」, 但無法控制 agent 自行讀取 repo 的其他檔案 — 這需要在 Skill 指引與使用者的 agent 權限設定中處理 ([security-privacy.md](../security/security-privacy.md))。

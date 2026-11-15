@@ -8,7 +8,7 @@ Accepted — 2026-11-13
 
 - WorkLens 0.1 的每個 schema 只有一個版本。Report IR 1.1 為月報模板新增欄位。
 - 1.0 的報告與 manifest 必須維持有效。變更後, 1.0 文件的結果必須相同。
-- 每個 name 只有一個 schema ID 的驗證器無法讀取兩個 minor。
+- 每個 name 只對應一個 schema ID 的驗證器，無法讀取兩個 minor 版本。
 
 ## Decision
 
