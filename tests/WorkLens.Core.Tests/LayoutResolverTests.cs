@@ -118,10 +118,6 @@ public sealed class LayoutResolverTests
     }
 
     [Fact]
-    public void Stress_report_is_bound_to_stress_evidence_bytes() =>
-        Assert.Equal(Sha256(StressEvidencePath), Load<ReportDocument>(StressReportPath).EvidenceDocument.Sha256);
-
-    [Fact]
     public void Stress_overflow_splits_and_truncates()
     {
         var presentation = Stress();

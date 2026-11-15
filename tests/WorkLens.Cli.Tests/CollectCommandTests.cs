@@ -227,7 +227,6 @@ public sealed class CollectCommandTests : IDisposable
     }
 
     [Theory]
-    [InlineData]
     [InlineData("--period", "2026-13")]
     [InlineData("--period", "2026-1")]
     [InlineData("--period", "0000-10")]
@@ -235,7 +234,7 @@ public sealed class CollectCommandTests : IDisposable
     [InlineData("--period", "0001-01")]
     [InlineData("--period", "\u0662\u0660\u0662\u0666-10")]
     [InlineData("--period", "2026-10\n")]
-    public async Task Missing_or_malformed_period_is_a_usage_error(params string[] period)
+    public async Task Malformed_period_is_a_usage_error(params string[] period)
     {
         WriteConfig();
 

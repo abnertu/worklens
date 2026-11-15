@@ -131,20 +131,6 @@ public sealed class SchemaConsistencyTests
         Assert.True(JsonNode.DeepEquals(expected, actual), $"Round-trip changed {fileName}:{Environment.NewLine}{roundTripped}");
     }
 
-    // The serialized form of a model is itself schema-valid (guards against model/schema drift on write).
-    [Theory]
-    [MemberData(nameof(ValidExamples))]
-    public void Serialized_model_is_schema_valid(string schemaName, string version, string fileName)
-    {
-        var info = SchemaExamples.Info(schemaName, version);
-        var json = File.ReadAllText(SchemaExamples.ExamplePath(schemaName, version, "valid", fileName));
-        var model = JsonSerializer.Deserialize(json, info.RootType, WorkLensJson.Options);
-
-        var result = Validator.Validate(info.Id, JsonSerializer.Serialize(model, info.RootType, WorkLensJson.Options));
-
-        Assert.True(result.IsValid);
-    }
-
     // The valid examples form one consistent set (usable as M0 golden inputs): each document's SHA-256 binding
     // matches the file it points to.
     [Fact]

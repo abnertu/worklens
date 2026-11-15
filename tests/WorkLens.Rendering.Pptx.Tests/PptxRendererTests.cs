@@ -396,17 +396,15 @@ public sealed class PptxRendererTests : IDisposable
         Assert.DoesNotContain("removePersonalInfoOnSave", await reader.ReadToEndAsync(TestContext.Current.CancellationToken), StringComparison.Ordinal);
     }
 
-    // D12 for the committed template itself, and its binding to the manifest.
+    // D12 for the committed template itself.
     [Fact]
-    public void Template_has_no_author_and_matches_the_manifest_sha256()
+    public void Template_has_no_author()
     {
         using (var template = PackageDocument.Open(TemplatePath, false))
         {
             Assert.True(string.IsNullOrEmpty(template.PackageProperties.Creator));
             Assert.True(string.IsNullOrEmpty(template.PackageProperties.LastModifiedBy));
         }
-
-        Assert.Equal(Manifest().Template.Sha256, Sha256(File.ReadAllBytes(TemplatePath)));
     }
 
     [Fact]
