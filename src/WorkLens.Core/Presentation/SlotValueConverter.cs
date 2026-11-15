@@ -50,6 +50,7 @@ internal sealed class SlotValueConverter : JsonConverter<SlotValue>
             "bullets" => typeof(BulletsSlotValue),
             "table" => typeof(TableSlotValue),
             "metric" => typeof(MetricSlotValue),
+            "image" => typeof(ImageSlotValue),
             null => throw new JsonException("The slot value has no 'kind' member."),
             _ => throw new JsonException($"Unknown slot value kind '{kind}'."),
         };
@@ -160,6 +161,7 @@ internal sealed class SlotValueConverter : JsonConverter<SlotValue>
             BulletsSlotValue => "bullets",
             TableSlotValue => "table",
             MetricSlotValue => "metric",
+            ImageSlotValue => "image",
             _ => throw new JsonException($"Unsupported slot value {value.GetType().Name}."),
         };
 

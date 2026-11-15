@@ -172,6 +172,7 @@ public static class PresentationManifestChecker
         BulletsSlotValue => SlotKind.Bullets,
         TableSlotValue => SlotKind.Table,
         MetricSlotValue => SlotKind.Metric,
+        ImageSlotValue => SlotKind.Image,
         _ => throw new NotSupportedException($"Unsupported slot value {value.GetType().Name}."),
     };
 
@@ -180,6 +181,9 @@ public static class PresentationManifestChecker
     {
         switch (value)
         {
+            case ImageSlotValue image:
+                yield return (image.Title, $"{path}/title");
+                break;
             case TextSlotValue text:
                 yield return (text.Text, $"{path}/text");
                 break;

@@ -34,6 +34,7 @@
   - 一個 C# root type 讀取同一 name 的全部 minor。每個 minor 是前一個 minor 的超集合。
 - 未發布的 minor 可以修改。沒有任何 WorkLens release tag 包含它時, 它是未發布。後續工作可以為它加選填欄位或 enum 值, 不升 minor。已發布 minor 的檔案不改。
 - 寫出: 永遠寫 WorkLens 內建的最新 minor。
+- 未發布的 1.1 支援 Report IR 圖片附件、Presentation IR 圖片 slot 與 Template Manifest 圖片 layout。
 - 不支援的 major → 錯誤 `schema.unsupported_version`, 提示執行 `worklens migrate` (若有) 或使用對應版本的 WorkLens。
 
 ## 4. Migration

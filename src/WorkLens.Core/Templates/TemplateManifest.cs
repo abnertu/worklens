@@ -119,6 +119,7 @@ public enum LayoutPurpose
     Summary,
     Achievements,
     WorkItemDetail,
+    WorkItemImage,
     Operations,
     Narrative,
     ChallengeTable,
@@ -131,6 +132,7 @@ public enum SlotKind
     Bullets,
     Table,
     Metric,
+    Image,
 }
 
 public enum OverflowPolicy
@@ -160,7 +162,8 @@ public sealed record LayoutDefinition(
     string SlideLayoutName,
     LayoutPurpose Purpose,
     IReadOnlyList<SlotDefinition> Slots,
-    LayoutBrand? Brand = null);
+    LayoutBrand? Brand = null,
+    string? ImageLayoutId = null);
 
 /// <summary>Placeholders of a layout that receive the brand elements given to <c>render</c> (1.1).</summary>
 public sealed record LayoutBrand(BrandLogo? Logo = null, BrandUnitName? UnitName = null);

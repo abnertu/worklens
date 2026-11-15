@@ -348,7 +348,8 @@ public sealed partial class LayoutResolver
                 },
                 [item.Id, .. refs],
                 null,
-                new HashSet<string>(StringComparer.Ordinal) { "evidence" });
+                new HashSet<string>(StringComparer.Ordinal) { "evidence" },
+                ImageOwner: item);
         }
 
         /// <summary>

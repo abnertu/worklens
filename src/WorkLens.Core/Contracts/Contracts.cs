@@ -87,7 +87,7 @@ public interface IReportValidator
 public interface ILayoutResolver
 {
     /// <param name="reportSha256">SHA-256 of the report.json bytes, recorded as <c>source_report.sha256</c>.</param>
-    LayoutResult Resolve(ReportDocument report, string reportSha256, EvidenceDocument evidence, TemplateManifest manifest);
+    LayoutResult Resolve(ReportDocument report, string reportSha256, EvidenceDocument evidence, TemplateManifest manifest, bool includeArchify = true);
 }
 
 /// <summary>
@@ -122,7 +122,8 @@ public interface IOutputRenderer
         string templatePath,
         string outputPath,
         BrandElements? brand,
-        CancellationToken cancellationToken);
+        CancellationToken cancellationToken,
+        IReadOnlyDictionary<string, RasterImage>? images = null);
 }
 
 /// <summary>
@@ -134,11 +135,19 @@ public sealed record BrandElements(string? UnitName, LogoImage? Logo);
 /// <summary>A logo image as the file holds it, with its pixel size from the file header.</summary>
 public sealed record LogoImage(byte[] Bytes, string ContentType, int Width, int Height)
 {
+    public static LogoImage? Read(byte[] bytes) => RasterImage.Read(bytes) is { } image
+        ? new LogoImage(image.Bytes, image.ContentType, image.Width, image.Height)
+        : null;
+}
+
+/// <summary>Caller-supplied PNG or JPEG bytes with pixel dimensions read from the header.</summary>
+public sealed record RasterImage(byte[] Bytes, string ContentType, int Width, int Height)
+{
     /// <summary>
     /// Reads a PNG (IHDR) or JPEG (SOF marker) image; <c>null</c> for another format or a header without a size.
     /// The bytes are kept as they are, metadata included.
     /// </summary>
-    public static LogoImage? Read(byte[] bytes)
+    public static RasterImage? Read(byte[] bytes)
     {
         ArgumentNullException.ThrowIfNull(bytes);
         ReadOnlySpan<byte> png = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
@@ -179,8 +188,8 @@ public sealed record LogoImage(byte[] Bytes, string ContentType, int Width, int 
         return null;
     }
 
-    private static LogoImage? Sized(byte[] bytes, string contentType, int width, int height) =>
-        width > 0 && height > 0 ? new LogoImage(bytes, contentType, width, height) : null;
+    private static RasterImage? Sized(byte[] bytes, string contentType, int width, int height) =>
+        width > 0 && height > 0 ? new RasterImage(bytes, contentType, width, height) : null;
 
     private static int BigEndian(byte[] bytes, int offset, int count)
     {

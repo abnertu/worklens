@@ -124,8 +124,8 @@ Layout Resolver (Report IR → Presentation IR) 是純函式, 放在 Core (`Work
 | `IEvidenceDigester` | `EvidenceDocument` + `DigestOptions` → `EvidenceDigest` | M2 |
 | `IAnalysisModule` | `EvidenceDigest` → `ReportDocument` | v0.1 由 **agent** 擔任, WorkLens 內無實作; 契約保留給未來內建 LLM / headless runner |
 | `IReportValidator` | `Validate(string reportJson, EvidenceDocument? evidence, string? evidenceSha256)` → `ValidationResult` | M0: `ReportValidator` (JSON 解析、schema、參照完整性、domain 規則) |
-| `ILayoutResolver` | `Resolve(ReportDocument, string reportSha256, EvidenceDocument, TemplateManifest)` → `LayoutResult` (`PresentationDocument?` + errors + warnings) | M0: `LayoutResolver` |
-| `IOutputRenderer` | `RenderAsync(PresentationDocument, TemplateManifest, string templatePath, string outputPath, BrandElements?, CancellationToken)` → `RenderResult` (輸出路徑 + errors + warnings) | M0: `PptxRenderer` |
+| `ILayoutResolver` | `Resolve(ReportDocument, string reportSha256, EvidenceDocument, TemplateManifest, bool includeArchify = true)` → `LayoutResult` (`PresentationDocument?` + errors + warnings) | M0: `LayoutResolver` |
+| `IOutputRenderer` | `RenderAsync(PresentationDocument, TemplateManifest, string templatePath, string outputPath, BrandElements?, CancellationToken, IReadOnlyDictionary<string, RasterImage>? images = null)` → `RenderResult` (輸出路徑 + errors + warnings) | M0: `PptxRenderer` |
 
 ## 6. 工作目錄 (Workspace)
 
@@ -145,3 +145,7 @@ Layout Resolver (Report IR → Presentation IR) 是純函式, 放在 Core (`Work
 擴充點: 新 Source Connector (實作 `ISourceConnector`, 輸出 Evidence IR)、新輸出 (實作 `IOutputRenderer` + 對應 Presentation 或其他 output IR)、新入口 (MCP / API, 屆時抽出 Application 層)、內建 analyzer (實作 `IAnalysisModule`)。
 
 v0.1 非目標 (交接文件 §5.5 + 本次決策): 績效評分、以 commit 數等同貢獻、無數據的成效宣稱、自由排版生成器、Web UI / Dashboard / Marketplace、WorkLens 主動呼叫 LLM 或 headless agent、MCP server。
+
+圖片附件由呼叫端產生，CLI 解析相對路徑並驗證 SHA-256 與 PNG/JPEG header。
+Core 只處理參照與位元組，Renderer 接收已驗證的圖片位元組。
+WorkLens 不執行 Archify、Node.js、瀏覽器或 LLM。

@@ -38,7 +38,9 @@ internal static class SlideBuilder
         StyleWriter styles,
         int numberStart,
         BrandWriter brand,
-        Func<LogoImage, string> addImage)
+        Func<LogoImage, string> addImage,
+        IReadOnlyDictionary<string, RasterImage>? images,
+        Func<ImageSlotValue, string> addBodyImage)
     {
         var tree = new P.ShapeTree(
             new P.NonVisualGroupShapeProperties(
@@ -70,6 +72,8 @@ internal static class SlideBuilder
                     TextSlotValue text => TextShape(nextId++, bound, style, TextParagraphs(text.Text, StyleWriter.RunProperties(style))),
                     BulletsSlotValue bullets => TextShape(nextId++, bound, style, bullets.Items.Select(i => BulletParagraph(i, style, styles, numberStart))),
                     MetricSlotValue metric => TextShape(nextId++, bound, style, MetricParagraphs(metric, style, styles)),
+                    ImageSlotValue image => Picture(nextId++, bound.Name, bound.Placeholder, images![image.Sha256].Width,
+                        images[image.Sha256].Height, addBodyImage(image), bound.Position!.Value, image.Title),
 
                     // Not a template fault: the presentation was checked before rendering, so this is a program error.
                     _ => throw new ArgumentOutOfRangeException(nameof(slide), $"Unsupported slot value {value.GetType().Name}."),
@@ -80,7 +84,7 @@ internal static class SlideBuilder
             if (brandPositions?.Logo is { } logoPosition && brand.Logo is { } logo && TemplateLayouts.Matches(logoPosition.Placeholder, shape)
                 && TemplateLayouts.PositionOf(shape.Shape) is { } box)
             {
-                tree.Append(Picture(nextId++, shape.Name, placeholder, logo, addImage(logo), box));
+                tree.Append(Picture(nextId++, shape.Name, placeholder, logo.Width, logo.Height, addImage(logo), box));
                 brand.LogoWritten();
             }
 
@@ -272,15 +276,15 @@ internal static class SlideBuilder
         return copy;
     }
 
-    /// <summary>The logo, scaled into the placeholder box with its aspect ratio kept, and centered in it.</summary>
-    private static P.Picture Picture(uint id, string name, P.PlaceholderShape placeholder, LogoImage logo, string relationshipId, Position box)
+    /// <summary>The image, scaled into its frame with its aspect ratio kept, and centered in it.</summary>
+    private static P.Picture Picture(uint id, string name, P.PlaceholderShape placeholder, int pixelWidth, int pixelHeight, string relationshipId, Position box, string? title = null)
     {
-        var scale = Math.Min((double)box.Width / logo.Width, (double)box.Height / logo.Height);
-        var width = (long)Math.Round(logo.Width * scale);
-        var height = (long)Math.Round(logo.Height * scale);
+        var scale = Math.Min((double)box.Width / pixelWidth, (double)box.Height / pixelHeight);
+        var width = Math.Max(1, (long)Math.Round(pixelWidth * scale));
+        var height = Math.Max(1, (long)Math.Round(pixelHeight * scale));
         return new P.Picture(
             new P.NonVisualPictureProperties(
-                new P.NonVisualDrawingProperties { Id = id, Name = name },
+                new P.NonVisualDrawingProperties { Id = id, Name = name, Description = title },
                 new P.NonVisualPictureDrawingProperties(new A.PictureLocks { NoGrouping = true, NoChangeAspect = true }),
                 new P.ApplicationNonVisualDrawingProperties(PlaceholderCopy(placeholder))),
             new P.BlipFill(new A.Blip { Embed = relationshipId }, new A.Stretch(new A.FillRectangle())),

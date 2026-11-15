@@ -260,6 +260,9 @@ stdout 恰好一個 JSON 物件, 結尾換行:
 | `input.unreadable` | 輸入檔存在但讀取失敗 (IO 錯誤、權限) | 3 |
 | `input.invalid` | evidence / manifest 不是有效 JSON 或不符合 schema (`issues` 附上原因) | 3 |
 | `config.missing_manifest` | `present` / `render` 未給 `--manifest` | 3 |
+| `input.invalid_image_path` | 圖片參照為絕對路徑、drive-relative、URI、UNC、device 或 alternate data stream | 3 |
+| `input.invalid_image` | 圖片沒有可讀尺寸的 PNG/JPEG header | 3 |
+| `input.image_sha256_mismatch` | 圖片位元組的 SHA-256 與宣告不同 | 3 |
 | `config.invalid_logo` | `--config` 的 logo 不是能讀出尺寸的 PNG 或 JPEG 圖檔 | 3 |
 | `render.brand_not_written` | `render` 對沒有任何位置接收的品牌值給 warning issue。`instance_path` 為 manifest 的 pointer: 頁尾放不下時為 `/footer`, 沒有 layout 宣告位置時為 `/layouts` | 0 (warning) |
 | `manifest.invalid` | manifest 內容有問題。`issues` 含 `manifest.duplicate_id` (layout id 或同一 layout 內的 slot id 重複)、`manifest.column_mismatch` 與 `manifest.unknown_style`, 以及 `manifest.unknown_layout`、`manifest.purpose_mismatch` 與 `manifest.slot_mismatch` (只有 `present`) | 3 |
@@ -274,6 +277,8 @@ stdout 恰好一個 JSON 物件, 結尾換行:
 
 - `manifest.column_mismatch`: 欄 key 不屬於該 purpose 的集合、purpose 沒有集合卻有 `columns`、key 重複, 或寬度總和不是 100。
 - `manifest.unknown_style`: `header_style` 或 `row_styles` 的項目不是 `styles` 定義的角色。
+- `manifest.image_layout_missing`: 啟用的圖片沒有可用的工作細節 section 或圖片 layout。包在 `manifest.invalid` 中，回 exit 3。
+- `manifest.image_layout_invalid`: 圖片 layout 缺少必要 slot、image slot 放在其他 purpose，或 `image_layout_id` 沒有指向圖片 layout。包在 `manifest.invalid` 中，回 exit 3。
 - `present` 與 `render` 接受 1.0 與 1.1 manifest。
 
 `presentation.table_column_count`: 有 `columns` 的 slot, 其表格的欄數與 `columns` 不同。
@@ -412,3 +417,17 @@ description: 使用 WorkLens 產生具證據的工作月報 (GitHub/GitLab → P
 - 不要直接修改 evidence.json、presentation.json 或 .pptx。
 - 不要讀取 digest 以外的原始碼或 diff 來補充內容, 除非使用者明確要求。
 ```
+
+## 9. 圖片開關
+
+`present` 與 `render` 預設包含已宣告的圖片。
+`--no-archify` 略過 `producer: archify` 的圖片頁，不讀取這些圖片檔。
+文字頁、一般圖片與品牌保留，頁碼與 `slide_count` 依實際輸出計算。
+Schema 與 manifest 檢查仍執行。
+圖片路徑相對於持有參照的 JSON 檔。
+`present --output` 改變目錄時會重算相對路徑，保留原始 report 的 SHA-256。
+`..` 片段可用，但不接受表列的非本機相對路徑。
+圖片讀取失敗使用 `input.not_found` 或 `input.unreadable`，回 exit 3。
+所有啟用的圖片通過驗證後才寫入輸出。
+Renderer API 缺少圖片位元組時回 `render.image_missing`，內容不符時回 `render.image_invalid`。
+CLI 將這兩種 API 錯誤包為 `input.invalid_image`，回 exit 3。

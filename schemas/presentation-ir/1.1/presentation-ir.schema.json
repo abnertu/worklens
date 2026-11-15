@@ -63,7 +63,7 @@
         "source_refs": {
           "type": "array",
           "uniqueItems": true,
-          "items": { "type": "string", "pattern": "^(wi|nr|ev)-[a-z0-9-]+$" }
+          "items": { "type": "string", "pattern": "^(wi|nr|ev|img)-[a-z0-9-]+$" }
         },
         "continuation": {
           "type": "object",
@@ -80,13 +80,14 @@
       "type": "object",
       "required": ["kind"],
       "properties": {
-        "kind": { "enum": ["text", "bullets", "table", "metric"] }
+        "kind": { "enum": ["text", "bullets", "table", "metric", "image"] }
       },
       "oneOf": [
         { "$ref": "#/$defs/text_value" },
         { "$ref": "#/$defs/bullets_value" },
         { "$ref": "#/$defs/table_value" },
-        { "$ref": "#/$defs/metric_value" }
+        { "$ref": "#/$defs/metric_value" },
+        { "$ref": "#/$defs/image_value" }
       ]
     },
     "text_value": {
@@ -159,6 +160,21 @@
           }
         }
       ]
+    },
+    "image_value": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "id", "title", "file", "sha256"],
+      "properties": {
+        "kind": { "const": "image" },
+        "id": { "type": "string", "pattern": "^img-[a-z0-9-]+$" },
+        "title": { "type": "string", "minLength": 1 },
+        "file": { "type": "string", "minLength": 1 },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "producer": { "const": "archify" },
+        "style": { "$ref": "#/$defs/style" },
+        "truncated": { "type": "boolean" }
+      }
     },
     "metric_value": {
       "type": "object",

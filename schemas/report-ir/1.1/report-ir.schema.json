@@ -66,6 +66,19 @@
     "evidence_id": { "type": "string", "pattern": "^ev-[0-9a-f]{16}$" },
     "narrative_id": { "type": "string", "pattern": "^nr-[a-z0-9-]+$" },
     "origin": { "enum": ["agent", "human"] },
+    "image": {
+      "description": "A caller-supplied image. File paths are relative to report.json. Origin and evidence come from the owning work item.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "file", "sha256"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^img-[a-z0-9-]+$" },
+        "title": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "file": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "producer": { "const": "archify" }
+      }
+    },
     "work_item": {
       "type": "object",
       "additionalProperties": false,
@@ -110,7 +123,8 @@
         },
         "rank": { "type": "integer", "minimum": 1 },
         "human_notes": { "type": "string" },
-        "review_status": { "enum": ["pending", "approved", "rejected"] }
+        "review_status": { "enum": ["pending", "approved", "rejected"] },
+        "images": { "type": "array", "items": { "$ref": "#/$defs/image" } }
       },
       "if": {
         "properties": { "origin": { "const": "agent" } }

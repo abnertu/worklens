@@ -23,6 +23,10 @@ M0 與 M1 只透過 Evidence IR schema 相依, 可平行開發; 但 M0 的參照
 
 狀態: 實作完成 (2026-11-11); 結果見 [pptx-poc-report.md](pptx-poc-report.md)。`render` / `present` 在 M0 需要 `--manifest`; `worklens.json`、預設工作目錄、stale exit 5 與 `report rebind` 屬 M3。
 
+2026-11-15 新增呼叫端 PNG/JPEG 附件與 Archify 整合，見 [整合指南](../integrations/archify.md)。
+`present` 與 `render` 的 `--no-archify` 預設關閉，因此已宣告的 Archify 圖片預設納入。
+M2 digest 與 M3 編排的範圍不變。
+
 目標: 以手寫的 `report.json` / `evidence.json` 驗證 schema → layout → PPTX, 確認樣本模板可行。
 
 工作項目:

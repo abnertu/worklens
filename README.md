@@ -55,6 +55,14 @@ dotnet run --project src/WorkLens.Cli -c Release -- collect --from 2026-08 --to 
 每月分別寫入 `.worklens/reports/<yyyy-MM>/evidence.json`。某個月停止時, 已完成月份會保留。
 每個月的 `present` 與 `render` 請在該月子目錄分別執行。
 
+## Archify 流程圖
+
+專案已安裝 Codex 與 Claude Code 可用的 Archify。
+代理先產生 PNG，並在 `report.json` 的工作項目宣告圖片參照與 SHA-256。
+`present` 與 `render` 預設納入這些圖片，可加上 `--no-archify` 略過 Archify 圖片頁。
+WorkLens 不執行 Archify 或呼叫 LLM。
+流程與範例見 [Archify 整合指南](docs/integrations/archify.md)。
+
 ## 文件
 
 - 命令、選項、輸出與 exit code: [docs/design/cli-ux.md](docs/design/cli-ux.md)

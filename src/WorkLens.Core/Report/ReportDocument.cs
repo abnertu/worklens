@@ -85,7 +85,11 @@ public sealed record WorkItem(
     AgentInference? AgentInference = null,
     int? Rank = null,
     string? HumanNotes = null,
-    ReviewStatus? ReviewStatus = null);
+    ReviewStatus? ReviewStatus = null,
+    IReadOnlyList<ReportImage>? Images = null);
+
+/// <summary>An image supplied by the caller, relative to report.json, with its exact byte hash.</summary>
+public sealed record ReportImage(string Id, string Title, string File, string Sha256, string? Producer = null);
 
 /// <summary>A statement directly verifiable from the referenced evidence.</summary>
 public sealed record ObservedFact(string Statement, IReadOnlyList<string> EvidenceRefs);

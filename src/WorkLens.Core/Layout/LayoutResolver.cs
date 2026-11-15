@@ -81,7 +81,7 @@ public sealed partial class LayoutResolver : ILayoutResolver
     private static (string Id, SlotKind Kind, bool Required)[] TableSlots() =>
         [("title", SlotKind.Text, true), ("status", SlotKind.Text, false), ("items", SlotKind.Table, false)];
 
-    public LayoutResult Resolve(ReportDocument report, string reportSha256, EvidenceDocument evidence, TemplateManifest manifest)
+    public LayoutResult Resolve(ReportDocument report, string reportSha256, EvidenceDocument evidence, TemplateManifest manifest, bool includeArchify = true)
     {
         ArgumentNullException.ThrowIfNull(report);
         ArgumentNullException.ThrowIfNull(evidence);
@@ -158,6 +158,24 @@ public sealed partial class LayoutResolver : ILayoutResolver
             foreach (var content in context.Contents(entry.Section, layout))
             {
                 pages.AddRange(Bind(layout, layoutIndex, conventions[layout.Purpose], content, continuation, errors));
+                if (content.ImageOwner is { } owner)
+                {
+                    AddImagePages(owner, layout, layoutIndex, manifest, includeArchify, pages, errors);
+                }
+            }
+        }
+
+        if (errors.Count == 0)
+        {
+            var placed = pages.SelectMany(p => p.SourceRefs).ToHashSet(StringComparer.Ordinal);
+            foreach (var image in report.WorkItems.Where(w => w.ReviewStatus != ReviewStatus.Rejected)
+                .SelectMany(w => w.Images ?? []).Where(i => includeArchify || i.Producer != "archify"))
+            {
+                if (!placed.Contains(image.Id))
+                {
+                    errors.Add(Error("manifest.image_layout_missing", "/sequence",
+                        $"Image '{image.Id}' has no detail section and image layout in the manifest sequence."));
+                }
             }
         }
 
@@ -197,6 +215,36 @@ public sealed partial class LayoutResolver : ILayoutResolver
         }
 
         return -1;
+    }
+
+    private static readonly (string Id, SlotKind Kind, bool Required)[] ImageSlots =
+        [("title", SlotKind.Text, true), ("image", SlotKind.Image, true)];
+
+    private static void AddImagePages(WorkItem item, LayoutDefinition detail, int detailIndex, TemplateManifest manifest,
+        bool includeArchify, List<Page> pages, List<WorkLensError> errors)
+    {
+        var images = (item.Images ?? []).Where(i => includeArchify || i.Producer != "archify").ToList();
+        if (images.Count == 0) { return; }
+        var imageIndex = detail.ImageLayoutId is { } id ? IndexOfLayout(manifest, id) : -1;
+        if (imageIndex < 0)
+        {
+            errors.Add(Error("manifest.image_layout_missing", $"/layouts/{detailIndex}/image_layout_id",
+                $"Work item '{item.Id}' has images, but its detail layout declares no image layout."));
+            return;
+        }
+
+        var layout = manifest.Layouts[imageIndex];
+        if (!CheckSlots(layout, imageIndex, ImageSlots, true, errors)) { return; }
+        foreach (var image in images)
+        {
+            var title = SlotFitter.ImageTitle(image.Title, image.Id);
+            var content = new SlideContent(new()
+            {
+                ["title"] = new TextSlotValue(title),
+                ["image"] = new ImageSlotValue(image.Id, title, image.File, image.Sha256, image.Producer),
+            }, [item.Id, image.Id, .. item.EvidenceRefs, .. item.ObservedFacts.SelectMany(f => f.EvidenceRefs)]);
+            pages.AddRange(Bind(layout, imageIndex, ImageSlots, content, null, errors));
+        }
     }
 
     private static LayoutPurpose PurposeOf(ReportSection section) => section switch
@@ -444,7 +492,8 @@ public sealed partial class LayoutResolver : ILayoutResolver
         Dictionary<string, SlotValue> Values,
         IReadOnlyList<string> SourceRefs,
         IReadOnlyDictionary<string, IReadOnlyList<string>>? SlotRefs = null,
-        IReadOnlySet<string>? Grouped = null);
+        IReadOnlySet<string>? Grouped = null,
+        WorkItem? ImageOwner = null);
 
     /// <summary>Report-derived content per section, computed once per resolve.</summary>
     private sealed partial class Context
@@ -650,7 +699,7 @@ public sealed partial class LayoutResolver : ILayoutResolver
 
             return new SlideContent(
                 new() { ["title"] = Text(item.Title), ["facts"] = new BulletsSlotValue(bullets) },
-                [item.Id, .. refs]);
+                [item.Id, .. refs], ImageOwner: item);
         }
 
         private string CellStatus(WorkStatus status) => status switch

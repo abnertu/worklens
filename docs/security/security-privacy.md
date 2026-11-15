@@ -103,3 +103,13 @@ Issue 蒐集將標題、描述、label 名稱與本人的 username / name 存於
 - [x] `collect` 輸出未被 Git 忽略時警告 (`CollectCommandTests`, M1a; `init` 於 M3 提供)。
 - [x] 投影片的證據標題不含 URL、SSH remote、email、commit SHA 與 token (`SlideDisclosureTests`、`LayoutResolver11Tests`)。
 - [x] 模板範例 slides / 備註 / 文件屬性不帶入輸出 (M0; `PptxRendererTests` 斷言, 見 [pptx-poc-report.md](../plans/pptx-poc-report.md))。
+
+## 9. 圖片附件
+
+圖片的像素與中繼資料照原樣嵌入。
+加入附件前先審核內容，並移除不需分享的中繼資料。
+WorkLens 不對圖片執行 OCR、脫敏或完整解碼。
+SHA-256 只檢查位元組一致性，不證明圖片內的敘述。
+圖片繼承所屬工作的證據參照，不新增證據。
+路徑只接受本機相對參照，允許 `..`；這不是檔案系統 sandbox。
+`--no-archify` 不讀取停用的 Archify 圖片，但不會移除文字頁中的相關敘述。

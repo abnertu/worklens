@@ -129,6 +129,18 @@ public sealed partial class ReportValidator : IReportValidator
         CheckResolves(report, issues);
         AddDuplicates(report.WorkItems.Select(w => w.Id), "/work_items", issues);
         AddDuplicates(report.Narratives.Select(n => n.Id), "/narratives", issues);
+        var imageIds = new HashSet<string>(StringComparer.Ordinal);
+        for (var w = 0; w < report.WorkItems.Count; w++)
+        {
+            var images = report.WorkItems[w].Images ?? [];
+            for (var i = 0; i < images.Count; i++)
+            {
+                if (!imageIds.Add(images[i].Id))
+                {
+                    issues.Add(Error("ref.duplicate_id", $"/work_items/{w}/images/{i}/id", $"Image id '{images[i].Id}' is already used."));
+                }
+            }
+        }
     }
 
     /// <summary>Each ID in <c>resolves</c> (Report IR 1.1) names a challenge narrative.</summary>

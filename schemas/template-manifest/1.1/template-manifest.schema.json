@@ -141,7 +141,8 @@
       "properties": {
         "id": { "$ref": "#/$defs/identifier" },
         "slide_layout_name": { "type": "string", "minLength": 1 },
-        "purpose": { "enum": ["cover", "summary", "achievements", "work_item_detail", "operations", "narrative", "challenge_table", "closing"] },
+        "purpose": { "enum": ["cover", "summary", "achievements", "work_item_detail", "work_item_image", "operations", "narrative", "challenge_table", "closing"] },
+        "image_layout_id": { "description": "Image page layout for this work_item_detail layout.", "$ref": "#/$defs/identifier" },
         "slots": {
           "type": "array",
           "minItems": 1,
@@ -180,7 +181,7 @@
       "properties": {
         "id": { "$ref": "#/$defs/identifier" },
         "placeholder": { "$ref": "#/$defs/placeholder" },
-        "kind": { "enum": ["text", "bullets", "table", "metric"] },
+        "kind": { "enum": ["text", "bullets", "table", "metric", "image"] },
         "required": { "type": "boolean" },
         "max_chars": { "type": "integer", "minimum": 1 },
         "max_items": { "type": "integer", "minimum": 1 },

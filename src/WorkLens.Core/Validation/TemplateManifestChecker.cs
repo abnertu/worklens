@@ -67,6 +67,7 @@ public static class TemplateManifestChecker
         for (var i = 0; i < manifest.Layouts.Count; i++)
         {
             var layout = manifest.Layouts[i];
+            CheckImageLayout(manifest, layout, $"/layouts/{i}", errors);
             for (var j = 0; j < layout.Slots.Count; j++)
             {
                 var slot = layout.Slots[j];
@@ -89,6 +90,35 @@ public static class TemplateManifestChecker
         }
 
         return errors;
+    }
+
+    private static void CheckImageLayout(TemplateManifest manifest, LayoutDefinition layout, string path, List<WorkLensError> errors)
+    {
+        void Invalid(string suffix, string message) => errors.Add(new WorkLensError(
+            "manifest.image_layout_invalid", message, new Dictionary<string, string> { ["path"] = path + suffix }));
+
+        if (layout.ImageLayoutId is { } imageId)
+        {
+            var target = manifest.Layouts.FirstOrDefault(l => l.Id == imageId);
+            if (layout.Purpose != LayoutPurpose.WorkItemDetail || target?.Purpose != LayoutPurpose.WorkItemImage)
+            {
+                Invalid("/image_layout_id", "An image layout reference must connect a work_item_detail layout to a work_item_image layout.");
+            }
+        }
+
+        if (layout.Purpose == LayoutPurpose.WorkItemImage)
+        {
+            if (!layout.Slots.Any(s => s is { Id: "title", Kind: SlotKind.Text, Required: true })
+                || !layout.Slots.Any(s => s is { Id: "image", Kind: SlotKind.Image, Required: true })
+                || layout.Slots.Count(s => s.Kind == SlotKind.Image) != 1)
+            {
+                Invalid("/slots", "A work_item_image layout requires a text title and exactly one image slot named image.");
+            }
+        }
+        else if (layout.Slots.Any(s => s.Kind == SlotKind.Image))
+        {
+            Invalid("/slots", "Image slots are only supported in dedicated work_item_image layouts.");
+        }
     }
 
     private static void CheckColumns(

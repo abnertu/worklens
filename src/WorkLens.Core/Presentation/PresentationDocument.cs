@@ -69,3 +69,6 @@ public sealed record TableSlotValue(IReadOnlyList<string> Columns, IReadOnlyList
 
 /// <summary>A metric card (Presentation IR 1.1). Each field is display text, formatted by the Layout Resolver.</summary>
 public sealed record MetricSlotValue(string Label, string Value, string? Caption = null) : SlotValue;
+
+/// <summary>A verified-at-render image reference, relative to presentation.json. Producer preserves caller provenance.</summary>
+public sealed record ImageSlotValue(string Id, string Title, string File, string Sha256, string? Producer = null) : SlotValue;

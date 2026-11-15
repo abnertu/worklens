@@ -320,3 +320,11 @@ Agent 或使用者撰寫的文字照原樣顯示。
 WorkLens 從這些標題移除 URL、SSH remote、email 與 commit SHA, 並先遮蔽 token 樣式 ([ADR-0012](../adr/0012-slide-disclosure.md))。
 沒有路徑的主機名稱不移除, 例如 `gitlab.example.com`。
 `README.md/x` 這類字詞會被當成 URL 移除。
+
+## 11. 圖片頁
+
+`rd-monthly` 1.1.0 新增 `Work Item Image` layout。
+必要 slot 是文字 `title` 與圖片 `image`。
+圖片框的位置與尺寸為 `(48, 90, 864, 390)` pt。
+每張圖片接在所屬工作的所有細節續頁之後。
+圖片依比例縮放並置中，不裁切。

@@ -19,6 +19,7 @@ internal static class SlotFitter
         BulletsSlotValue b => b.Items.Count == 0,
         TableSlotValue t => t.Rows.Count == 0,
         MetricSlotValue m => m.Label.Length == 0 && m.Value.Length == 0 && string.IsNullOrEmpty(m.Caption),
+        ImageSlotValue => false,
         _ => true,
     };
 
@@ -37,6 +38,8 @@ internal static class SlotFitter
 
         switch (value)
         {
+            case ImageSlotValue image:
+                return [image with { Title = ImageTitle(image.Title, image.Id) }];
             case TextSlotValue text:
                 {
                     var (clipped, truncated) = Clip(text.Text, slot.MaxChars);
@@ -99,6 +102,12 @@ internal static class SlotFitter
             default:
                 throw new ArgumentOutOfRangeException(nameof(value));
         }
+    }
+
+    internal static string ImageTitle(string title, string imageId)
+    {
+        var clean = LayoutResolver.RemoveInvalidXmlCharacters(title);
+        return clean.Length == 0 ? imageId : clean;
     }
 
     private static int? ColumnMaxChars(SlotDefinition slot, int column) =>

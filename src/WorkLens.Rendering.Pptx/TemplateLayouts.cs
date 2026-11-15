@@ -14,7 +14,7 @@ internal sealed record TemplateLayout(
     IReadOnlyDictionary<string, LayoutPlaceholder> Slots);
 
 /// <param name="Shape">The layout's placeholder shape (<c>p:sp</c>, <c>p:graphicFrame</c> or <c>p:pic</c>).</param>
-/// <param name="Position">The placeholder's position for a table slot (layout, else master); otherwise <c>null</c>.</param>
+/// <param name="Position">The placeholder's position for a table or image slot (layout, else master).</param>
 internal sealed record LayoutPlaceholder(OpenXmlElement Shape, P.PlaceholderShape Placeholder, string Name, Position? Position);
 
 internal readonly record struct Position(long X, long Y, long Width, long Height);
@@ -77,14 +77,14 @@ internal static class TemplateLayouts
                 }
 
                 Position? position = null;
-                if (slot.Kind == SlotKind.Table)
+                if (slot.Kind is SlotKind.Table or SlotKind.Image)
                 {
                     position = PositionOf(match.Shape) ?? MasterPosition(part, match.Placeholder);
-                    if (position is null)
+                    if (position is null || (slot.Kind == SlotKind.Image && (position.Value.Width <= 0 || position.Value.Height <= 0)))
                     {
                         errors.Add(Error(
                             "template.placeholder_position_missing",
-                            $"Placeholder {Describe(slot.Placeholder)} of slide layout '{definition.SlideLayoutName}' has no position in the layout or the master; a table needs one.",
+                            $"Placeholder {Describe(slot.Placeholder)} of slide layout '{definition.SlideLayoutName}' has no usable frame in the layout or the master.",
                             path));
                         continue;
                     }

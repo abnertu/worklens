@@ -100,9 +100,10 @@ internal static class PresentCommand
         var evidence = Program.FileOption("--evidence", InputFiles.EvidenceFileName);
         var manifest = new Option<string?>("--manifest") { Description = "Template manifest.json (required in M0)." };
         var output = Program.FileOption("--output", InputFiles.PresentationFileName);
+        var noArchify = new Option<bool>("--no-archify") { Description = "Skip images produced by Archify." };
         var strict = Program.StrictOption();
         var json = Program.JsonOption();
-        foreach (var option in new Option[] { workspace, report, evidence, manifest, output, strict, json })
+        foreach (var option in new Option[] { workspace, report, evidence, manifest, output, noArchify, strict, json })
         {
             command.Options.Add(option);
         }
@@ -132,7 +133,7 @@ internal static class PresentCommand
             var manifestDocument = InputFiles.LoadManifest(manifestPath);
             var reportDocument = JsonSerializer.Deserialize<ReportDocument>(checkedReport.Report.Content.Span, WorkLensJson.Options)!;
 
-            var layout = new LayoutResolver().Resolve(reportDocument, checkedReport.Report.Sha256, checkedReport.Evidence, manifestDocument);
+            var layout = new LayoutResolver().Resolve(reportDocument, checkedReport.Report.Sha256, checkedReport.Evidence, manifestDocument, !parse.GetValue(noArchify));
             if (layout.Presentation is null)
             {
                 throw CliException.FromErrors(layout.Errors, "manifest.invalid", manifestPath);
@@ -156,7 +157,8 @@ internal static class PresentCommand
                 return ExitCodes.ValidationFailed;
             }
 
-            AtomicFile.WriteAllBytes(outputPath, WorkLensJson.SerializeCanonicalUtf8(layout.Presentation));
+            var presentationDocument = ImageAssets.Rebase(layout.Presentation, reportPath, outputPath);
+            AtomicFile.WriteAllBytes(outputPath, WorkLensJson.SerializeCanonicalUtf8(presentationDocument));
             files["presentation"] = outputPath;
             result.Result["slide_count"] = layout.Presentation.Slides.Count;
             result.Lines.Add($"Wrote {outputPath} ({layout.Presentation.Slides.Count} slides).");

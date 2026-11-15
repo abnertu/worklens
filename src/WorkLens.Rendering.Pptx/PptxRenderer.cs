@@ -31,10 +31,11 @@ public sealed class PptxRenderer : IOutputRenderer
         string templatePath,
         string outputPath,
         BrandElements? brand,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        IReadOnlyDictionary<string, RasterImage>? images = null)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        return Task.FromResult(Render(presentation, manifest, templatePath, outputPath, brand));
+        return Task.FromResult(Render(presentation, manifest, templatePath, outputPath, brand, images));
     }
 
     public static RenderResult Render(
@@ -42,8 +43,24 @@ public sealed class PptxRenderer : IOutputRenderer
         TemplateManifest manifest,
         string templatePath,
         string outputPath,
-        BrandElements? brand = null)
+        BrandElements? brand = null,
+        IReadOnlyDictionary<string, RasterImage>? images = null)
     {
+        foreach (var image in presentation.Slides.SelectMany(s => s.Bindings.Values).OfType<ImageSlotValue>())
+        {
+            if (images is null || !images.TryGetValue(image.Sha256, out var raster))
+            {
+                return Failed(new WorkLensError("render.image_missing", $"No verified bytes supplied for image '{image.Id}'."));
+            }
+
+            var header = RasterImage.Read(raster.Bytes);
+            if (header is null || header.Width != raster.Width || header.Height != raster.Height || header.ContentType != raster.ContentType
+                || Convert.ToHexStringLower(SHA256.HashData(raster.Bytes)) != image.Sha256)
+            {
+                return Failed(new WorkLensError("render.image_invalid", $"Supplied bytes or dimensions differ for image '{image.Id}'."));
+            }
+        }
+
         byte[] templateBytes;
         try
         {
@@ -78,7 +95,7 @@ public sealed class PptxRenderer : IOutputRenderer
         try
         {
             using var document = DocumentFormat.OpenXml.Packaging.PresentationDocument.Open(stream, isEditable: true);
-            (errors, warnings) = Build(document, presentation, manifest, brand);
+            (errors, warnings) = Build(document, presentation, manifest, brand, images);
         }
         catch (Exception ex) when (IsTemplateFault(ex))
         {
@@ -131,7 +148,8 @@ public sealed class PptxRenderer : IOutputRenderer
         DocumentFormat.OpenXml.Packaging.PresentationDocument document,
         PresentationDocument presentation,
         TemplateManifest manifest,
-        BrandElements? brand)
+        BrandElements? brand,
+        IReadOnlyDictionary<string, RasterImage>? images)
     {
         var presentationPart = document.PresentationPart
             ?? throw new InvalidDataException("The package has no presentation part.");
@@ -170,6 +188,7 @@ public sealed class PptxRenderer : IOutputRenderer
         var styles = new StyleWriter(manifest.Styles);
         var brandWriter = new BrandWriter(brand, manifest, presentation);
         ImagePart? logoPart = null;
+        var imageParts = new Dictionary<string, ImagePart>(StringComparer.Ordinal);
         uint slideId = 256;
         var numbered = 0;
         foreach (var slide in presentation.Slides)
@@ -196,6 +215,19 @@ public sealed class PptxRenderer : IOutputRenderer
                 }
 
                 return slidePart.GetIdOfPart(slidePart.AddPart(logoPart));
+            }, images, image =>
+            {
+                if (!imageParts.TryGetValue(image.Sha256, out var part))
+                {
+                    var raster = images![image.Sha256];
+                    part = slidePart.AddImagePart(raster.ContentType == "image/png" ? ImagePartType.Png : ImagePartType.Jpeg);
+                    using var data = new MemoryStream(raster.Bytes);
+                    part.FeedData(data);
+                    imageParts.Add(image.Sha256, part);
+                    return slidePart.GetIdOfPart(part);
+                }
+
+                return slidePart.GetIdOfPart(slidePart.AddPart(part));
             });
             numbered += SlideBuilder.NumberedItems(slide);
             slideIdList.Append(new P.SlideId { Id = slideId++, RelationshipId = relationshipId });

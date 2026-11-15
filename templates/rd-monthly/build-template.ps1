@@ -317,6 +317,11 @@ try {
     Add-FooterLogo $detail
 
     # Narrative (design section 8.7).
+    $imagePage = New-Layout $master 'Work Item Image'
+    Set-Title $imagePage @(48, 36, 864, 33)
+    Add-Placeholder $imagePage $ppPlaceholderPicture 'Image' @(48, 90, 864, 390) | Out-Null
+    Add-FooterLogo $imagePage
+
     $narrative = New-Layout $master 'Narrative'
     Set-Title $narrative @(48, 36, 864, 33)
     Add-Bullets $narrative 'Body' @(48, 90, 864, 390) | Out-Null
@@ -347,7 +352,7 @@ finally {
         try { $presentation.Close(); $ownOpen = $false } catch { Write-Warning "Close failed: $($_.Exception.Message)" }
     }
     # Release COM references before Quit, otherwise POWERPNT can stay alive after Quit.
-    Get-Variable presentation, master, supportTitle, fontSet, shape, rule, cover, band, kickerRule, summary, card, support, table, detail, tag, narrative, closing, layout -ErrorAction SilentlyContinue |
+    Get-Variable presentation, master, supportTitle, fontSet, shape, rule, cover, band, kickerRule, summary, card, support, table, detail, tag, imagePage, narrative, closing, layout -ErrorAction SilentlyContinue |
         ForEach-Object { $_.Value = $null }
     [GC]::Collect(); [GC]::WaitForPendingFinalizers(); [GC]::Collect()
     # PowerPoint runs one instance: a file that the user opens during the run opens in this one. Quit only when no

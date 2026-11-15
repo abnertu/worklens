@@ -147,19 +147,20 @@ public sealed class SchemaConsistencyTests
         Assert.Equal(Sha256(reportPath), presentation["source_report"]!["sha256"]!.GetValue<string>());
     }
 
-    // Each 1.1 presentation example binds the 1.1 report example. ReportValidatorTests covers the binding of that
-    // report to the evidence example.
+    // Each 1.1 presentation binds the exact bytes of its named report example.
     [Fact]
     public void Valid_1_1_presentation_examples_bind_the_1_1_report_example()
     {
-        var reportSha256 = Sha256(SchemaExamples.ExamplePath("report-ir", "1.1", "valid", "monthly-report.json"));
+        var reportHashes = SchemaExamples.Examples(SchemaExamples.Info("report-ir", "1.1"), "valid")
+            .ToDictionary(path => JsonNode.Parse(File.ReadAllBytes(path))!["report_id"]!.GetValue<string>(), Sha256);
         var presentations = SchemaExamples.Examples(SchemaExamples.Info("presentation-ir", "1.1"), "valid").ToList();
 
         Assert.NotEmpty(presentations);
         foreach (var path in presentations)
         {
             var presentation = JsonNode.Parse(File.ReadAllText(path))!;
-            Assert.Equal(reportSha256, presentation["source_report"]!["sha256"]!.GetValue<string>());
+            var source = presentation["source_report"]!;
+            Assert.Equal(reportHashes[source["report_id"]!.GetValue<string>()], source["sha256"]!.GetValue<string>());
         }
     }
 

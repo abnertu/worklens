@@ -106,7 +106,8 @@ ReportDocument
 │   ├── evidence_refs[]    ev-...; origin = agent 時 ≥ 1
 │   ├── rank?              ≥ 1, 越小越重要; 未給的排在所有有 rank 的項目之後; 同值 (含都未給) 依陣列順序
 │   ├── human_notes?       人工補充
-│   └── review_status?     pending | approved | rejected (預設 pending)
+│   ├── review_status?     pending | approved | rejected (預設 pending)
+│   └── images?[]          { id, title, file, sha256, producer? } (1.1)
 └── narratives[]  Narrative
     ├── id                 "nr-<slug>"
     ├── kind               challenge | improvement | next_plan | other_work | support (1.1)
@@ -116,7 +117,7 @@ ReportDocument
     └── resolves?[]        此 improvement 解決的 challenge narrative ID; 只能用於 kind: improvement (1.1)
 ```
 
-1.1 新增 narrative kind `support` 與 narrative 的選填欄位 `resolves`。其他欄位與 1.0 相同。
+1.1 新增 narrative kind `support`、narrative 的選填欄位 `resolves`，以及 work item 的選填欄位 `images`。
 `support` 列出 subject 需要他人提供的支援。
 `category: ops` 標示伺服器維運工作。
 
@@ -172,7 +173,8 @@ SlotValue (以 kind 區分)
 ├── { kind: text, text }
 ├── { kind: bullets, items[]: { text, level: 0..2, style? } }
 ├── { kind: table, columns[], rows[][] } — 每個儲存格為字串, 或 { text, style } (1.1)
-└── { kind: metric, label, value, caption? } (1.1) — 三個欄位都是顯示文字
+├── { kind: metric, label, value, caption? } (1.1) — 三個欄位都是顯示文字
+└── { kind: image, id, title, file, sha256, producer? } (1.1)
 任一 SlotValue 可帶 style? (1.1): 樣式角色, 即 manifest 中一個 style 的 id
 任一 SlotValue 可帶 truncated?: true (經 overflow policy 截斷)
 ```
@@ -193,11 +195,13 @@ TemplateManifest
 │   ├── slide_layout_name  模板中 slide layout 的名稱
 │   ├── purpose            cover | summary | achievements | work_item_detail | narrative | closing
 │   │                      1.1 新增 operations | challenge_table
+│   │                      1.1 新增 work_item_image
+│   ├── image_layout_id? (1.1) work_item_detail 所用的圖片頁 layout
 │   ├── brand? (1.1)       { logo?: { placeholder }, unit_name?: { placeholder, max_chars? } }
 │   └── slots[]
 │       ├── id             例 title, summary, facts
 │       ├── placeholder    { idx?, name? } (至少一個)
-│       ├── kind           text | bullets | table; 1.1 新增 metric
+│       ├── kind           text | bullets | table; 1.1 新增 metric | image
 │       ├── required?      預設 false
 │       ├── max_chars?     | max_items?
 │       ├── overflow?      split | truncate (預設 truncate)
@@ -292,6 +296,29 @@ Layout Resolver 規則 (M0, `WorkLens.Core.Layout.LayoutResolver`, 純函式; �
 - Manifest 有根層 `footer` 時, presentation 有 `footer`: `footer` label 代入 `{period}`, 依 `footer.max_chars` 截斷。沒有根層 `footer` 時, presentation 沒有 `footer`。
 - 每個不在任何投影片 `source_refs` 中的 narrative, Layout 回傳一個 `layout.unplaced_narrative` warning。`Details["path"]` 為 report 的 pointer `/narratives/<i>`。1.0 manifest 下, Layout 只回報 `support` narrative, 因為 1.0 manifest 沒有放置它的 section。
 
+### 5.1 報告圖片
+
+圖片附件有 `img-` ID、標題、檔案參照、SHA-256 與選填的 `producer`。
+`producer: archify` 標示 Archify 匯出的圖片。
+沒有 `producer` 時，圖片視為一般圖片。
+圖片 ID 在整份報告中不可重複。
+圖片繼承所屬工作項目的審核狀態、來源與證據參照。
+圖片不獨立增加證據主張。
+Presentation IR 的 image slot 保留附件的全部欄位。
+圖片路徑相對於包含它的 JSON 檔案。
+`present` 改變輸出目錄時重新計算相對路徑，但保留原始報告的位元組雜湊。
+圖片的位元組由 CLI 驗證後傳入 Renderer；Core 不讀取圖片檔案。
+PNG 與 JPEG 的標頭提供尺寸，不保證每個像素都能正確解碼。
+圖片的位元組與中繼資料維持原樣。
+圖片頁使用 purpose `work_item_image`，必須有 required 的文字 `title` 與唯一的圖片 `image` slot。
+其他 purpose 不接受 image slot。
+Work-item detail layout 可用 `image_layout_id` 指向圖片頁 layout。
+不存在或 purpose 不符的參照回 `manifest.image_layout_invalid`。
+圖片依附件順序接在所屬工作的所有文字續頁之後。
+啟用的圖片沒有可用的細節 section 或圖片 layout 時，回 `manifest.image_layout_missing`。
+`Resolve` 的 `includeArchify` 預設為 `true`。
+圖片頁放在所屬工作項目的文字續頁之後。
+
 ## 6. Evidence Digest (agent 輸入, 非正式 IR)
 
 `worklens evidence digest` 的輸出 (`digest.json`), 版本化 (`digest_version`) 但不保證相容, 也不提供 JSON Schema (M2 可能補上)。內容:
@@ -337,14 +364,15 @@ public interface IReportValidator
 public interface ILayoutResolver
 {
     // reportSha256: report 檔原始位元組的 SHA-256, 寫入 source_report。
-    LayoutResult Resolve(ReportDocument report, string reportSha256, EvidenceDocument evidence, TemplateManifest manifest);
+    LayoutResult Resolve(ReportDocument report, string reportSha256, EvidenceDocument evidence, TemplateManifest manifest, bool includeArchify = true);
 }
 
 public interface IOutputRenderer
 {
     string Format { get; }   // "pptx"
     Task<RenderResult> RenderAsync(PresentationDocument presentation, TemplateManifest manifest,
-        string templatePath, string outputPath, BrandElements? brand, CancellationToken cancellationToken);
+        string templatePath, string outputPath, BrandElements? brand, CancellationToken cancellationToken,
+        IReadOnlyDictionary<string, RasterImage>? images = null);
 }
 ```
 
@@ -385,3 +413,8 @@ public sealed record WorkLensError(string Code, string Message, IReadOnlyDiction
 - 只有入口 project (Cli) 組裝元件; v0.1 不使用 DI 容器 (`Microsoft.Extensions.DependencyInjection`) 與 `IHttpClientFactory` — CLI 是短命程序, 手動組裝即可 (M1 決策, [ADR-0008](../adr/0008-libraries-schema-validation-and-http.md))。
 - `collect` 為每個 source 建立一個 connector 與一個 `HttpClient` (共用同一個內層 `HttpMessageHandler`); connector 依 source 的 `platform` 選擇; Renderer 依 `Format` 選擇。
 - Core 型別不依賴 DI 容器; `WorkLensSchemaRegistry` 為 process 內單例 (lazy 載入 embedded schemas)。
+
+`IOutputRenderer` 的 `images` 以 SHA-256 為 key，值為已驗證的 `RasterImage` 位元組與尺寸。
+圖片檔案由 CLI 讀取，Core 與 Renderer 不解析圖片路徑。
+
+圖片標題移除 XML 不允許的字元後若變成空字串，投影片標題與圖片文字都改用圖片 ID。

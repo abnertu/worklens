@@ -5,6 +5,10 @@ obj/
 .vs/
 TestResults/
 
+# Installed skill runtimes are not .NET build output.
+!/.agents/skills/archify/bin/
+!/.claude/skills/archify/bin/
+
 # Local tool state / machine-specific agent config
 .codegraph/
 .claude/settings*.json

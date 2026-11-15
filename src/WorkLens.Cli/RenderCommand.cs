@@ -27,12 +27,13 @@ internal static class RenderCommand
             Description = "Template .pptx (default: the manifest's template.file, relative to the manifest).",
         };
         var output = Program.FileOption("--output", InputFiles.PptxFileName);
+        var noArchify = new Option<bool>("--no-archify") { Description = "Skip image pages produced by Archify without reading their assets." };
         var config = new Option<string?>("--config")
         {
             Description = "Configuration file with the unit name and the logo (config 1.1); without it, render adds no brand.",
         };
         var json = Program.JsonOption();
-        foreach (var option in new Option[] { workspace, presentation, manifest, template, output, config, json })
+        foreach (var option in new Option[] { workspace, presentation, manifest, template, output, config, noArchify, json })
         {
             command.Options.Add(option);
         }
@@ -93,8 +94,10 @@ internal static class RenderCommand
                     CliException.FileDetails(templatePath));
             }
 
+            document = parse.GetValue(noArchify) ? ImageAssets.WithoutArchify(document!) : document!;
+            var images = ImageAssets.Load(document, presentationPath);
             var temp = AtomicFile.TempPathFor(outputPath);
-            var rendered = PptxRenderer.Render(document!, manifestDocument, templatePath, temp, brand);
+            var rendered = PptxRenderer.Render(document, manifestDocument, templatePath, temp, brand, images);
             if (rendered.Errors.Count > 0)
             {
                 AtomicFile.TryDelete(temp);
@@ -167,6 +170,11 @@ internal static class RenderCommand
 
     private static CliException RenderFailure(IReadOnlyList<WorkLensError> errors, string manifestPath, string outputPath)
     {
+        if (errors.Any(e => e.Code.StartsWith("render.image_", StringComparison.Ordinal)))
+        {
+            return CliException.FromErrors(errors, "input.invalid_image", outputPath);
+        }
+
         if (errors.FirstOrDefault(e => e.Code == "output.write_failed") is { } write)
         {
             return new CliException(ExitCodes.Configuration, write.Code, write.Message, CliException.FileDetails(outputPath));

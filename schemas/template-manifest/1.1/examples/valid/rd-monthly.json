@@ -2,7 +2,7 @@
   "schema_version": "1.1",
   "template": {
     "id": "rd-monthly",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "file": "rd-monthly.pptx"
   },
   "layouts": [
@@ -345,7 +345,8 @@
           },
           "max_chars": 20
         }
-      }
+      },
+      "image_layout_id": "image_v1"
     },
     {
       "id": "operations_v1",
@@ -519,6 +520,37 @@
           "max_chars": 32
         }
       ]
+    },
+    {
+      "id": "image_v1",
+      "slide_layout_name": "Work Item Image",
+      "purpose": "work_item_image",
+      "slots": [
+        {
+          "id": "title",
+          "placeholder": {
+            "name": "Title"
+          },
+          "kind": "text",
+          "required": true,
+          "max_chars": 60
+        },
+        {
+          "id": "image",
+          "placeholder": {
+            "name": "Image"
+          },
+          "kind": "image",
+          "required": true
+        }
+      ],
+      "brand": {
+        "logo": {
+          "placeholder": {
+            "name": "Footer Logo"
+          }
+        }
+      }
     }
   ],
   "sequence": [
