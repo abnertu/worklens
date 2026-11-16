@@ -52,11 +52,11 @@ CLI 負責設定、環境變數與檔案存取。
 Core 負責 IR、驗證與確定性排版。
 Connectors 蒐集來源證據，Renderer 以 Open XML 寫出 PPTX。
 呼叫端負責報告內容、圖表產生與人工審核。
-下載圖表的獨立 HTML 檔後，可互動檢視。
+從版本化的圖表來源產生獨立 HTML 後，可互動檢視。
 
 ![WorkLens 執行架構](docs/diagrams/architecture/architecture.svg)
 
-[流程圖 HTML](docs/diagrams/workflow/workflow.html) · [架構圖 HTML](docs/diagrams/architecture/architecture.html) · [Archify 整合指南](docs/integrations/archify.md)
+[Archify 整合指南與重建指令](docs/integrations/archify.md#準備與渲染)
 
 ## 狀態與文件
 

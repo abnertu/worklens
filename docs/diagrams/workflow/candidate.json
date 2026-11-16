@@ -5,7 +5,7 @@
     "title": "WorkLens 月報流程",
     "locale": "zh-TW",
     "quality_profile": "showcase",
-    "output": "docs/diagrams/workflow/workflow.html",
+    "output": ".worklens/diagrams/workflow/workflow.html",
     "repository": {
       "url": "git@github.com:abnertu/worklens.git",
       "revision": "f63164ca39866996f43c9ae4feb433df6b2bf687",

@@ -18,3 +18,10 @@ TestResults/
 # WorkLens runtime workspace and generated reports
 .worklens/
 out/
+
+# Rebuild standalone diagram HTML and verification receipts from candidate JSON.
+docs/diagrams/**/*.html
+docs/diagrams/**/*.delivery.json
+docs/diagrams/**/*.browser-check.json
+docs/diagrams/**/*.finalize.json
+docs/diagrams/**/*.finalize-summary.json

@@ -58,6 +58,29 @@ dotnet run --project src/WorkLens.Cli -c Release -- present --workspace .worklen
 dotnet run --project src/WorkLens.Cli -c Release -- render --workspace .worklens/reports/2026-11 --manifest templates/rd-monthly/manifest.json --json
 ```
 
+專案圖表使用內附的 Archify 3.2.0 渲染器。
+`docs/diagrams/*/candidate.json` 保存圖表結構與固定的來源版本。
+Repo 保留供 README 與報告使用的 SVG、PNG。
+HTML 與驗證收據放在被忽略的 `.worklens/diagrams/`。
+從 candidate 與固定渲染器版本重建 HTML，不需要 LLM。
+
+1. 準備 Node.js 與 Chromium 瀏覽器，例如 Microsoft Edge。
+2. 在專案根目錄執行下列命令。
+3. 開啟產生的 HTML，進行互動檢視。
+
+```powershell
+$review = Get-Date -Format 'yyyyMMdd-HHmmssfff'
+New-Item -ItemType Directory -Force .worklens/diagrams/workflow,.worklens/diagrams/architecture | Out-Null
+node .agents/skills/archify/bin/archify.mjs finalize workflow docs/diagrams/workflow/candidate.json .worklens/diagrams/workflow/workflow.html --repo-root . --quality showcase --out-dir ".worklens/diagrams/workflow/review-$review" --json
+if ($LASTEXITCODE -ne 0) { throw 'Workflow diagram verification failed.' }
+node .agents/skills/archify/bin/archify.mjs finalize architecture docs/diagrams/architecture/candidate.json .worklens/diagrams/architecture/architecture.html --repo-root . --quality showcase --out-dir ".worklens/diagrams/architecture/review-$review" --json
+if ($LASTEXITCODE -ne 0) { throw 'Architecture diagram verification failed.' }
+```
+
+每次執行都將收據寫入新的 review 目錄。
+以檢視器的「匯出」控制項更新 SVG 與 PNG。
+準備簡報圖片時，依照前述步驟匯出無標題 PNG。
+
 ## 略過 Archify
 
 在 `present` 或 `render` 加上 `--no-archify`。
