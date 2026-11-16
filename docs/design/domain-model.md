@@ -163,6 +163,7 @@ PresentationDocument
 ├── source_report          { report_id, sha256 }
 ├── template               { id, version }
 ├── footer?                每張投影片的頁尾文字 (1.1)
+├── report_context? (1.1)   { period, subject }，供輸出命名使用
 └── slides[]
     ├── id                 "slide-001" (依順序編號)
     ├── layout_id          必須存在於 Template Manifest
@@ -180,6 +181,11 @@ SlotValue (以 kind 區分)
 ```
 
 1.0 沒有 `footer`、`metric` 與 `style`。Layout Resolver 寫出 1.1。沒有樣式的儲存格寫成字串。C# 把每個儲存格的文字放在 `TableSlotValue.Rows`, 樣式角色放在與 `Rows` 同形的 `CellStyles`。
+
+`present` 將 Report IR 的結構化 `period` 與 `subject` 複製到 `report_context`。
+這些值不由 label、頁尾或封面文字還原。
+命名 helper 是純函式，CLI 負責選擇路徑與寫檔。
+沒有脈絡的舊 Presentation IR 仍可使用明確輸出路徑或既有預設檔名。
 
 ## 5. Template Manifest (`urn:worklens:schema:template-manifest:1.0`、`1.1`)
 
@@ -214,6 +220,7 @@ TemplateManifest
 ├── styles? (1.1)          角色 ID → { font_size?, bold?, color?, fill?, border_bottom?: { color, width } }
 │                          字級與線寬以 pt 表示; 顏色為 #RRGGBB
 ├── footer? (1.1)          { max_chars? }
+├── shared_brand? (1.1)    { masters: [{ name, footer, logo }] }
 └── labels?                Layout Resolver 的固定文字 (固定 key, 皆選填, 未提供時用英文預設)
     ├── cover_title, summary_title, achievements_title, challenges_title, improvements_title,
     │   next_plan_title, other_work_title, closing_title
@@ -226,6 +233,12 @@ TemplateManifest
 ```
 
 1.0 manifest 不能使用標為 1.1 的欄位與值。
+`shared_brand` 的名稱精確比對模板母片與一般圖形，不使用 placeholder 的索引。
+每個宣告的母片名稱必須唯一，其頁尾與 Logo 必須是不同圖形。
+頁尾必須是一般文字框，Logo 必須有有效的容納框。
+同一母片的版面必須顯示母片圖形，且不可另行宣告 `brand.logo`。
+Renderer 只改寫輸出副本的母片，並保留原生頁碼與主題字型。
+沒有 `shared_brand` 時，Renderer 維持既有的逐頁品牌位置與頁尾 placeholder 行為。
 1.1 中, `operations` 使用 purpose `operations`, `operation_details` 使用 `work_item_detail`, `support` 使用 `narrative`。
 1.1 中, `challenges` 使用 `narrative` 或 `challenge_table`。
 其他 section 使用與 1.0 相同的 purpose。
@@ -244,7 +257,7 @@ TemplateManifest
 
 Layout Resolver 規則 (M0, `WorkLens.Core.Layout.LayoutResolver`, 純函式; 同樣輸入必定得到位元組相同的輸出):
 
-- Layout id 或同一 layout 內的 slot id 重複 → `manifest.duplicate_id` (JSON Schema 無法表達, 由 `TemplateManifestChecker` 檢查; `render` 也檢查)。
+- `shared_brand` 母片名稱、layout id 或同一 layout 內的 slot id 重複 → `manifest.duplicate_id` (JSON Schema 無法表達, 由 `TemplateManifestChecker` 檢查; `render` 也檢查)。
 - 依 `sequence` 產生 slides (`slide-001` 起); `layout_id` 不存在 → `manifest.unknown_layout`; section 與 layout `purpose` 不對應 → `manifest.purpose_mismatch`; layout 缺少必要 slot、kind 不符, 或有該 purpose 不會填的 `required: true` slot → `manifest.slot_mismatch` (CLI exit 3, `manifest.invalid`)。
 - 每個 purpose 的 slot id 慣例: cover `title` (`labels.cover_title`, `{period}`)、`subtitle` (`subject.display_name`); summary `title`、`highlights` (bullets: 狀態統計 L0 + 活動統計 L1)、`activity` (table: repository、commit 數、merged change request 數); achievements `title`、`items` (table: 標題、狀態); work_item_detail `title` (work item 標題)、`facts` (bullets: facts L0 (無 facts 時用 `summary`) → 推論 L1 → 非 completed 的狀態 L1 → `human_notes` L1); narrative `title`、`body` (該 kind 的 narratives, L0); closing `title`。未列出的 slot 不綁定; 選填 slot 無內容時不綁定。narrative 與 achievements 無內容時不產生該 slide。
 - 統計只計 `occurred_at ∈ [period.start, period.end)` 且無 `duplicate` flag 的證據; 排除 `review_status: rejected` 的 work item; 順序依 `rank` (見 §3)。

@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using WorkLens.Core.Common;
 using WorkLens.Core.Evidence;
 
@@ -15,7 +16,8 @@ public sealed record WorkLensConfig(
     string? Timezone = null,
     ExcludeConfig? Exclude = null,
     DigestConfig? Digest = null,
-    ReportConfig? Report = null)
+    ReportConfig? Report = null,
+    [property: JsonPropertyName("$schema")] string? Schema = null)
 {
     public const string CurrentSchemaVersion = "1.1";
     public const string SchemaId = "urn:worklens:schema:config:1.1";
@@ -50,4 +52,9 @@ public sealed record RedactionPattern(string Match, string Replace);
 
 /// <param name="Organization">Unit name for the brand positions of the template (1.1).</param>
 /// <param name="Logo">PNG or JPEG logo, relative to the configuration file (1.1).</param>
-public sealed record ReportConfig(string? TemplateManifest = null, string? Organization = null, string? Logo = null);
+public sealed record ReportConfig(
+    string? TemplateManifest = null,
+    string? Organization = null,
+    string? Logo = null,
+    string? OutputFilename = null,
+    string? OutputMonth = null);

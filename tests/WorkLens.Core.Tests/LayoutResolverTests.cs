@@ -62,7 +62,9 @@ public sealed class LayoutResolverTests
         var golden = File.ReadAllText(SchemaExamples.ExamplePath("presentation-ir", "valid", "monthly-presentation.json"));
         var expected = System.Text.Encoding.UTF8.GetBytes(golden.Replace("\"schema_version\": \"1.0\"", "\"schema_version\": \"1.1\"", StringComparison.Ordinal));
 
-        Assert.Equal(expected, WorkLensJson.SerializeCanonicalUtf8(Example()));
+        var actual = Example();
+        Assert.Equal(expected, WorkLensJson.SerializeCanonicalUtf8(actual with { ReportContext = null }));
+        Assert.Equal(new PresentationReportContext(Report.Period, Report.Subject), actual.ReportContext);
     }
 
     [Fact]

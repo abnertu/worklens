@@ -32,9 +32,10 @@ Open XML SDK 採 MIT 授權。
 4. 從該 layout 建立 slide，不複製 prototype slide。
 5. 透過 placeholder 的 `idx` 或 name，填入 slot 的文字、項目符號與表格。
    不寫入 run 格式覆寫。
-6. 複製 layout 的頁尾與頁碼 placeholder。
-   在 manifest 指定的位置寫入頁尾文字與品牌。
-   品牌包含單位名稱與 logo。
+6. 複製 layout 的原生頁碼 placeholder。
+   依 manifest 的品牌位置寫入單位名稱與 Logo。
+   有 `shared_brand` 時，將共用頁尾與 Logo 寫入輸出母片 ([ADR-0016](0016-shared-master-branding.md))。
+   其他 manifest 繼續複製 layout 的頁尾 placeholder。
 7. 重寫文件屬性。
 8. 存檔。
 

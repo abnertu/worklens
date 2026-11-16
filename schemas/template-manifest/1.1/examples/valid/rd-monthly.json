@@ -2,7 +2,7 @@
   "schema_version": "1.1",
   "template": {
     "id": "rd-monthly",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "file": "rd-monthly.pptx"
   },
   "layouts": [
@@ -70,11 +70,6 @@
         }
       ],
       "brand": {
-        "logo": {
-          "placeholder": {
-            "name": "Cover Logo"
-          }
-        },
         "unit_name": {
           "placeholder": {
             "name": "Cover Unit"
@@ -181,11 +176,6 @@
         }
       ],
       "brand": {
-        "logo": {
-          "placeholder": {
-            "name": "Logo"
-          }
-        },
         "unit_name": {
           "placeholder": {
             "name": "Unit Name"
@@ -253,11 +243,6 @@
         }
       ],
       "brand": {
-        "logo": {
-          "placeholder": {
-            "name": "Logo"
-          }
-        },
         "unit_name": {
           "placeholder": {
             "name": "Unit Name"
@@ -334,11 +319,6 @@
         }
       ],
       "brand": {
-        "logo": {
-          "placeholder": {
-            "name": "Logo"
-          }
-        },
         "unit_name": {
           "placeholder": {
             "name": "Unit Name"
@@ -386,11 +366,6 @@
         }
       ],
       "brand": {
-        "logo": {
-          "placeholder": {
-            "name": "Logo"
-          }
-        },
         "unit_name": {
           "placeholder": {
             "name": "Unit Name"
@@ -425,11 +400,6 @@
         }
       ],
       "brand": {
-        "logo": {
-          "placeholder": {
-            "name": "Logo"
-          }
-        },
         "unit_name": {
           "placeholder": {
             "name": "Unit Name"
@@ -492,11 +462,6 @@
         }
       ],
       "brand": {
-        "logo": {
-          "placeholder": {
-            "name": "Logo"
-          }
-        },
         "unit_name": {
           "placeholder": {
             "name": "Unit Name"
@@ -543,14 +508,7 @@
           "kind": "image",
           "required": true
         }
-      ],
-      "brand": {
-        "logo": {
-          "placeholder": {
-            "name": "Footer Logo"
-          }
-        }
-      }
+      ]
     }
   ],
   "sequence": [
@@ -695,5 +653,14 @@
     "footer": "研發工作月報 · {period}",
     "detail_kicker": "{section} · {project}",
     "project_more": "{project} 等 {count} 個"
+  },
+  "shared_brand": {
+    "masters": [
+      {
+        "name": "RD Monthly",
+        "footer": "WorkLens Footer",
+        "logo": "WorkLens Logo"
+      }
+    ]
   }
 }

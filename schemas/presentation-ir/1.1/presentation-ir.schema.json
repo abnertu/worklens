@@ -36,6 +36,31 @@
       "minItems": 1,
       "items": { "$ref": "#/$defs/slide" }
     },
+    "report_context": {
+      "description": "Structured source report values for deterministic output filenames. Period start is inclusive and end is exclusive; label is display text only.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["period", "subject"],
+      "properties": {
+        "period": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["label", "start", "end", "timezone"],
+          "properties": {
+            "label": { "type": "string", "minLength": 1 },
+            "start": { "type": "string", "format": "date-time" },
+            "end": { "type": "string", "format": "date-time" },
+            "timezone": { "type": "string", "minLength": 1 }
+          }
+        },
+        "subject": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["display_name"],
+          "properties": { "display_name": { "type": "string", "minLength": 1 } }
+        }
+      }
+    },
     "footer": {
       "description": "Footer text of every slide.",
       "type": "string"

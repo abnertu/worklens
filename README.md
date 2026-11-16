@@ -9,6 +9,8 @@ WorkLens 從 GitHub 與 GitLab 蒐集可追溯的證據，並將驗證過的報�
 安裝 `global.json` 指定的 .NET 10 SDK。
 渲染不需要 PowerPoint。
 只有呼叫端使用 Archify 產生圖表時，才需要 Node.js 與瀏覽器。
+Repo 內附固定版本的 Archify runtime 與 Claude 薄入口。
+代理設定與每份 clone 的 CodeGraph 初始化見 [CodeGraph 指南](docs/integrations/codegraph.md)。
 
 ```powershell
 git clone https://github.com/abnertu/worklens.git
@@ -35,6 +37,16 @@ dotnet run --project src/WorkLens.Cli -c Release -- render --workspace .worklens
 單月使用 `collect --period`，包含兩端的月份區間使用 `--from` 與 `--to`。
 呼叫端先撰寫並審核 `report.json`，再執行驗證、排版與渲染。
 設定與命令見 [CLI 使用規格](docs/design/cli-ux.md)。
+
+月報模板從輸出母片繼承頁尾文字與選填 Logo。
+手動新增使用相同版面的投影片，也會繼承這些資料。
+Renderer 修改乾淨模板的輸出副本。
+以 `report.output_filename` 與 `report.output_month` 設定每月檔名及選填的月份覆寫。
+月份覆寫使用西元 `YYYY-MM`。
+檔名 token 可顯示 ISO 格式的年月或民國年。
+設定檔 schema 提供編輯器補全與錯誤診斷。
+Renderer 依 `config_version` 選擇內嵌 schema。
+`$schema` 提示只供編輯器使用。
 
 ## 月報流程
 
@@ -64,7 +76,12 @@ Connectors 蒐集來源證據，Renderer 以 Open XML 寫出 PPTX。
 GitHub 與 self-managed GitLab 蒐集均已通過真實驗收。
 M2 digest、M3 端到端編排與 M4 發佈強化留待後續。
 目前沒有已發布版本或 CI workflow。
-最近一次完整本機檢查通過 Release 建置與 888 項測試。
+使用下列命令執行完整本機檢查：
+
+```powershell
+dotnet build WorkLens.slnx -c Release -warnaserror
+dotnet test --solution WorkLens.slnx -c Release
+```
 
 - [架構與相依規則](docs/architecture/overview.md)
 - [資料模型與模組契約](docs/design/domain-model.md)

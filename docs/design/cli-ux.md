@@ -144,6 +144,51 @@ M1a 提供 `urn:worklens:schema:config:1.0`。`worklens schema show config` 輸�
 Config 1.1 新增 GitLab source 的選填欄位 `issue_status_labels`, 以及選填的 `report.organization` (單位名稱) 與 `report.logo` (PNG 或 JPEG, 相對於設定檔)。只有 `render --config` 讀取這兩個品牌欄位; 沒有 `--config` 時, `render` 不加品牌元素。
 `config` 不屬於 IR 三層, 但同樣以 schema 驗證。
 
+Config 1.1 也接受選填的 `report.output_filename` 與 `report.output_month`。
+年月資料使用西元 `YYYY-MM`，檔名格式可自行選擇。
+
+```json
+{
+  "output_filename": "{roc_year}年{month}月_RD月報_{display_name}.pptx",
+  "output_month": "2026-11"
+}
+```
+
+這個片段放在設定檔的 `report` 中。
+一般單月報告可省略 `output_month`。
+可排序的西元檔名範例是 `{period}_RD月報_{display_name}.pptx`。
+
+| 代入項目 | 值 |
+|---|---|
+| `{period}` | 西元年月，例如 `2026-11` |
+| `{year}` | 四位西元年，例如 `2026` |
+| `{roc_year}` | 西元年減 1911，例如 `115` |
+| `{month}` | 不補零的月份，例如 `2` |
+| `{month_2}` | 兩位月份，例如 `02` |
+| `{display_name}` | Report IR 的報告對象名稱 |
+
+預設月份來自報告期間最後一個包含的時刻，並換算為報告的時區。
+期間結束時間不包含在內。
+`output_month` 只覆寫輸出檔名的歸屬月份，適用累計報告。
+命名不解析 label 或投影片文字，也不使用執行當下的時間。
+
+1. 明確的 `--output` 優先，並略過命名展開。
+2. 否則將設定的檔名放在所選的 workspace。
+3. 沒有命名設定時，保留 `report.pptx` 預設值。
+
+設定的名稱只接受以 `.pptx` 結尾的可攜式單一檔名。
+完整檔名的 UTF-8 編碼不可超過 255 個位元組。
+路徑、保留裝置名稱、無效字元、未知代入項目與無效月份會使命名失敗。
+舊 Presentation IR 缺少 `report_context` 時，重新執行 `present` 或明確指定 `--output`。
+`render` 仍只在明確指定 `--config` 時讀取設定。
+
+Config 1.1 的選填 `$schema` 可讓編輯器關聯本機 schema。
+相對路徑以設定檔位置解析。
+例如根目錄的設定檔可使用 `"$schema": "./schemas/config/1.1/config.schema.json"`。
+編輯器可提供欄位補全、說明、完整範例值與驗證提示。
+檔名字串內的部分代入項目不保證自動補全。
+執行時仍以 `config_version` 選擇內建 schema，不讀取或下載這個提示。
+
 GitLab source 可設定 `"issue_status_labels": ["Todo", "Doing", "Pending", "Done"]`。
 陣列至少包含一個非空字串值, label 名稱比對區分大小寫。
 GitHub source 不可使用此欄位。Issue 蒐集需要適用於 GitLab 的 username identity。
@@ -264,8 +309,9 @@ stdout 恰好一個 JSON 物件, 結尾換行:
 | `input.invalid_image` | 圖片沒有可讀尺寸的 PNG/JPEG header | 3 |
 | `input.image_sha256_mismatch` | 圖片位元組的 SHA-256 與宣告不同 | 3 |
 | `config.invalid_logo` | `--config` 的 logo 不是能讀出尺寸的 PNG 或 JPEG 圖檔 | 3 |
+| `config.invalid_output_filename` | 設定的輸出檔名無效，或 Presentation IR 缺少命名所需的報告脈絡 | 3 |
 | `render.brand_not_written` | `render` 對沒有任何位置接收的品牌值給 warning issue。`instance_path` 為 manifest 的 pointer: 頁尾放不下時為 `/footer`, 沒有 layout 宣告位置時為 `/layouts` | 0 (warning) |
-| `manifest.invalid` | manifest 內容有問題。`issues` 含 `manifest.duplicate_id` (layout id 或同一 layout 內的 slot id 重複)、`manifest.column_mismatch` 與 `manifest.unknown_style`, 以及 `manifest.unknown_layout`、`manifest.purpose_mismatch` 與 `manifest.slot_mismatch` (只有 `present`) | 3 |
+| `manifest.invalid` | manifest 內容有問題。`issues` 含 `manifest.duplicate_id` (`shared_brand` 母片名稱、layout id 或同一 layout 內的 slot id 重複)、`manifest.column_mismatch` 與 `manifest.unknown_style`, 以及 `manifest.unknown_layout`、`manifest.purpose_mismatch` 與 `manifest.slot_mismatch` (只有 `present`) | 3 |
 | `template.invalid` | Renderer 回報模板問題; `issues` 含 `template.sha256_mismatch`、`template.unreadable`、`template.layout_missing`、`template.placeholder_missing`、`template.placeholder_position_missing` | 3 |
 | `output.write_failed` | 輸出目錄不存在或目標檔被鎖定 (例如在 PowerPoint 中開啟) | 3 |
 | `schema.not_found` | `schema show` 不認得的名稱或版本 (stderr) | 1 |
@@ -284,6 +330,15 @@ stdout 恰好一個 JSON 物件, 結尾換行:
 `presentation.table_column_count`: 有 `columns` 的 slot, 其表格的欄數與 `columns` 不同。
 `presentation.footer_without_position`: presentation 有 `footer`, 但 manifest 沒有宣告頁尾位置。`presentation.footer_too_long`: `footer` 超過 manifest `footer.max_chars`。
 `template.invalid` 中的品牌與頁尾 code: `template.slot_on_footer`: slot 或品牌位置綁定到頁尾或頁碼 placeholder。`template.brand_on_slot`: 品牌位置綁定到 slot 使用的 placeholder。`template.brand_conflict`: 同一 layout 的 logo 與單位名稱綁定到同一個 placeholder。模板沒有品牌位置的 placeholder 時為 `template.placeholder_missing`, logo placeholder 沒有位置時為 `template.placeholder_position_missing`。
+
+共用母片的錯誤仍回 exit 3，並在 `issues` 指出 manifest 欄位。
+
+- `manifest.shared_brand_conflict`：共用頁尾與 Logo 指向同一圖形，包在 `manifest.invalid` 中。
+- `template.shared_brand_target`：母片或一般圖形缺少、重複、類型不符，或沒有有效容納框。
+- `template.shared_brand_hidden`：目標圖形被隱藏，或母片的任一版面隱藏母片圖形。
+- `template.shared_brand_conflict`：逐頁 Logo 會與共用母片 Logo 重複。
+
+三種 `template.shared_brand_*` 錯誤都包在 `template.invalid` 中。
 
 `render` 的品牌規則: 單位名稱與 logo 只寫入 manifest 宣告的品牌位置。每個頁尾顯示單位名稱與 presentation `footer`, 以 `｜` 連接。超過頁尾容量時只截斷單位名稱; 放不下一個字時, 頁尾不放單位名稱, `render` 回 warning。
 

@@ -27,10 +27,11 @@ internal static class RenderCommand
             Description = "Template .pptx (default: the manifest's template.file, relative to the manifest).",
         };
         var output = Program.FileOption("--output", InputFiles.PptxFileName);
+        output.Description = "Output path, relative to the current directory. Overrides configured naming (default: <workspace>/<configured filename or report.pptx>).";
         var noArchify = new Option<bool>("--no-archify") { Description = "Skip image pages produced by Archify without reading their assets." };
         var config = new Option<string?>("--config")
         {
-            Description = "Configuration file with the unit name and the logo (config 1.1); without it, render adds no brand.",
+            Description = "Configuration file with branding and output naming options (config 1.1); without it, render uses no brand and report.pptx.",
         };
         var json = Program.JsonOption();
         foreach (var option in new Option[] { workspace, presentation, manifest, template, output, config, noArchify, json })
@@ -48,7 +49,6 @@ internal static class RenderCommand
                     "No template manifest: pass --manifest <manifest.json>.");
             var ws = parse.GetValue(workspace);
             var presentationPath = InputFiles.Resolve(host, parse.GetValue(presentation), ws, InputFiles.PresentationFileName);
-            var outputPath = InputFiles.Resolve(host, parse.GetValue(output), ws, InputFiles.PptxFileName);
 
             var presentationFile = InputFiles.Read(presentationPath);
             var manifestDocument = InputFiles.LoadManifest(manifestPath);
@@ -63,11 +63,13 @@ internal static class RenderCommand
             };
             result.Result = new JsonObject { ["files"] = files };
 
-            // Only an explicit --config adds brand values (D27): the configuration of collect stays out of render.
+            // Only an explicit --config adds branding or naming: the configuration of collect stays out of render.
             BrandElements? brand = null;
+            WorkLensConfig? configDocument = null;
             if (parse.GetValue(config) is { } configOption)
             {
-                var (configPath, configDocument) = ConfigFiles.Load(host, configOption);
+                var (configPath, loadedConfig) = ConfigFiles.Load(host, configOption);
+                configDocument = loadedConfig;
                 files["config"] = configPath;
                 brand = LoadBrand(configPath, configDocument);
             }
@@ -94,6 +96,16 @@ internal static class RenderCommand
                     CliException.FileDetails(templatePath));
             }
 
+            var outputName = InputFiles.PptxFileName;
+            if (parse.GetValue(output) is null && configDocument?.Report?.OutputFilename is { } pattern)
+            {
+                var named = ReportOutputName.Expand(pattern, configDocument.Report.OutputMonth, document!.ReportContext);
+                outputName = named.Filename ?? throw new CliException(
+                    ExitCodes.Configuration, "config.invalid_output_filename", named.Error!,
+                    CliException.FileDetails(files["config"]!.GetValue<string>()));
+            }
+
+            var outputPath = InputFiles.Resolve(host, parse.GetValue(output), ws, outputName);
             document = parse.GetValue(noArchify) ? ImageAssets.WithoutArchify(document!) : document!;
             var images = ImageAssets.Load(document, presentationPath);
             var temp = AtomicFile.TempPathFor(outputPath);

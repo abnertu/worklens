@@ -2,6 +2,7 @@ using System.Text.Json;
 using WorkLens.Core.Json;
 using WorkLens.Core.Templates;
 using Xunit;
+using P = DocumentFormat.OpenXml.Presentation;
 using PackageDocument = DocumentFormat.OpenXml.Packaging.PresentationDocument;
 
 namespace WorkLens.Rendering.Pptx.Tests;
@@ -43,6 +44,18 @@ public sealed class RdMonthlyTemplateTests
         };
         using var document = PackageDocument.Open(Path.Combine(Directory, manifest.Template.File), isEditable: false);
 
+        if (placeholder == "Footer")
+        {
+            // Keep the legacy footer-placeholder guard after RD moved its footer into an ordinary master shape.
+            var narrative = document.PresentationPart!.SlideMasterParts.SelectMany(m => m.SlideLayoutParts)
+                .Single(p => p.SlideLayout!.CommonSlideData!.Name!.Value == "Narrative");
+            var footer = (P.Shape)TemplateLayouts.Shapes(narrative.SlideLayout!.CommonSlideData!.ShapeTree)
+                .Single(s => s.Name == "Slide Number").Shape.CloneNode(true);
+            footer.NonVisualShapeProperties!.NonVisualDrawingProperties!.Name = "Footer";
+            footer.NonVisualShapeProperties.ApplicationNonVisualDrawingProperties!.PlaceholderShape!.Type = P.PlaceholderValues.Footer;
+            narrative.SlideLayout.CommonSlideData.ShapeTree!.Append(footer);
+        }
+
         TemplateLayouts.Resolve(document.PresentationPart!, manifest with { Layouts = layouts }, out var errors);
 
         var error = Assert.Single(errors);
@@ -62,7 +75,11 @@ public sealed class RdMonthlyTemplateTests
         {
             Brand = position == "logo"
                 ? brand with { Logo = new BrandLogo(reference) }
-                : brand with { UnitName = brand.UnitName! with { Placeholder = reference } },
+                : brand with
+                {
+                    UnitName = brand.UnitName! with { Placeholder = reference },
+                    Logo = placeholder == "Unit Name" ? new BrandLogo(reference) : null,
+                },
         };
         return (index, manifest with { Layouts = layouts });
     }
@@ -81,7 +98,7 @@ public sealed class RdMonthlyTemplateTests
     [InlineData("logo", "Subject", "template.brand_on_slot")]
     [InlineData("unit_name", "No Such Unit", "template.placeholder_missing")]
     [InlineData("unit_name", "Kicker", "template.brand_on_slot")]
-    [InlineData("unit_name", "Logo", "template.brand_conflict")]
+    [InlineData("unit_name", "Unit Name", "template.brand_conflict")]
     public void Unusable_brand_position_is_a_template_error(string position, string placeholder, string code)
     {
         var (index, manifest) = WithBrandPosition(position, placeholder);
@@ -117,11 +134,17 @@ public sealed class RdMonthlyTemplateTests
             {
                 var cover = document.PresentationPart!.SlideMasterParts.SelectMany(m => m.SlideLayoutParts)
                     .Single(p => p.SlideLayout!.CommonSlideData!.Name!.Value == "Cover");
-                var logo = TemplateLayouts.Shapes(cover.SlideLayout!.CommonSlideData!.ShapeTree).Single(s => s.Name == "Logo").Shape;
+                var logo = TemplateLayouts.Shapes(cover.SlideLayout!.CommonSlideData!.ShapeTree).Single(s => s.Name == "Unit Name").Shape;
                 logo.Descendants<DocumentFormat.OpenXml.Drawing.Transform2D>().Single().Remove();
             }
 
             var index = manifest.Layouts.Select((l, i) => (l, i)).Single(x => x.l.Id == "cover_v1").i;
+            manifest = manifest with
+            {
+                Layouts = [.. manifest.Layouts.Select(l => l.Id == "cover_v1"
+                    ? l with { Brand = new LayoutBrand(new BrandLogo(new PlaceholderRef(Name: "Unit Name"))) }
+                    : l)],
+            };
             var error = Assert.Single(ResolveErrors(manifest, copy));
 
             Assert.Equal(("template.placeholder_position_missing", $"/layouts/{index}/brand/logo/placeholder"), (error.Code, error.Details!["path"]));

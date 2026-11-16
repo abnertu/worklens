@@ -2,9 +2,9 @@
   "schema_version": "1.1",
   "template": {
     "id": "rd-monthly",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "file": "rd-monthly.pptx",
-    "sha256": "679f9cfb4747d865052340a827a2ab6d0747bbad638e2bf1f3910d633a384764"
+    "sha256": "218e299e10286655e14df90c0227b6c49bc7191f4268f3d714759002959f34bc"
   },
   "layouts": [
     {
@@ -71,11 +71,6 @@
         }
       ],
       "brand": {
-        "logo": {
-          "placeholder": {
-            "name": "Logo"
-          }
-        },
         "unit_name": {
           "placeholder": {
             "name": "Unit Name"
@@ -182,14 +177,7 @@
           "kind": "text",
           "max_chars": 80
         }
-      ],
-      "brand": {
-        "logo": {
-          "placeholder": {
-            "name": "Footer Logo"
-          }
-        }
-      }
+      ]
     },
     {
       "id": "achievements_v1",
@@ -251,14 +239,7 @@
           ],
           "table_style": "{2D5ABB26-0587-4C30-8999-92F81FD0307C}"
         }
-      ],
-      "brand": {
-        "logo": {
-          "placeholder": {
-            "name": "Footer Logo"
-          }
-        }
-      }
+      ]
     },
     {
       "id": "operations_v1",
@@ -315,14 +296,7 @@
           ],
           "table_style": "{2D5ABB26-0587-4C30-8999-92F81FD0307C}"
         }
-      ],
-      "brand": {
-        "logo": {
-          "placeholder": {
-            "name": "Footer Logo"
-          }
-        }
-      }
+      ]
     },
     {
       "id": "challenges_v1",
@@ -379,14 +353,7 @@
           ],
           "table_style": "{2D5ABB26-0587-4C30-8999-92F81FD0307C}"
         }
-      ],
-      "brand": {
-        "logo": {
-          "placeholder": {
-            "name": "Footer Logo"
-          }
-        }
-      }
+      ]
     },
     {
       "id": "detail_v1",
@@ -456,13 +423,6 @@
           "overflow": "truncate"
         }
       ],
-      "brand": {
-        "logo": {
-          "placeholder": {
-            "name": "Footer Logo"
-          }
-        }
-      },
       "image_layout_id": "image_v1"
     },
     {
@@ -490,14 +450,7 @@
           "max_chars": 110,
           "overflow": "split"
         }
-      ],
-      "brand": {
-        "logo": {
-          "placeholder": {
-            "name": "Footer Logo"
-          }
-        }
-      }
+      ]
     },
     {
       "id": "closing_v1",
@@ -537,14 +490,7 @@
           "kind": "image",
           "required": true
         }
-      ],
-      "brand": {
-        "logo": {
-          "placeholder": {
-            "name": "Footer Logo"
-          }
-        }
-      }
+      ]
     }
   ],
   "sequence": [
@@ -751,5 +697,14 @@
     "detail_kicker": "{section} · {project}",
     "project_more": "{project} 等 {count} 個",
     "footer": "研發工作月報 · {period}"
+  },
+  "shared_brand": {
+    "masters": [
+      {
+        "name": "RD Monthly",
+        "footer": "WorkLens Footer",
+        "logo": "WorkLens Logo"
+      }
+    ]
   }
 }

@@ -11,6 +11,11 @@
     "sources"
   ],
   "properties": {
+    "$schema": {
+      "description": "Editor schema hint. Relative local paths are supported. Runtime validation uses only the embedded schema selected by config_version and never downloads this hint.",
+      "type": "string",
+      "minLength": 1
+    },
     "config_version": {
       "const": "1.1"
     },
@@ -173,6 +178,20 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "output_filename": {
+          "description": "Portable .pptx basename used by render --config unless --output is explicit. Tokens: {period} (Gregorian YYYY-MM), {year}, {roc_year}, {month}, {month_2}, {display_name}. Requires presentation report_context. No paths or reserved device names.",
+          "type": "string",
+          "minLength": 1,
+          "examples": ["{period}_RD月報_{display_name}.pptx", "{roc_year}年{month}月_RD月報_{display_name}.pptx"]
+        },
+        "output_month": {
+          "description": "Optional Gregorian YYYY-MM attribution for cumulative reports. Without it, naming uses the last included instant in the report timezone. This changes only the filename.",
+          "type": "string",
+          "pattern": "^(?!0000)[0-9]{4}-(0[1-9]|1[0-2])$",
+          "minLength": 7,
+          "maxLength": 7,
+          "examples": ["2026-11"]
+        },
         "template_manifest": {
           "type": "string",
           "minLength": 1

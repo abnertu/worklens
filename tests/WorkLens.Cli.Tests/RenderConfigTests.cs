@@ -75,7 +75,13 @@ public sealed class RenderConfigTests : IDisposable
         var cover = ((SlidePart)document.PresentationPart!.GetPartById(
             document.PresentationPart.Presentation!.SlideIdList!.Elements<P.SlideId>().First().RelationshipId!.Value!)).Slide!;
         Assert.Contains("研發一處", cover.Descendants<A.Text>().Select(t => t.Text));
-        Assert.Single(cover.Descendants<P.Picture>());
+        Assert.Empty(cover.Descendants<P.Picture>());
+        var master = cover.SlidePart!.SlideLayoutPart!.SlideMasterPart!;
+        Assert.Single(master.SlideMaster!.Descendants<P.Picture>());
+        var footer = master.SlideMaster.Descendants<P.Shape>()
+            .Single(s => s.NonVisualShapeProperties?.NonVisualDrawingProperties?.Name?.Value == "WorkLens Footer");
+        Assert.StartsWith("研發一處｜", string.Concat(footer.Descendants<A.Text>().Select(t => t.Text)), StringComparison.Ordinal);
+        Assert.All(document.PresentationPart.SlideParts, slide => Assert.Empty(slide.Slide!.Descendants<P.Picture>()));
     }
 
     [Fact]

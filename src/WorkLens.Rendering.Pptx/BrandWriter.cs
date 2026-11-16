@@ -117,7 +117,7 @@ internal sealed class BrandWriter
     }
 
     /// <summary>Writes the text into a copy of a footer placeholder, in place of its template text.</summary>
-    public static void SetText(DocumentFormat.OpenXml.OpenXmlElement footer, string text)
+    public static void SetText(DocumentFormat.OpenXml.OpenXmlElement footer, string text, bool preserveFormatting = false)
     {
         var body = footer.GetFirstChild<P.TextBody>();
         if (body is null)
@@ -126,8 +126,34 @@ internal sealed class BrandWriter
             footer.Append(body);
         }
 
+        var paragraphProperties = preserveFormatting ? body.Elements<A.Paragraph>().FirstOrDefault()?.ParagraphProperties?.CloneNode(true) : null;
+        var runProperties = preserveFormatting ? (A.RunProperties?)body.Descendants<A.RunProperties>().FirstOrDefault()?.CloneNode(true) : null;
+        if (preserveFormatting && runProperties is null && body.Descendants<A.EndParagraphRunProperties>().FirstOrDefault() is { } endProperties)
+        {
+            runProperties = new A.RunProperties();
+            runProperties.SetAttributes(endProperties.GetAttributes());
+            foreach (var child in endProperties.ChildElements)
+            {
+                runProperties.Append(child.CloneNode(true));
+            }
+        }
+
         body.RemoveAllChildren<A.Paragraph>();
-        body.Append(new A.Paragraph(new A.Run(new A.Text(text))));
+        var paragraph = new A.Paragraph();
+        if (paragraphProperties is not null)
+        {
+            paragraph.Append(paragraphProperties);
+        }
+
+        var run = new A.Run();
+        if (runProperties is not null)
+        {
+            run.Append(runProperties);
+        }
+
+        run.Append(new A.Text(text));
+        paragraph.Append(run);
+        body.Append(paragraph);
     }
 
     private static string Truncate(string text, int? maxChars) =>

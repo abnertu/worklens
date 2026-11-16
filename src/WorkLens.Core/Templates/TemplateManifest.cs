@@ -6,6 +6,7 @@ namespace WorkLens.Core.Templates;
 /// </summary>
 /// <param name="Styles">Style roles by id (1.1). The renderer takes run and cell formats only from these roles.</param>
 /// <param name="Footer">Footer constraints (1.1).</param>
+/// <param name="SharedBrand">Ordinary master shapes for inherited branding (1.1).</param>
 public sealed record TemplateManifest(
     string SchemaVersion,
     TemplateInfo Template,
@@ -13,7 +14,8 @@ public sealed record TemplateManifest(
     IReadOnlyList<SequenceEntry> Sequence,
     TemplateLabels? Labels = null,
     IReadOnlyDictionary<string, StyleDefinition>? Styles = null,
-    FooterDefinition? Footer = null)
+    FooterDefinition? Footer = null,
+    SharedBrandDefinition? SharedBrand = null)
 {
     public const string CurrentSchemaVersion = "1.1";
     public const string SchemaId = "urn:worklens:schema:template-manifest:1.1";
@@ -36,6 +38,14 @@ public sealed record BorderLine(string Color, decimal Width);
 
 /// <param name="MaxChars">Capacity of the footer text.</param>
 public sealed record FooterDefinition(int? MaxChars = null);
+
+/// <summary>Ordinary master shapes that receive shared branding in the rendered output.</summary>
+public sealed record SharedBrandDefinition(IReadOnlyList<SharedBrandMaster> Masters);
+
+/// <param name="Name">The exact name of the master common slide data.</param>
+/// <param name="Footer">The exact name of an ordinary master text shape.</param>
+/// <param name="Logo">The exact name of an ordinary master shape or picture with a logo frame.</param>
+public sealed record SharedBrandMaster(string Name, string Footer, string Logo);
 
 /// <param name="File">Template path, relative to the directory that contains the manifest file.</param>
 /// <param name="Sha256">Lowercase hex SHA-256 of the template file bytes as written.</param>

@@ -77,3 +77,19 @@
 - `templates/sample-monthly/` (模板 + manifest)、`src/WorkLens.Rendering.Pptx/`、`ILayoutResolver` 實作、測試。
 - PoC 報告 `docs/plans/pptx-poc-report.md`: P1–P11 結果 (P11 不執行)、截圖、容量校正值、ADR-0006 的結論。
 - 結束條件: P1–P4、P7–P10 通過; P5、P6 有記錄的結果與決策 (可接受的差異或後續工作); P11 記錄為不執行。
+
+## 8. 共用母片驗收
+
+`rd-monthly` 1.2.0 另需驗證 [ADR-0016](../adr/0016-shared-master-branding.md) 的共用品牌。
+
+1. 檢查母片的頁尾、Logo 關聯、容納框與編輯語言。
+2. 確認產生的投影片沒有共用品牌副本。
+3. 以七種 RD 版面手動新增投影片。
+4. 保存並重新開啟驗收副本。
+5. 檢查共用頁尾、選填 Logo 與原生頁碼。
+6. 未指定 Logo 時，確認所有版面都沒有 Logo 圖片。
+7. 匯出並檢視每頁 PNG。
+8. 比對渲染前後的來源模板雜湊。
+
+本次月報不放 Logo。
+動態 Logo 的格式支援與驗收留待後續需求。

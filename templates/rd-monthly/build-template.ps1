@@ -182,7 +182,7 @@ function Set-Title($Layout, [double[]] $Box, [double] $FontSize = $Size.title, [
     throw "Layout $($Layout.Name) has no title placeholder."
 }
 
-# A new layout with the title, footer and slide number of the master, without the date.
+# A new layout with the title and native slide number. Shared branding stays on the master.
 function New-Layout($Master, [string] $Name, [bool] $Footer = $true) {
     $layout = $Master.CustomLayouts.Add($Master.CustomLayouts.Count + 1)
     $layout.Name = $Name
@@ -191,18 +191,12 @@ function New-Layout($Master, [string] $Name, [bool] $Footer = $true) {
         if ($shape.Type -ne 14) { continue }
         switch ($shape.PlaceholderFormat.Type) {
             $ppPlaceholderTitle { }
-            # The renderer copies every footer and slide number placeholder of the layout, so a layout without a
-            # footer must not have them at all.
-            $ppPlaceholderFooter { if ($Footer) { $shape.Name = 'Footer' } else { $shape.Delete() } }
+            $ppPlaceholderFooter { $shape.Delete() }
             $ppPlaceholderSlideNumber { if ($Footer) { $shape.Name = 'Slide Number' } else { $shape.Delete() } }
             default { $shape.Delete() }
         }
     }
     $layout
-}
-
-function Add-FooterLogo($Layout) {
-    Add-Placeholder $Layout $ppPlaceholderPicture 'Footer Logo' @(816, 501, 54, 15) | Out-Null
 }
 
 function Set-DocumentProperty($Presentation, [string] $Name, [string] $Value) {
@@ -234,6 +228,7 @@ try {
     $presentation.PageSetup.SlideWidth = 960
     $presentation.PageSetup.SlideHeight = 540
     $master = $presentation.Designs.Item(1).SlideMaster
+    $master.Name = 'RD Monthly'
 
     foreach ($fontSet in @($master.Theme.ThemeFontScheme.MajorFont, $master.Theme.ThemeFontScheme.MinorFont)) {
         $fontSet.Item($msoThemeLatin).Name = $LatinFont
@@ -257,10 +252,7 @@ try {
                 Set-TextFormat $shape $Size.body $Colors.body $false $ppAlignLeft $msoAnchorTop $true
             }
             $ppPlaceholderFooter {
-                $shape.Name = 'Footer'
-                $shape.Left = 48; $shape.Top = 501; $shape.Width = 600; $shape.Height = 15
-                $shape.TextFrame.TextRange.Text = ''
-                Set-TextFormat $shape $Size.footer $Colors.subtle $false $ppAlignLeft $msoAnchorMiddle $false
+                $shape.Delete()
             }
             $ppPlaceholderSlideNumber {
                 $shape.Name = 'Slide Number'
@@ -274,17 +266,29 @@ try {
     $rule.Line.ForeColor.RGB = ConvertTo-Bgr $Colors.line
     $rule.Line.Weight = 0.75
     $rule.Name = 'Footer Rule'
-    $master.HeadersFooters.Footer.Visible = $msoTrue
-    $master.HeadersFooters.Footer.Text = ''
+    # Ordinary shapes are inherited by newly added slides without copying report-specific values.
+    $sharedFooter = $master.Shapes.AddTextbox(1, 48, 501, 600, 15)
+    $sharedFooter.Name = 'WorkLens Footer'
+    $sharedFooter.TextFrame.TextRange.Text = ''
+    Set-TextFormat $sharedFooter $Size.footer $Colors.subtle $false $ppAlignLeft $msoAnchorMiddle $false
+    # AddTextbox auto-sizes the empty box before Set-TextFormat turns auto-size off. Pin the box that rd-monthly 1.2.0
+    # shipped with, so that a rebuild does not depend on font metrics.
+    $sharedFooter.Top = 504.635
+    $sharedFooter.Height = 10.905
+    $sharedLogo = $master.Shapes.AddShape($msoShapeRectangle, 816, 501, 54, 17.5)
+    $sharedLogo.Name = 'WorkLens Logo'
+    $sharedLogo.Fill.Visible = $msoFalse
+    $sharedLogo.Line.Visible = $msoFalse
+    $master.HeadersFooters.Footer.Visible = $msoFalse
     $master.HeadersFooters.SlideNumber.Visible = $msoTrue
     $master.HeadersFooters.DateAndTime.Visible = $msoFalse
 
     $defaultLayouts = $master.CustomLayouts.Count
 
-    # Cover (design section 8.1). The brand band covers the right side, so the master shapes stay hidden.
-    $cover = New-Layout $master 'Cover' $false
-    $cover.DisplayMasterShapes = $msoFalse
-    $band = $cover.Shapes.AddShape($msoShapeRectangle, 672, 0, 288, 540)
+    # Keep the common footer strip clear of the cover decoration.
+    $cover = New-Layout $master 'Cover'
+    $cover.DisplayMasterShapes = $msoTrue
+    $band = $cover.Shapes.AddShape($msoShapeRectangle, 672, 0, 288, 492)
     Set-Fill $band $Colors.accent
     $band.Line.Visible = $msoFalse
     $band.Name = 'Brand Band'
@@ -298,9 +302,8 @@ try {
     Add-Text $cover 'Subject' @(60, 390, 540, 21) $Size.heading $Colors.ink $true | Out-Null
     Add-Text $cover 'Meta' @(60, 417, 540, 18) $Size.meta $Colors.muted | Out-Null
     Add-Text $cover 'Unit Name' @(60, 471, 450, 18) $Size.meta $Colors.muted | Out-Null
-    Add-Placeholder $cover $ppPlaceholderPicture 'Logo' @(510, 465, 90, 30) | Out-Null
     Add-Text $cover 'Band Year' @(702, 54, 150, 18) $Size.meta $Colors.onAccentMuted | Out-Null
-    Add-Text $cover 'Band Month' @(702, 438, 150, 66) $Size.display $Colors.onAccent $true | Out-Null
+    Add-Text $cover 'Band Month' @(702, 420, 150, 60) $Size.display $Colors.onAccent $true | Out-Null
 
     # Summary (design section 8.2). The metric cards carry their own fill, so an unbound card leaves no empty box.
     $summary = New-Layout $master 'Summary'
@@ -324,14 +327,12 @@ try {
     $support = Add-Bullets $summary 'Support' @(594, 240, 318, 183)
     Set-Fill $support $Colors.surface
     Add-Text $summary 'Activity Note' @(48, 450, 864, 18) $Size.meta $Colors.muted | Out-Null
-    Add-FooterLogo $summary
 
     # Table (design sections 8.3, 8.5 and 8.6): achievements, operations and the challenge table.
     $table = New-Layout $master 'Table'
     Set-Title $table @(48, 36, 560, 33)
     Add-Text $table 'Status' @(612, 36, 300, 33) $Size.meta $Colors.muted $false $ppAlignRight $msoAnchorMiddle | Out-Null
     Add-Placeholder $table $ppPlaceholderTable 'Items' @(48, 90, 864, 390) | Out-Null
-    Add-FooterLogo $table
 
     # Detail (design section 8.4). The status tag beside the title keeps rounded corners.
     $detail = New-Layout $master 'Detail'
@@ -348,18 +349,15 @@ try {
     Add-Text $detail 'Evidence Title' $evidenceTitle $Size.heading $Colors.ink $true | Out-Null
     Add-HeadingRule $detail 'Evidence Title' $evidenceTitle
     Add-Bullets $detail 'Evidence' @(564, 144, 348, 300) $Size.meta | Out-Null
-    Add-FooterLogo $detail
 
     # Narrative (design section 8.7).
     $imagePage = New-Layout $master 'Work Item Image'
     Set-Title $imagePage @(48, 36, 864, 33)
     Add-Placeholder $imagePage $ppPlaceholderPicture 'Image' @(48, 90, 864, 390) | Out-Null
-    Add-FooterLogo $imagePage
 
     $narrative = New-Layout $master 'Narrative'
     Set-Title $narrative @(48, 36, 864, 33)
     Add-Bullets $narrative 'Body' @(48, 90, 864, 390) | Out-Null
-    Add-FooterLogo $narrative
 
     # Closing.
     $closing = New-Layout $master 'Closing'
@@ -387,7 +385,7 @@ finally {
         try { $presentation.Close(); $ownOpen = $false } catch { Write-Warning "Close failed: $($_.Exception.Message)" }
     }
     # Release COM references before Quit, otherwise POWERPNT can stay alive after Quit.
-    Get-Variable presentation, master, supportTitle, fontSet, shape, rule, cover, band, kickerRule, summary, card, support, table, detail, tag, imagePage, narrative, closing, layout -ErrorAction SilentlyContinue |
+    Get-Variable presentation, master, sharedFooter, sharedLogo, supportTitle, fontSet, shape, rule, cover, band, kickerRule, summary, card, support, table, detail, tag, imagePage, narrative, closing, layout -ErrorAction SilentlyContinue |
         ForEach-Object { $_.Value = $null }
     [GC]::Collect(); [GC]::WaitForPendingFinalizers(); [GC]::Collect()
     # PowerPoint runs one instance: a file that the user opens during the run opens in this one. Quit only when no

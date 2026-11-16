@@ -263,5 +263,16 @@
       ]
     }
   ],
-  "footer": "Example User · 2026-10"
+  "footer": "Example User · 2026-10",
+  "report_context": {
+    "period": {
+      "label": "2026-10",
+      "start": "2026-09-30T16:00:00+00:00",
+      "end": "2026-10-31T16:00:00+00:00",
+      "timezone": "Asia/Taipei"
+    },
+    "subject": {
+      "display_name": "Example User"
+    }
+  }
 }

@@ -8,7 +8,7 @@ namespace WorkLens.Rendering.Pptx;
 /// <summary>Preserves the template's Chinese and English editing languages without setting font names.</summary>
 internal static class TextLanguageWriter
 {
-    public static void Apply(P.Slide slide, P.SlideMaster? master)
+    public static void Apply(DocumentFormat.OpenXml.OpenXmlElement element, P.SlideMaster? master, bool replaceLanguages = false)
     {
         // PowerPoint does not infer a generated run's editing language from its characters or the placeholder.
         var pair = master?.Descendants()
@@ -21,10 +21,11 @@ internal static class TextLanguageWriter
             return;
         }
 
-        foreach (var run in slide.Descendants<A.Run>().ToList())
+        foreach (var run in element.Descendants<A.Run>().ToList())
         {
-            // Keep language choices already present in copied template content.
-            if (run.RunProperties?.Language is not null || run.Text?.Text is not { Length: > 0 } text)
+            // Replaced master text can use new boundaries only after the template supplies a valid pair.
+            // Other copied content keeps its explicit languages.
+            if ((!replaceLanguages && run.RunProperties?.Language is not null) || run.Text?.Text is not { Length: > 0 } text)
             {
                 continue;
             }

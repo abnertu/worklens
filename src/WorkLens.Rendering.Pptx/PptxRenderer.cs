@@ -160,7 +160,11 @@ public sealed class PptxRenderer : IOutputRenderer
             return (idErrors, []);
         }
 
-        var template = TemplateLayouts.Resolve(presentationPart, manifest, out var errors);
+        var errors = new List<WorkLensError>();
+        var sharedTargets = SharedBrandWriter.Resolve(presentationPart, manifest, errors);
+        var sharedMasters = sharedTargets.Select(t => t.Part).ToHashSet();
+        var template = TemplateLayouts.Resolve(presentationPart, manifest, out var layoutErrors, sharedMasters);
+        errors.AddRange(layoutErrors);
         if (errors.Count == 0)
         {
             // Only when the manifest fits the template: a missing layout would also show up as an unknown slide layout.
@@ -188,6 +192,18 @@ public sealed class PptxRenderer : IOutputRenderer
         var styles = new StyleWriter(manifest.Styles);
         var brandWriter = new BrandWriter(brand, manifest, presentation);
         ImagePart? logoPart = null;
+        SharedBrandWriter.Write(sharedTargets, brandWriter, (master, logo) =>
+        {
+            if (logoPart is null)
+            {
+                logoPart = master.AddImagePart(logo.ContentType == "image/png" ? ImagePartType.Png : ImagePartType.Jpeg);
+                using var data = new MemoryStream(logo.Bytes);
+                logoPart.FeedData(data);
+                return master.GetIdOfPart(logoPart);
+            }
+
+            return master.GetIdOfPart(master.AddPart(logoPart));
+        });
         var imageParts = new Dictionary<string, ImagePart>(StringComparer.Ordinal);
         uint slideId = 256;
         var numbered = 0;

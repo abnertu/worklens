@@ -83,3 +83,15 @@ sequenceDiagram
 - **M0 的檔案指定**: `present` / `render` 需以 `--manifest` 指定 template manifest (未給 → exit 3 `config.missing_manifest`); `worklens.json` 與 `.worklens/reports/<period>/` 預設路徑於 M3 提供。`render` 前會檢查 presentation 與 manifest 一致 (`presentation.*`, exit 2) 與模板 sha256 (`template.sha256_mismatch`, exit 3)。`render --config` 讀取單位名稱與 logo; 沒有 `--config` 時不加品牌元素。M0 尚不寫 provenance `manifest.json`。
 - **人工介入點**: 「請審核 report.json 與 warnings」之後的人工審核是必要的; v0.1 不提供自動跳過審核的選項。
 - **失敗處理**: 每個命令失敗時不覆寫既有輸出檔; agent 依 exit code 決定重試、修正或回報 (cli-ux.md §6)。
+
+## 輸出命名與共用母片
+
+1. `present` 將報告期間與對象寫入 Presentation IR 的 `report_context`。
+2. `render --config` 讀取選填的命名設定。
+3. `render` 先驗證名稱，再建立同目錄的暫存輸出。
+4. Renderer 在模板副本的母片填入共用頁尾與選填 Logo。
+5. CLI 完成原子替換，並在結果中回傳實際檔名。
+
+明確的 `--output` 優先於命名設定。
+命名不依賴執行時間，也不重新分析報告內容。
+設定未提供 Logo 時，輸出保持空白的 Logo 位置。

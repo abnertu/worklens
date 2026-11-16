@@ -93,7 +93,13 @@ public sealed class BrandRenderTests : IDisposable
         slide.Descendants<P.Shape>()
             .Where(s => s.NonVisualShapeProperties?.ApplicationNonVisualDrawingProperties?.PlaceholderShape?.Type?.Value == P.PlaceholderValues.Footer)
             .Select(s => string.Concat(s.Descendants<A.Text>().Select(t => t.Text)))
-            .SingleOrDefault();
+            .SingleOrDefault()
+        ?? slide.SlidePart?.SlideLayoutPart?.SlideMasterPart?.SlideMaster?.Descendants<P.Shape>()
+            .Where(s => s.NonVisualShapeProperties?.NonVisualDrawingProperties?.Name?.Value == "WorkLens Footer")
+            .Select(s => string.Concat(s.Descendants<A.Text>().Select(t => t.Text))).SingleOrDefault();
+
+    private static P.Picture MasterLogo(PackageDocument document) =>
+        document.PresentationPart!.SlideMasterParts.SelectMany(m => m.SlideMaster!.Descendants<P.Picture>()).Single();
 
     private static string NamedText(P.Slide slide, string name) =>
         string.Concat(slide.Descendants<P.Shape>()
@@ -110,15 +116,12 @@ public sealed class BrandRenderTests : IDisposable
         using var document = PackageDocument.Open(path, isEditable: false);
         var slides = Slides(document);
 
-        // The cover logo box is 90 × 30 pt: a 4:1 logo is 90 × 22.5 pt, centered in it.
-        var cover = slides[0].Descendants<P.Picture>().Single();
-        var transform = cover.ShapeProperties!.Transform2D!;
-        Assert.Equal(90 * EmuPerPoint, transform.Extents!.Cx!.Value);
-        Assert.Equal((long)(22.5 * EmuPerPoint), transform.Extents.Cy!.Value);
-        Assert.Equal((465 + 3.75) * EmuPerPoint, transform.Offset!.Y!.Value);
-        // Every content slide has a footer logo; the closing layout declares none.
-        Assert.All(slides.Skip(1).SkipLast(1), s => Assert.Single(s.Descendants<P.Picture>()));
-        Assert.Empty(slides[^1].Descendants<P.Picture>());
+        // Every layout inherits the same 54 × 17.5 pt master frame.
+        var transform = MasterLogo(document).ShapeProperties!.Transform2D!;
+        Assert.Equal(54 * EmuPerPoint, transform.Extents!.Cx!.Value);
+        Assert.Equal((long)(13.5 * EmuPerPoint), transform.Extents.Cy!.Value);
+        Assert.Equal(503 * EmuPerPoint, transform.Offset!.Y!.Value);
+        Assert.All(slides, s => Assert.Empty(s.Descendants<P.Picture>()));
         Assert.Empty(result.Warnings);
         Assert.Empty(new OpenXmlValidator(FileFormatVersions.Office2016).Validate(document, TestContext.Current.CancellationToken));
     }
@@ -130,9 +133,9 @@ public sealed class BrandRenderTests : IDisposable
         var (path, _) = RenderRd(new BrandElements(null, LogoImage.Read(Png(2, 8))));
         using var document = PackageDocument.Open(path, isEditable: false);
 
-        var transform = Slides(document)[0].Descendants<P.Picture>().Single().ShapeProperties!.Transform2D!;
-        Assert.Equal((long)(7.5 * EmuPerPoint), transform.Extents!.Cx!.Value);
-        Assert.Equal((long)((510 + 41.25) * EmuPerPoint), transform.Offset!.X!.Value);
+        var transform = MasterLogo(document).ShapeProperties!.Transform2D!;
+        Assert.Equal((long)(4.375 * EmuPerPoint), transform.Extents!.Cx!.Value);
+        Assert.Equal(816 * EmuPerPoint + ((54 * EmuPerPoint - transform.Extents.Cx.Value) / 2), transform.Offset!.X!.Value);
     }
 
     // The slides share one image part, so the logo is stored once.
@@ -142,7 +145,7 @@ public sealed class BrandRenderTests : IDisposable
         var (path, _) = RenderRd(Brand());
         using var document = PackageDocument.Open(path, isEditable: false);
 
-        var parts = document.PresentationPart!.SlideParts.SelectMany(p => p.ImageParts).Select(p => p.Uri).Distinct().ToList();
+        var parts = document.PresentationPart!.SlideMasterParts.SelectMany(p => p.ImageParts).Select(p => p.Uri).Distinct().ToList();
         Assert.Single(parts);
     }
 
@@ -168,7 +171,7 @@ public sealed class BrandRenderTests : IDisposable
         var (path, _) = RenderRd(new BrandElements(null, LogoImage.Read(Jpeg())));
         using var document = PackageDocument.Open(path, isEditable: false);
 
-        Assert.Equal("image/jpeg", document.PresentationPart!.SlideParts.SelectMany(p => p.ImageParts).First().ContentType);
+        Assert.Equal("image/jpeg", document.PresentationPart!.SlideMasterParts.SelectMany(p => p.ImageParts).First().ContentType);
     }
 
     // Characters that XML does not allow are removed, so the package stays valid.
@@ -198,8 +201,7 @@ public sealed class BrandRenderTests : IDisposable
         using var document = PackageDocument.Open(path, isEditable: false);
         var slides = Slides(document);
 
-        Assert.Null(Footer(slides[0])); // the cover has no footer
-        Assert.All(slides.Skip(1), s => Assert.Equal("研發一處｜" + Full.Footer, Footer(s)));
+        Assert.All(slides, s => Assert.Equal("研發一處｜" + Full.Footer, Footer(s)));
     }
 
     [Fact]

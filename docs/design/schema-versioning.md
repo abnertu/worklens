@@ -35,6 +35,7 @@
 - 未發布的 minor 可以修改。沒有任何 WorkLens release tag 包含它時, 它是未發布。後續工作可以為它加選填欄位或 enum 值, 不升 minor。已發布 minor 的檔案不改。
 - 寫出: 永遠寫 WorkLens 內建的最新 minor。
 - 未發布的 1.1 支援 Report IR 圖片附件、Presentation IR 圖片 slot 與 Template Manifest 圖片 layout。
+- 未發布的 1.1 也支援共用母片、設定檔命名與 Presentation IR 的 `report_context`。
 - 不支援的 major → 錯誤 `schema.unsupported_version`, 提示執行 `worklens migrate` (若有) 或使用對應版本的 WorkLens。
 
 ## 4. Migration
@@ -58,9 +59,14 @@ WorkLens 寫出的 JSON, 以及 `schemas/**/examples/valid/` 的範例, 遵循�
 | Enum | `snake_case` 字串 |
 | 數字 | 整數欄位不寫小數點 |
 | 未定義欄位 | 不允許 (schema `additionalProperties: false`; C# `JsonUnmappedMemberHandling.Disallow`, `SlotValueConverter` 讀取時也套用) |
-| `$schema` 屬性 | instance 文件**不寫** `"$schema"` (會被當成未定義欄位) |
+| `$schema` 屬性 | Config 1.1 可寫選填的編輯器提示；IR 文件仍禁止此屬性 |
 
 欄位順序不屬於 canonical 形式的一部分 (DeepEquals 不比較順序), 但 WorkLens 寫出時固定依 C# record 宣告順序, 讓 diff 穩定。
+
+Config 的 `$schema` 只供編輯器使用，可指向相對的本機路徑。
+執行時的驗證仍依 `config_version` 選擇內建 schema。
+這個提示不能覆寫驗證契約，也不觸發本機 schema 讀取或網路下載。
+沒有提示的舊設定檔維持有效。
 
 `SlotValueConverter` 依此順序寫出 SlotValue: `kind`、該 kind 的欄位 (宣告順序)、`style`、`truncated`。它寫出 bullet 項目為 `text`、`level`、`style`, 寫出儲存格物件為 `text`、`style`。沒有樣式的儲存格是字串。
 

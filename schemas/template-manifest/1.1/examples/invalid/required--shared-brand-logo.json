@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.1",
+  "template": { "id": "shared-monthly", "version": "1.0.0", "file": "shared-monthly.pptx" },
+  "layouts": [
+    {
+      "id": "cover",
+      "slide_layout_name": "Cover",
+      "purpose": "cover",
+      "slots": [{ "id": "title", "placeholder": { "idx": 0 }, "kind": "text" }]
+    }
+  ],
+  "sequence": [{ "section": "cover", "layout_id": "cover" }],
+  "shared_brand": { "masters": [{ "name": "Monthly", "footer": "WorkLens Footer" }] }
+}

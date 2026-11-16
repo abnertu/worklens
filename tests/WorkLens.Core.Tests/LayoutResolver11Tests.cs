@@ -44,6 +44,8 @@ public sealed class LayoutResolver11Tests
     {
         var presentation = ResolveOk(Manifest);
 
+        Assert.Equal(new PresentationReportContext(Report.Period, Report.Subject), presentation.ReportContext);
+
         Assert.Equal(
             ["cover_v1", "summary_v1", "achievements_v1", "detail_v1", "detail_v1", "operations_v1", "detail_v1", "challenges_v1", "narrative_v1", "narrative_v1", "closing_v1"],
             presentation.Slides.Select(s => s.LayoutId));

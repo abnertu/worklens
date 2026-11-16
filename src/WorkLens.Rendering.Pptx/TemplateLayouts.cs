@@ -11,7 +11,8 @@ namespace WorkLens.Rendering.Pptx;
 internal sealed record TemplateLayout(
     LayoutDefinition Definition,
     SlideLayoutPart Part,
-    IReadOnlyDictionary<string, LayoutPlaceholder> Slots);
+    IReadOnlyDictionary<string, LayoutPlaceholder> Slots,
+    bool SharedBrand = false);
 
 /// <param name="Shape">The layout's placeholder shape (<c>p:sp</c>, <c>p:graphicFrame</c> or <c>p:pic</c>).</param>
 /// <param name="Position">The placeholder's position for a table or image slot (layout, else master).</param>
@@ -28,7 +29,8 @@ internal static class TemplateLayouts
     public static IReadOnlyDictionary<string, TemplateLayout> Resolve(
         PresentationPart presentation,
         TemplateManifest manifest,
-        out List<WorkLensError> errors)
+        out List<WorkLensError> errors,
+        IReadOnlySet<SlideMasterPart>? sharedMasters = null)
     {
         errors = [];
         var layoutParts = presentation.SlideMasterParts
@@ -48,6 +50,13 @@ internal static class TemplateLayouts
                     $"The template has no slide layout named '{definition.SlideLayoutName}' (layout '{definition.Id}').",
                     $"/layouts/{i}/slide_layout_name"));
                 continue;
+            }
+
+            var sharedBrand = part.SlideMasterPart is { } master && sharedMasters?.Contains(master) == true;
+            if (sharedBrand && definition.Brand?.Logo is not null)
+            {
+                errors.Add(Error("template.shared_brand_conflict", $"Layout '{definition.Id}' declares a logo that would duplicate its master logo.",
+                    $"/layouts/{i}/brand/logo"));
             }
 
             var slots = new Dictionary<string, LayoutPlaceholder>(StringComparer.Ordinal);
@@ -123,7 +132,7 @@ internal static class TemplateLayouts
                 }
             }
 
-            result.TryAdd(definition.Id, new TemplateLayout(definition, part, slots));
+            result.TryAdd(definition.Id, new TemplateLayout(definition, part, slots, sharedBrand));
         }
 
         return result;

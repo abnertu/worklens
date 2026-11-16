@@ -28,6 +28,44 @@ public sealed class ConfigParserTests
 
     private static ConfigParseResult Parse(JsonNode node) => ConfigParser.Parse(node.ToJsonString());
 
+    [Theory]
+    [InlineData("../../schemas/config/1.1/config.schema.json")]
+    [InlineData("http://127.0.0.1:1/unavailable-schema.json")]
+    public void Editor_hint_is_preserved_but_does_not_select_runtime_schema(string hint)
+    {
+        var node = Minimal();
+        node["config_version"] = "1.1";
+        node["$schema"] = hint;
+        node["report"] = new JsonObject { ["output_filename"] = "{period}_{display_name}.pptx", ["output_month"] = "2026-11" };
+
+        var result = Parse(node);
+        Assert.True(result.IsValid);
+        Assert.Equal(hint, result.Config!.Schema);
+        Assert.Equal("2026-11", result.Config.Report!.OutputMonth);
+
+        node["unknown"] = true;
+        Assert.Contains(Parse(node).Issues, issue => issue.Code == "schema.additionalProperties");
+        node.Remove("unknown");
+        node["config_version"] = "99.0";
+        Assert.Contains(Parse(node).Issues, issue => issue.Code == "schema.unsupported_version");
+        node["config_version"] = "1.0";
+        Assert.Contains(Parse(node).Issues, issue => issue.Code == "schema.additionalProperties" && issue.InstancePath == "/$schema");
+    }
+
+    [Theory]
+    [InlineData("0000-11")]
+    [InlineData("2026-00")]
+    [InlineData("2026-13")]
+    [InlineData("2026-1")]
+    [InlineData("2026-11\n")]
+    public void Output_month_requires_gregorian_year_month(string month)
+    {
+        var node = Minimal();
+        node["config_version"] = "1.1";
+        node["report"] = new JsonObject { ["output_month"] = month };
+        Assert.Contains(Parse(node).Issues, issue => issue.Code.StartsWith("schema.", StringComparison.Ordinal) && issue.InstancePath == "/report/output_month");
+    }
+
     // The brand values are new in 1.1, so a 1.0 file keeps rejecting them.
     [Fact]
     public void Config_1_0_rejects_the_organization()

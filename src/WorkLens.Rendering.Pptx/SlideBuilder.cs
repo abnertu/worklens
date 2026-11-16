@@ -95,7 +95,7 @@ internal static class SlideBuilder
                 tree.Append(TextShape(nextId++, bound, null, TextParagraphs(unit, null)));
             }
 
-            if (TemplateLayouts.IsType(placeholder, P.PlaceholderValues.Footer))
+            if (TemplateLayouts.IsType(placeholder, P.PlaceholderValues.Footer) && !layout.SharedBrand)
             {
                 var footer = CopyLayoutShape(shape.Shape, nextId++);
                 if (brand.FooterText is { } text)
@@ -277,7 +277,7 @@ internal static class SlideBuilder
     }
 
     /// <summary>The image, scaled into its frame with its aspect ratio kept, and centered in it.</summary>
-    private static P.Picture Picture(uint id, string name, P.PlaceholderShape placeholder, int pixelWidth, int pixelHeight, string relationshipId, Position box, string? title = null)
+    internal static P.Picture Picture(uint id, string name, P.PlaceholderShape? placeholder, int pixelWidth, int pixelHeight, string relationshipId, Position box, string? title = null)
     {
         var scale = Math.Min((double)box.Width / pixelWidth, (double)box.Height / pixelHeight);
         var width = Math.Max(1, (long)Math.Round(pixelWidth * scale));
@@ -286,7 +286,7 @@ internal static class SlideBuilder
             new P.NonVisualPictureProperties(
                 new P.NonVisualDrawingProperties { Id = id, Name = name, Description = title },
                 new P.NonVisualPictureDrawingProperties(new A.PictureLocks { NoGrouping = true, NoChangeAspect = true }),
-                new P.ApplicationNonVisualDrawingProperties(PlaceholderCopy(placeholder))),
+                placeholder is null ? new P.ApplicationNonVisualDrawingProperties() : new P.ApplicationNonVisualDrawingProperties(PlaceholderCopy(placeholder))),
             new P.BlipFill(new A.Blip { Embed = relationshipId }, new A.Stretch(new A.FillRectangle())),
             new P.ShapeProperties(new A.Transform2D(
                 new A.Offset { X = box.X + ((box.Width - width) / 2), Y = box.Y + ((box.Height - height) / 2) },

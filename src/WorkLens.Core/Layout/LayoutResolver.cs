@@ -200,7 +200,8 @@ public sealed partial class LayoutResolver : ILayoutResolver
             new SourceReportRef(report.ReportId, reportSha256),
             new TemplateRef(manifest.Template.Id, manifest.Template.Version),
             slides,
-            v11 && manifest.Footer is { } footer ? Footer(labels, report, footer) : null);
+            v11 && manifest.Footer is { } footer ? Footer(labels, report, footer) : null,
+            new PresentationReportContext(report.Period, report.Subject));
         return new LayoutResult(presentation, [], UnplacedNarratives(report, slides, v11));
     }
 

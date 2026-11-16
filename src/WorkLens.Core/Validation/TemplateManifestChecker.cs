@@ -12,14 +12,31 @@ namespace WorkLens.Core.Validation;
 public static class TemplateManifestChecker
 {
     /// <summary>
-    /// <c>manifest.duplicate_id</c> for each layout id, and each slot id within a layout, that appears again after its
-    /// first occurrence (<c>Details["path"]</c> = the manifest JSON pointer of the repeated id).
+    /// <c>manifest.duplicate_id</c> for each shared brand master name, layout id, and slot id within a layout that
+    /// appears again after its first occurrence (<c>Details["path"]</c> = the manifest JSON pointer of the repeated
+    /// value). <c>manifest.shared_brand_conflict</c> for a shared brand master whose footer and logo name one shape.
     /// </summary>
     public static IReadOnlyList<WorkLensError> CheckIds(TemplateManifest manifest)
     {
         ArgumentNullException.ThrowIfNull(manifest);
         var errors = new List<WorkLensError>();
         var layoutIds = new HashSet<string>(StringComparer.Ordinal);
+        var masterNames = new HashSet<string>(StringComparer.Ordinal);
+        for (var i = 0; i < (manifest.SharedBrand?.Masters.Count ?? 0); i++)
+        {
+            var master = manifest.SharedBrand!.Masters[i];
+            if (!masterNames.Add(master.Name))
+            {
+                errors.Add(Error($"/shared_brand/masters/{i}/name", $"Shared brand master '{master.Name}' is defined more than once."));
+            }
+
+            if (master.Footer == master.Logo)
+            {
+                errors.Add(new WorkLensError("manifest.shared_brand_conflict", "The shared footer and logo must use different shapes.",
+                    new Dictionary<string, string> { ["path"] = $"/shared_brand/masters/{i}/logo" }));
+            }
+        }
+
         for (var i = 0; i < manifest.Layouts.Count; i++)
         {
             var layout = manifest.Layouts[i];

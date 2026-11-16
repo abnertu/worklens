@@ -1,9 +1,24 @@
 # 在月報中使用 Archify 圖片
 
-Codex 與 Claude Code 都能使用專案內的 Archify 3.2.0。
-安裝位置分別是 `.agents/skills/archify` 與 `.claude/skills/archify`。
+專案只保留一份完整的 Archify 3.2.0，位置是 `.agents/skills/archify/`。
+授權檔與第三方聲明隨 runtime 保留。
+`skills-lock.json` 記錄來源與內容 hash。
+Claude 的 `.claude/skills/archify/SKILL.md` 只負責導向共用技能。
+技能內的相對參照以 `.agents/skills/archify/` 為基準。
+下列命令一律在專案根目錄執行。
 WorkLens 預設納入已宣告的圖片。流程圖由呼叫端產生。
 WorkLens 執行時不需要 Node.js、瀏覽器或 LLM SDK。
+
+## Clone 與追蹤範圍
+
+Clone 已包含 runtime，不必另外安裝 Archify。
+安裝程式的移動來源不代表固定版本。
+升級時須一併審核 runtime 與 lockfile 的變更。
+WorkLens 不會自動更新 Archify。
+
+共用圖表的 candidate 與 README 使用的 SVG、PNG 納入追蹤。
+私人報告 JSON、個人品牌、產生的 HTML 與驗證收據放在被忽略的 `.worklens/` 目錄。
+代理設定與 CodeGraph 初始化方式見 [CodeGraph 指南](codegraph.md)。
 
 ## 準備與渲染
 
@@ -23,6 +38,8 @@ node .agents/skills/archify/bin/archify.mjs finalize workflow .worklens/reports/
 
 `candidate.json` 的 `meta.output` 須與 HTML 輸出路徑相同。
 非程式碼圖表可省略 `--repo-root`。
+Candidate metadata 與報告圖片參照使用簡短的主題標題。
+保留有助理解的架構或流程用語。
 將流程圖嵌入簡報時，只顯示一個標題。
 
 1. 保留投影片標題。

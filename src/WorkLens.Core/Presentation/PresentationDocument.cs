@@ -1,4 +1,6 @@
 using System.Text.Json.Serialization;
+using WorkLens.Core.Common;
+using WorkLens.Core.Report;
 
 namespace WorkLens.Core.Presentation;
 
@@ -14,7 +16,8 @@ public sealed record PresentationDocument(
     SourceReportRef SourceReport,
     TemplateRef Template,
     IReadOnlyList<Slide> Slides,
-    string? Footer = null)
+    string? Footer = null,
+    PresentationReportContext? ReportContext = null)
 {
     public const string CurrentSchemaVersion = "1.1";
     public const string SchemaId = "urn:worklens:schema:presentation-ir:1.1";
@@ -23,6 +26,9 @@ public sealed record PresentationDocument(
 public sealed record SourceReportRef(string ReportId, string Sha256);
 
 public sealed record TemplateRef(string Id, string Version);
+
+/// <summary>Structured source values for deterministic output naming. The period end is exclusive.</summary>
+public sealed record PresentationReportContext(Period Period, ReportSubject Subject);
 
 public sealed record Slide(
     string Id,

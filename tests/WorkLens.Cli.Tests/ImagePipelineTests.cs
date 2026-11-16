@@ -90,7 +90,10 @@ public sealed class ImagePipelineTests : IDisposable
             var slides = package.PresentationPart!.SlideParts.ToList();
             Assert.Equal((int)full.Json["result"]!["slide_count"]! - 1, slides.Count);
             Assert.Equal(slides.Count, (int)render.Json["result"]!["slide_count"]!);
-            Assert.All(slides, slide => Assert.Contains(slide.Slide!.Descendants<P.Picture>(), picture => picture.NonVisualPictureProperties!.NonVisualDrawingProperties!.Name!.Value!.Contains("Logo", StringComparison.Ordinal)));
+            Assert.All(slides, slide => Assert.Contains(slide.SlideLayoutPart!.SlideMasterPart!.SlideMaster!.Descendants<P.Picture>(),
+                picture => picture.NonVisualPictureProperties!.NonVisualDrawingProperties!.Name!.Value == "WorkLens Logo"));
+            Assert.DoesNotContain(slides.SelectMany(s => s.Slide!.Descendants<P.Picture>()),
+                picture => picture.NonVisualPictureProperties!.NonVisualDrawingProperties!.Name!.Value == "WorkLens Logo");
             Assert.Single(slides.SelectMany(s => s.Slide!.Descendants<P.Picture>()), p => p.NonVisualPictureProperties!.NonVisualDrawingProperties!.Description?.Value == "General");
             Assert.Empty(new OpenXmlValidator().Validate(package, TestContext.Current.CancellationToken));
         }
@@ -161,12 +164,13 @@ public sealed class ImagePipelineTests : IDisposable
         Prepare();
         Assert.Equal(0, (await Present()).ExitCode);
         var document = JsonNode.Parse(File.ReadAllBytes(PresentationPath))!;
+        var templateVersion = (string)document["template"]!["version"]!;
         document["template"]!["version"] = "1.0.1";
         File.WriteAllText(PresentationPath, document.ToJsonString());
         var stale = await Render("--no-archify");
         Assert.Equal(2, stale.ExitCode);
         Assert.Contains(stale.Json["issues"]!.AsArray(), i => (string)i!["code"]! == "presentation.template_mismatch");
-        document["template"]!["version"] = "1.1.0";
+        document["template"]!["version"] = templateVersion;
         document["slides"]!.AsArray().First(s => (string)s!["layout_id"]! == "image_v1")!["bindings"]!["image"]!["producer"] = "unknown";
         File.WriteAllText(PresentationPath, document.ToJsonString());
         Assert.Equal(2, (await Render("--no-archify")).ExitCode);
