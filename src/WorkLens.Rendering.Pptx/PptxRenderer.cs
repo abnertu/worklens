@@ -229,6 +229,7 @@ public sealed class PptxRenderer : IOutputRenderer
 
                 return slidePart.GetIdOfPart(slidePart.AddPart(part));
             });
+            TextLanguageWriter.Apply(slidePart.Slide, layout.Part.SlideMasterPart?.SlideMaster);
             numbered += SlideBuilder.NumberedItems(slide);
             slideIdList.Append(new P.SlideId { Id = slideId++, RelationshipId = relationshipId });
         }

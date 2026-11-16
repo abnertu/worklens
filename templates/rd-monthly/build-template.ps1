@@ -66,6 +66,40 @@ function Get-FullWindowsPath([string] $Path) {
     [IO.Path]::GetFullPath($Path).Replace('/', '\')
 }
 
+function Set-TraditionalChineseThemeFont([string] $Path, [string] $Typeface) {
+    # COM sets a:ea but leaves the built-in Hant font unchanged. PowerPoint uses Hant for new zh-TW text.
+    $package = [IO.Compression.ZipFile]::Open($Path, [IO.Compression.ZipArchiveMode]::Update)
+    try {
+        foreach ($entry in $package.Entries | Where-Object FullName -Match '^ppt/theme/theme[0-9]+\.xml$') {
+            $stream = $entry.Open()
+            try {
+                $xml = [xml]::new()
+                $xml.PreserveWhitespace = $true
+                $xml.Load($stream)
+                $ns = [Xml.XmlNamespaceManager]::new($xml.NameTable)
+                $ns.AddNamespace('a', 'http://schemas.openxmlformats.org/drawingml/2006/main')
+                foreach ($fonts in $xml.SelectNodes('//a:fontScheme/a:majorFont | //a:fontScheme/a:minorFont', $ns)) {
+                    $hant = $fonts.SelectSingleNode('a:font[@script="Hant"]', $ns)
+                    if ($null -eq $hant) {
+                        $hant = $xml.CreateElement('a', 'font', $ns.LookupNamespace('a'))
+                        $hant.SetAttribute('script', 'Hant')
+                        [void] $fonts.AppendChild($hant)
+                    }
+                    $hant.SetAttribute('typeface', $Typeface)
+                }
+                $stream.Position = 0
+                $stream.SetLength(0)
+                $settings = [Xml.XmlWriterSettings]::new()
+                $settings.Encoding = [Text.UTF8Encoding]::new($false)
+                $writer = [Xml.XmlWriter]::Create($stream, $settings)
+                try { $xml.Save($writer) } finally { $writer.Dispose() }
+            }
+            finally { $stream.Dispose() }
+        }
+    }
+    finally { $package.Dispose() }
+}
+
 # COM colors are BGR integers.
 function ConvertTo-Bgr([string] $Hex) {
     $r = [Convert]::ToInt32($Hex.Substring(1, 2), 16)
@@ -340,6 +374,7 @@ try {
     $presentation.SaveAs($tempFull, $ppSaveAsOpenXMLPresentation)
     $presentation.Close()
     $ownOpen = $false
+    Set-TraditionalChineseThemeFont $tempFull $EastAsianFont
     Move-Item -LiteralPath $tempFull -Destination $outputFull -Force
     Write-Output "Wrote $outputFull"
 }

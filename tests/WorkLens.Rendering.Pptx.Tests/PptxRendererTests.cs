@@ -268,12 +268,16 @@ public sealed class PptxRendererTests : IDisposable
             Assert.Null(properties.GetFirstChild<A.SolidFill>());
         }
 
-        // Runs written for slot values have no a:rPr at all (only footer copies keep the layout's lang).
+        // Editing languages are metadata. Slot runs still inherit all visual formatting from the template.
         var shapes = Slides(document).SelectMany(ShapesOf)
             .Where(s => PlaceholderOf(s) is { } ph
                 && !IsType(ph, P.PlaceholderValues.Footer)
                 && !IsType(ph, P.PlaceholderValues.SlideNumber));
-        Assert.All(shapes.SelectMany(s => s.Descendants<A.Run>()), r => Assert.Null(r.RunProperties));
+        Assert.All(shapes.SelectMany(s => s.Descendants<A.Run>()), r =>
+        {
+            Assert.Empty(r.RunProperties?.ChildElements ?? []);
+            Assert.All(r.RunProperties?.GetAttributes() ?? [], a => Assert.Contains(a.LocalName, new[] { "lang", "altLang" }));
+        });
     }
 
     // Template section 2: master logo kept; footer text and slide number field on every slide; unique cNvPr ids.

@@ -27,7 +27,8 @@ Accepted — 2026-11-14 (使用者於 2026-11-13 決定樣式契約)
 ## Consequences
 
 - ADR-0006 的「run 不寫格式覆寫」現在只適用 1.0 manifest。
-- 1.0 manifest 沒有 `styles`, 所以它的輸出不變。
+- 1.0 manifest 沒有 `styles`，所以不新增視覺格式覆寫。
+- 編輯語言依 [ADR-0015](0015-pptx-editing-languages.md)。
 - 模板的外觀取決於 `.pptx` 與 manifest。改變外觀可能需要同時修改兩者。
 - 表格外觀來自儲存格底色與下框線, 因為 PowerPoint COM 無法建立自訂表格樣式。
 

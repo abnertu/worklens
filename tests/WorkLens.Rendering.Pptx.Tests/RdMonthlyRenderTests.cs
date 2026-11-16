@@ -59,6 +59,12 @@ public sealed class RdMonthlyRenderTests : IDisposable
 
     private static A.Table TableOf(P.Slide slide) => slide.Descendants<A.Table>().Single();
 
+    private static void AssertTemplateFormatting(A.Run run)
+    {
+        Assert.Empty(run.RunProperties?.ChildElements ?? []);
+        Assert.All(run.RunProperties?.GetAttributes() ?? [], a => Assert.Contains(a.LocalName, new[] { "lang", "altLang" }));
+    }
+
     [Theory]
     [InlineData("full")]
     [InlineData("empty")]
@@ -66,6 +72,59 @@ public sealed class RdMonthlyRenderTests : IDisposable
     {
         using var document = PackageDocument.Open(Render(name), isEditable: false);
 
+        Assert.Empty(new OpenXmlValidator(FileFormatVersions.Office2016).Validate(document, TestContext.Current.CancellationToken));
+    }
+
+    // PowerPoint resolves new zh-TW paragraphs through Hant, even when a:ea already names the intended font.
+    [Fact]
+    public void Traditional_chinese_typing_uses_the_templates_east_asian_font()
+    {
+        using var document = PackageDocument.Open(Render("full"), isEditable: false);
+        var scheme = document.PresentationPart!.SlideMasterParts.Single().ThemePart!.Theme!.ThemeElements!.FontScheme!;
+
+        foreach (var fonts in new OpenXmlElement[] { scheme.MajorFont!, scheme.MinorFont! })
+        {
+            Assert.Equal("Segoe UI", fonts.GetFirstChild<A.LatinFont>()!.Typeface!.Value);
+            Assert.Equal("Microsoft JhengHei", fonts.GetFirstChild<A.EastAsianFont>()!.Typeface!.Value);
+            var traditionalChinese = fonts.Elements<A.SupplementalFont>().Single(font => font.Script?.Value == "Hant");
+            Assert.Equal("Microsoft JhengHei", traditionalChinese.Typeface!.Value);
+        }
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("evidence_id")]
+    public void Mixed_chinese_and_english_text_has_separate_editing_languages(string? style)
+    {
+        var original = Golden("empty");
+        var slide = original.Slides[0];
+        const string text = "研發 GitHub𠀀 👩‍💻";
+        var bindings = slide.Bindings.ToDictionary(b => b.Key, b => b.Value);
+        bindings["subtitle"] = new TextSlotValue(text) { Style = style };
+        var path = Path.Combine(_directory, "mixed-languages.pptx");
+        var result = PptxRenderer.Render(original with { Slides = [slide with { Bindings = bindings }] },
+            Manifest, Path.Combine(TemplateDirectory, "rd-monthly.pptx"), path);
+        Assert.Empty(result.Errors);
+        using var document = PackageDocument.Open(path, isEditable: false);
+        var paragraph = ShapeNamed(Slides(document, "Cover")[0], "Subtitle").TextBody!.Elements<A.Paragraph>().Single();
+        var runs = paragraph.Elements<A.Run>().ToList();
+
+        Assert.Equal(text, string.Concat(runs.Select(r => r.Text!.Text)));
+        Assert.Equal("zh-TW", runs.First(r => r.Text!.Text.Contains("研發", StringComparison.Ordinal)).RunProperties?.Language?.Value);
+        Assert.Equal("en-US", runs.First(r => r.Text!.Text.Contains("GitHub", StringComparison.Ordinal)).RunProperties?.Language?.Value);
+        Assert.Equal("zh-TW", runs.First(r => r.Text!.Text.Contains("𠀀", StringComparison.Ordinal)).RunProperties?.Language?.Value);
+        if (style is null)
+        {
+            Assert.All(runs, AssertTemplateFormatting);
+        }
+        else
+        {
+            Assert.All(runs, r =>
+            {
+                Assert.True(r.RunProperties!.Bold!.Value);
+                Assert.Equal("1E3A8A", ColorOf(r.RunProperties));
+            });
+        }
         Assert.Empty(new OpenXmlValidator(FileFormatVersions.Office2016).Validate(document, TestContext.Current.CancellationToken));
     }
 
@@ -183,7 +242,7 @@ public sealed class RdMonthlyRenderTests : IDisposable
         var paragraph = body.TextBody!.Elements<A.Paragraph>().First();
         Assert.Equal(A.TextAutoNumberSchemeValues.ArabicPeriod, paragraph.ParagraphProperties!.GetFirstChild<A.AutoNumberedBullet>()!.Type!.Value);
         Assert.Equal("1E3A8A", paragraph.ParagraphProperties.GetFirstChild<A.BulletColor>()!.GetFirstChild<A.RgbColorModelHex>()!.Val!.Value);
-        Assert.Null(paragraph.Elements<A.Run>().Single().RunProperties);
+        Assert.All(paragraph.Elements<A.Run>(), AssertTemplateFormatting);
     }
 
     // The full fixture has 6 next plan items, split 5 + 1: the continuation slide numbers its item 6.
@@ -209,7 +268,7 @@ public sealed class RdMonthlyRenderTests : IDisposable
         using var document = PackageDocument.Open(Render("full", manifest), isEditable: false);
         var evidence = ShapeNamed(Slides(document, "Detail")[0], "Evidence");
 
-        Assert.Null(evidence.TextBody!.Elements<A.Paragraph>().First().Elements<A.Run>().Single().RunProperties);
+        Assert.All(evidence.TextBody!.Elements<A.Paragraph>().First().Elements<A.Run>(), AssertTemplateFormatting);
     }
 
     private sealed record UnknownSlotValue : SlotValue;

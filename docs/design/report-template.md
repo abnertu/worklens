@@ -24,6 +24,12 @@
 | 東亞字型 | Microsoft JhengHei |
 | 視覺稿字型 | Inter 與 Noto Sans TC, 作為網頁替代字型 |
 
+主題的繁體中文 (`Hant`) 標題與本文字型也設為 `Microsoft JhengHei`。
+PowerPoint 在新增段落與輸入繁體中文時使用這項設定。
+Renderer 依模板母片的中英文語言配對，分開標記中文與英文文字片段 ([ADR-0015](../adr/0015-pptx-editing-languages.md))。
+這些標記讓 PowerPoint 的字型欄辨識所選文字的語言。
+字型名稱仍由模板繼承。
+
 視覺稿字型的換行與 PPTX 字型不同。
 實作時在 PowerPoint 中校正容量。
 
