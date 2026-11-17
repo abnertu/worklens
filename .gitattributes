@@ -4,7 +4,9 @@
 # Preserve upstream skill bytes, including generated HTML whitespace.
 .agents/skills/archify/** -text -whitespace
 .claude/skills/archify/** -text -whitespace
-# Exclude documentation and diagram HTML from language statistics.
+# Exclude documentation and HTML assets from language statistics.
 docs/** linguist-documentation
+*.html linguist-detectable=false
+*.htm linguist-detectable=false
 # Keep generated diagram bytes bound to their delivery receipts.
 docs/diagrams/** -text -whitespace
